@@ -129,8 +129,12 @@ const searchMedicineByName = async (req, res) => {
       return res.status(400).json({ error: "Invalid or missing 'name' parameter" });
     }
 
-    // Perform the medicine search by name
-    const meds = await Medicine.find({ name });
+    // Perform the medicine search by name (partial match)
+    const meds = await Medicine.find({ name: { $regex: name, $options: 'i' } });
+    
+    if (meds.length === 0) {
+      return res.status(404).json({ error: "Medicine not found" });
+    }
     
     // Send a successful response with a 200 status code
     res.status(200).json({ message: "Medicines retrieved successfully", meds });
@@ -139,6 +143,7 @@ const searchMedicineByName = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 const filterMedicineByUse = async (req, res) => {
   try {
