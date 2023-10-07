@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router(); // Create an instance of the Express router
 
 const {
+  getUser,
   viewMedicine,
   searchMedicineByName,
   filterMedicineByUse,
-  addMedicine,
 } = require("../controllers/userController");
 
 const {
@@ -19,6 +19,7 @@ const {
 } = require("../controllers/adController");
 
 // Define your routes and route handlers
+router.get("/getUser", getUser);
 router.get("/viewMedicine", viewMedicine); //
 
 router.get("/searchMedicineByName", searchMedicineByName);
@@ -31,6 +32,5 @@ router.get("/viewPatients", viewPatients);
 router.delete("/deletePatient", deletePatient);
 router.delete("/deletePharmacist", deletePharmacist);
 router.delete("/deleteAdmin", deleteAdmin);
-router.post("/addMedicine", addMedicine);
 
 module.exports = router; // Export the router instance

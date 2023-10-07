@@ -7,6 +7,11 @@ const { default: mongoose } = require("mongoose");
 const createUser = async (req, res) => {
   const { username, password, role } = req.body;
   try {
+    const userfound = await mongoose.findOne({username: username});
+    if (userfound) {
+      res.status(400).json({ error: "User already exists" });
+      return;
+    }
     const newUser = await User.create({ username, password, role });
     res
       .status(201)
@@ -18,10 +23,11 @@ const createUser = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-  const { username } = req.body;
+  const username = req.query.username;
+  console.log(username);
   try {
-    const fUser = await User.findOne({ username });
-
+    const fUser = await User.findOne({ username: username });
+    console.log(fUser);
     // Your switch statement should be within the try block, not outside it.
     switch (fUser.role) {
       case "patient":
@@ -29,7 +35,7 @@ const getUser = async (req, res) => {
           const pa = await Patient.findByUsername(fUser.username);
           res
             .status(201)
-            .json({ message: "User created successfully", user: pa });
+            .json({ message: "User created successfully", user: { fUser, pa }});
           return { fUser, pa };
         } catch (err) {
           console.error("Error handling patient:", err);
@@ -41,7 +47,7 @@ const getUser = async (req, res) => {
           const ph = await Pharmacist.findByUsername(fUser.username);
           res
             .status(201)
-            .json({ message: "User created successfully", user: ph });
+            .json({ message: "User created successfully", user: { fUser, ph }});
           return { fUser, ph };
         } catch (error) {
           console.error("Error handling pharmacist:", error);
@@ -112,26 +118,7 @@ const viewMedicine = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-const addMedicine = async (req, res) => {
-  try {
-    const { activeElement, price, use, name, amount, imgurl } = req.body;
-    const medicine = await Medicine.create({
-      activeElement,
-      price,
-      use,
-      name,
-      amount,
-      imgurl,
-    });
-    console.log(medicine);
-    res
-      .status(200)
-      .json({ message: "Medicines retrieved successfully", medicine });
-  } catch (error) {
-    console.error("Error fetching medicines:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+
 
 const searchMedicineByName = async (req, res) => {
   try {
@@ -142,8 +129,12 @@ const searchMedicineByName = async (req, res) => {
       return res.status(400).json({ error: "Invalid or missing 'name' parameter" });
     }
 
-    // Perform the medicine search by name
-    const meds = await Medicine.find({ name });
+    // Perform the medicine search by name (partial match)
+    const meds = await Medicine.find({ name: { $regex: name, $options: 'i' } });
+    
+    if (meds.length === 0) {
+      return res.status(404).json({ error: "Medicine not found" });
+    }
     
     // Send a successful response with a 200 status code
     res.status(200).json({ message: "Medicines retrieved successfully", meds });
@@ -153,15 +144,31 @@ const searchMedicineByName = async (req, res) => {
   }
 };
 
+
 const filterMedicineByUse = async (req, res) => {
   try {
-    const medicine = await Medicine.find({ use: req.body.use });
-    res.status(201).json({ message: "medicines r got successfully", medicine });
+    const { use } = req.query;
+
+    // Validate the 'use' parameter
+    if (!use || use.trim() === "") {
+      return res.status(400).json({ error: "Invalid or missing 'use' parameter" });
+    }
+
+    // Perform the medicine search by 'use' (partial match)
+    const medicines = await Medicine.find({ use: { $regex: use, $options: 'i' } });
+    
+    if (medicines.length === 0) {
+      return res.status(404).json({ error: "Medicine not found" });
+    }
+    
+    // Send a successful response with a 200 status code
+    res.status(200).json({ message: "Medicines retrieved successfully", medicines });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error searching for medicine by use:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 module.exports = {
   createUser,
@@ -172,5 +179,4 @@ module.exports = {
   viewMedicine,
   searchMedicineByName,
   filterMedicineByUse,
-  addMedicine
 };

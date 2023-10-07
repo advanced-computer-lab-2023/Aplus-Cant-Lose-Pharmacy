@@ -23,6 +23,18 @@ const phSchema = new mongoose.Schema(
       default: "none",
       required: true,
     },
+    rate: {
+      type: Number,
+      required: true,
+    },
+    affilation: {
+      type: String,
+      required: true,
+    },
+    background: {
+      type: String,
+      required: true,
+    },
     docs: [
       {
         url: String, // Store the URL to the uploaded image
@@ -37,7 +49,7 @@ const phSchema = new mongoose.Schema(
   }
 );
 
-phSchema.statics.findByUsername = function (username) {
+phSchema.statics.findByUsername = async function (username) {
   return this.find({ username });
 };
 

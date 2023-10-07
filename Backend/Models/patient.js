@@ -23,6 +23,10 @@ const paSchema = new mongoose.Schema(
       default: "none",
       required: true,
     },
+    mobile: {
+      type: Number,
+      required: true,
+    },
     emergencyContact: {
       fullName: String,
       mobile: Number,
@@ -31,7 +35,7 @@ const paSchema = new mongoose.Schema(
   }
 );
 
-paSchema.statics.findByUsername = function (username) {
+paSchema.statics.findByUsername = async function (username) {
   return this.find({ username });
 };
 
