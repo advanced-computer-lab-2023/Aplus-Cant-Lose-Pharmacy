@@ -7,4 +7,9 @@ router.post("/addPharmacist", addPharmacist);
 router.post("/addMedicine", addMedicine);
 router.put("/updateMedicineDetails", updateMedicineDetails);
 
+const {viewMedicine, searchMedicineByName, filterMedicineByUse} = require("../controllers/userController");
+router.get("/viewMedicine", viewMedicine);
+router.get("/searchMedicineByName", searchMedicineByName);
+router.get("/filterMedicineByUse", filterMedicineByUse);
+
 module.exports=router;
