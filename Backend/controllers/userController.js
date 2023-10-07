@@ -147,13 +147,28 @@ const searchMedicineByName = async (req, res) => {
 
 const filterMedicineByUse = async (req, res) => {
   try {
-    const medicine = await Medicine.find({ use: req.body.use });
-    res.status(201).json({ message: "medicines r got successfully", medicine });
+    const { use } = req.query;
+
+    // Validate the 'use' parameter
+    if (!use || use.trim() === "") {
+      return res.status(400).json({ error: "Invalid or missing 'use' parameter" });
+    }
+
+    // Perform the medicine search by 'use' (partial match)
+    const medicines = await Medicine.find({ use: { $regex: use, $options: 'i' } });
+    
+    if (medicines.length === 0) {
+      return res.status(404).json({ error: "Medicine not found" });
+    }
+    
+    // Send a successful response with a 200 status code
+    res.status(200).json({ message: "Medicines retrieved successfully", medicines });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error searching for medicine by use:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 module.exports = {
   createUser,
