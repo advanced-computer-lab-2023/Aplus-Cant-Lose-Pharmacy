@@ -23,6 +23,10 @@ const paSchema = new mongoose.Schema(
       default: "none",
       required: true,
     },
+    mobile: {
+      type: Number,
+      required: true,
+    },
     emergencyContact: {
       fullName: String,
       mobile: Number,

@@ -23,6 +23,18 @@ const phSchema = new mongoose.Schema(
       default: "none",
       required: true,
     },
+    rate: {
+      type: Number,
+      required: true,
+    },
+    affilation: {
+      type: String,
+      required: true,
+    },
+    background: {
+      type: String,
+      required: true,
+    },
     docs: [
       {
         url: String, // Store the URL to the uploaded image

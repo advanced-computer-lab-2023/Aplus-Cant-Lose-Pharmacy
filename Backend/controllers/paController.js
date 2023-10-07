@@ -2,7 +2,7 @@ const Patient = require("../Models/patient");
 const User = require("../Models/user");
 const addPatient = async (req, res) => {
   try {
-    const { name, email, username, dBirth, gender, emergencyContact, password } =
+    const { name, email, username, dBirth, gender, mobile, emergencyContact, password } =
       req.body;
       const userfound = await User.findOne({username: username});
       if (userfound) {
@@ -15,6 +15,7 @@ const addPatient = async (req, res) => {
       username,
       dBirth,
       gender,
+      mobile,
       emergencyContact
     });
     const user = await User.create({
