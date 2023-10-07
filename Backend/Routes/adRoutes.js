@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router(); // Create an instance of the Express router
 
 const {
+  getUser,
   viewMedicine,
   searchMedicineByName,
   filterMedicineByUse,
@@ -19,6 +20,7 @@ const {
 } = require("../controllers/adController");
 
 // Define your routes and route handlers
+router.get("/getUser", getUser);
 router.get("/viewMedicine", viewMedicine); //
 
 router.get("/searchMedicineByName", searchMedicineByName);

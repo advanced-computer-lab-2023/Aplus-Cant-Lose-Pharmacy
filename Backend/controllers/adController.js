@@ -142,16 +142,17 @@ const addPack = async (req, res) => {
 };
 
 const updatePack = async (req, res) => {
-  try {
-    ///
-    const admin = await User.deleteOne({ username: req.query.username });
+  // try {
+  //   ///
+  //   const admin = await User.deleteOne({ username: req.query.username });
 
-    res.status(201).json({ message: "pharmacist r got successfully", admin });
-  } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+  //   res.status(201).json({ message: "pharmacist r got successfully", admin });
+  // } catch (error) {
+  //   console.error("Error creating user:", error);
+  //   res.status(500).json({ error: "Internal Server Error" });
+  // }
 };
+
 module.exports = {
   createAdmin,
   viewPendPh,
@@ -163,4 +164,4 @@ module.exports = {
   addPack,
   deletePack,
   updatePack,
-};
+  };

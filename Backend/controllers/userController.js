@@ -23,10 +23,11 @@ const createUser = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-  const { username } = req.body;
+  const username = req.query.username;
+  console.log(username);
   try {
-    const fUser = await User.findOne({ username });
-
+    const fUser = await User.findOne({ username: username });
+    console.log(fUser);
     // Your switch statement should be within the try block, not outside it.
     switch (fUser.role) {
       case "patient":
@@ -34,7 +35,7 @@ const getUser = async (req, res) => {
           const pa = await Patient.findByUsername(fUser.username);
           res
             .status(201)
-            .json({ message: "User created successfully", user: pa });
+            .json({ message: "User created successfully", user: { fUser, pa }});
           return { fUser, pa };
         } catch (err) {
           console.error("Error handling patient:", err);
@@ -46,7 +47,7 @@ const getUser = async (req, res) => {
           const ph = await Pharmacist.findByUsername(fUser.username);
           res
             .status(201)
-            .json({ message: "User created successfully", user: ph });
+            .json({ message: "User created successfully", user: { fUser, ph }});
           return { fUser, ph };
         } catch (error) {
           console.error("Error handling pharmacist:", error);
