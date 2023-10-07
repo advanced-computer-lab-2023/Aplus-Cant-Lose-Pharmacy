@@ -6,7 +6,6 @@ const {
   viewMedicine,
   searchMedicineByName,
   filterMedicineByUse,
-  addMedicine,
 } = require("../controllers/userController");
 
 const {
@@ -33,6 +32,5 @@ router.get("/viewPatients", viewPatients);
 router.delete("/deletePatient", deletePatient);
 router.delete("/deletePharmacist", deletePharmacist);
 router.delete("/deleteAdmin", deleteAdmin);
-router.post("/addMedicine", addMedicine);
 
 module.exports = router; // Export the router instance

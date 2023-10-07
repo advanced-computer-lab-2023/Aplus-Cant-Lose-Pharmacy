@@ -118,31 +118,7 @@ const viewMedicine = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-const addMedicine = async (req, res) => {
-  try {
-    const { activeElement, price, use, name, amount, imgurl } = req.body;
-    const nameFound = await name.findOne({name: name});
-    if (nameFound) {
-      res.status(400).json({ error: "Medicine already exists" });
-      return;
-    }
-    const medicine = await Medicine.create({
-      activeElement,
-      price,
-      use,
-      name,
-      amount,
-      imgurl,
-    });
-    console.log(medicine);
-    res
-      .status(200)
-      .json({ message: "Medicines retrieved successfully", medicine });
-  } catch (error) {
-    console.error("Error fetching medicines:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+
 
 const searchMedicineByName = async (req, res) => {
   try {
@@ -183,5 +159,4 @@ module.exports = {
   viewMedicine,
   searchMedicineByName,
   filterMedicineByUse,
-  addMedicine
 };

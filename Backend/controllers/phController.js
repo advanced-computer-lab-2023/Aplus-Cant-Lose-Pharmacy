@@ -1,5 +1,6 @@
 const Pharmacist = require("../Models/pharmacist");
 const User = require("../Models/user");
+const Medicine = require("../Models/medicine");
 
 const addPharmacist = async (req, res) => {
   try {
@@ -37,5 +38,31 @@ const addPharmacist = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const addMedicine = async (req, res) => {
+  try {
+    const { activeElement, price, use, name, amount, imgurl } = req.body;
+    const nameFound = await Medicine.findOne({name: name});
+    if (nameFound) {
+      res.status(400).json({ error: "Medicine already exists" });
+      return;
+    }
+    const medicine = await Medicine.create({
+      activeElement,
+      price,
+      use,
+      name,
+      amount,
+      imgurl,
+    });
+    console.log(medicine);
+    res
+      .status(200)
+      .json({ message: "Medicines retrieved successfully", medicine });
+  } catch (error) {
+    console.error("Error fetching medicines:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
-module.exports={addPharmacist};
+
+module.exports={addPharmacist, addMedicine};
