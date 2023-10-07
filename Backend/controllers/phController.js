@@ -1,17 +1,47 @@
 const Pharmacist = require("../Models/pharmacist");
 const User = require("../Models/user");
 const Medicine = require("../Models/medicine");
+const Patient = require("../Models/patient");
+const validator = require('validator');
 
 const addPharmacist = async (req, res) => {
   try {
     const { name, email, username, dBirth, gender, rate, affilation, background, docs, password } =
       req.body;
-      const userfound = await User.findOne({username: username});
-      if (userfound) {
-        res.status(400).json({ error: "User already exists" });
-        return;
-      }
-      const status = "pending";
+
+    // Validate input fields
+    if (!name || !email || !username || !dBirth || !gender || !rate || !affilation || !background || !docs || !password) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Check if the username is already in use
+    const userFound = await User.findOne({ username });
+    if (userFound) {
+      return res.status(400).json({ error: "Username already exists" });
+    }
+
+    // Check if the email is already in use for either patients or pharmacists
+    const emailFoundPatient = await Patient.findOne({ email });
+    const emailFoundPharmacist = await Pharmacist.findOne({ email });
+    if (emailFoundPatient || emailFoundPharmacist) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
+    // Password strength validation
+    if (!validator.isStrongPassword(password)) {
+      return res.status(400).json({ error: "Password not strong enough" });
+    }
+
+    // Default status is "pending"
+    const status = "pending";
+
+    // Create the pharmacist and user records
     const pharmacist = await Pharmacist.create({
       name,
       email,
@@ -24,20 +54,20 @@ const addPharmacist = async (req, res) => {
       docs,
       status
     });
+
     const user = await User.create({
       username,
       password,
       role: "pharmacist",
     });
 
-    res
-      .status(201)
-      .json({ message: "pharmacist r got successfully", pharmacist });
+    res.status(201).json({ message: "Pharmacist created successfully", pharmacist });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error creating pharmacist:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const addMedicine = async (req, res) => {
   try {
     const { activeElement, price, use, name, amount, imgurl } = req.body;

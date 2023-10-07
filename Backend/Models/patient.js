@@ -35,7 +35,7 @@ const paSchema = new mongoose.Schema(
   }
 );
 
-paSchema.statics.findByUsername = function (username) {
+paSchema.statics.findByUsername = async function (username) {
   return this.find({ username });
 };
 

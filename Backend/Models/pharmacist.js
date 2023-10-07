@@ -49,7 +49,7 @@ const phSchema = new mongoose.Schema(
   }
 );
 
-phSchema.statics.findByUsername = function (username) {
+phSchema.statics.findByUsername = async function (username) {
   return this.find({ username });
 };
 
