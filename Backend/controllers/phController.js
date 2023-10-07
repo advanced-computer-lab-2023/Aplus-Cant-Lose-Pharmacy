@@ -5,7 +5,11 @@ const addPharmacist = async (req, res) => {
   try {
     const { name, email, username, dBirth, gender, docs, status, password } =
       req.body;
-
+      const userfound = await User.findOne({username: username});
+      if (userfound) {
+        res.status(400).json({ error: "User already exists" });
+        return;
+      }
     const pharmacist = await Pharmacist.create({
       name,
       email,

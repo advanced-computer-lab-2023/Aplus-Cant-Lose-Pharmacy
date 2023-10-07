@@ -7,6 +7,11 @@ const { default: mongoose } = require("mongoose");
 const createUser = async (req, res) => {
   const { username, password, role } = req.body;
   try {
+    const userfound = await mongoose.findOne({username: username});
+    if (userfound) {
+      res.status(400).json({ error: "User already exists" });
+      return;
+    }
     const newUser = await User.create({ username, password, role });
     res
       .status(201)
@@ -115,6 +120,11 @@ const viewMedicine = async (req, res) => {
 const addMedicine = async (req, res) => {
   try {
     const { activeElement, price, use, name, amount, imgurl } = req.body;
+    const nameFound = await name.findOne({name: name});
+    if (nameFound) {
+      res.status(400).json({ error: "Medicine already exists" });
+      return;
+    }
     const medicine = await Medicine.create({
       activeElement,
       price,

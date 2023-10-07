@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const packSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ["gold", "silver", "platinum"], // Define allowed values for the 'role' field
     required: true,
     unique: true,
   },

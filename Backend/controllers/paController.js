@@ -4,7 +4,11 @@ const addPatient = async (req, res) => {
   try {
     const { name, email, username, dBirth, gender, emergencyContact, password } =
       req.body;
-
+      const userfound = await User.findOne({username: username});
+      if (userfound) {
+        res.status(400).json({ error: "User already exists" });
+        return;
+      }
     const patient = await Patient.create({
       name,
       email,
