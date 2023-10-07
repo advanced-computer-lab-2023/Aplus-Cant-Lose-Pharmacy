@@ -1,8 +1,6 @@
 const User = require("../Models/user");
-const Medicine = require("../Models/medicine");
 const Pharmacist = require("../Models/pharmacist");
 const Patient = require("../Models/patient");
-const HPackages = require("../Models/hpackages");
 const validator = require('validator');
 
 const createAdmin = async (req, res) => {
@@ -130,47 +128,7 @@ const deleteAdmin = async (req, res) => {
 // };
 ///HEalth pack
 
-const deletePack = async (req, res) => {
-  try {
-    ///
-    const package = await HPackages.deleteOne({ type: req.query.type });
 
-    res.status(201).json({ message: "package r got successfully", package });
-  } catch (error) {
-    console.error("Error deleting package:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-const addPack = async (req, res) => {
-  const { type, rate, doctorDisc, medicineDisc, familyDisc } = req.body;
-  try {
-    ///
-    const package = await HPackages.create({
-      type,
-      rate,
-      doctorDisc,
-      medicineDisc,
-      familyDisc,
-    });
-
-    res.status(201).json({ message: "package r got successfully", package });
-  } catch (error) {
-    console.error("Error creating package:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-const updatePack = async (req, res) => {
-  // try {
-  //   ///
-  //   const admin = await User.deleteOne({ username: req.query.username });
-
-  //   res.status(201).json({ message: "pharmacist r got successfully", admin });
-  // } catch (error) {
-  //   console.error("Error creating user:", error);
-  //   res.status(500).json({ error: "Internal Server Error" });
-  // }
-};
 
 module.exports = {
   createAdmin,
@@ -180,7 +138,4 @@ module.exports = {
   deletePatient,
   deletePharmacist,
   deleteAdmin,
-  addPack,
-  deletePack,
-  updatePack,
   };
