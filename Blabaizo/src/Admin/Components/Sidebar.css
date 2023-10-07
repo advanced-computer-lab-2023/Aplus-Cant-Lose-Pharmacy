@@ -1,0 +1,36 @@
+/* Sidebar.css */
+
+.sidebar {
+  background-color: #333;
+  color: #fff;
+  width: 250px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 10px;
+  font-size: 14px; /* Set the font size for list items (adjust as needed) */
+  margin-bottom: 8px; /* Add spacing between list items */
+  color: #333; /* Set the text color (adjust as needed) */
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #fff;
+  font-family:Arial, Helvetica, sans-serif
+}
+
+.sidebar a:hover {
+  text-decoration: underline;
+
+}

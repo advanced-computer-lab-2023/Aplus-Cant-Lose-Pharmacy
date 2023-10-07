@@ -1,0 +1,50 @@
+/* Reset some default browser styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Style the admin container, which includes the sidebar and main content */
+  .admin-container {
+    display: flex; /* Use flexbox to create a two-column layout */
+  }
+  
+  /* Style the sidebar */
+  .sidebar {
+    width: 250px; /* Set the width of the sidebar */
+    background-color: #333; /* Dark background color for the sidebar */
+    color: #fff; /* Text color in the sidebar */
+    padding: 20px;
+  }
+  
+  .sidebar ul {
+    list-style-type: none; /* Remove bullet points from the list */
+    padding: 0;
+  }
+  
+  .sidebar li {
+    margin-bottom: 10px; /* Add space between sidebar items */
+  }
+  
+  /* Style the main content area */
+
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 50%; /* Add margin equal to the width of the sidebar */
+    /* background-color: #f0f0f0; /* Light background color for the main content */
+    color: #333;
+    z-index: 1;
+    
+   
+  }
+  
+  /* Style content within the main content area */
+  .content {
+    background-color: #fff; /* White background for content */
+    padding: 20px; /* Add padding to content */
+    border: 1px solid #ccc; /* Gray border around content */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a box shadow */
+  }
+  
