@@ -3,19 +3,38 @@ const Medicine = require("../Models/medicine");
 const Pharmacist = require("../Models/pharmacist");
 const Patient = require("../Models/patient");
 const HPackages = require("../Models/hpackages");
+const validator = require('validator');
 
 const createAdmin = async (req, res) => {
   const { username, password } = req.body;
+
   try {
+    // Validate input fields
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required" });
+    }
+
+    // Check if the username is already in use
+    const userFound = await User.findOne({ username });
+    if (userFound) {
+      return res.status(400).json({ error: "Username already exists" });
+    }
+
+    // Password strength validation
+    if (!validator.isStrongPassword(password)) {
+      return res.status(400).json({ error: "Password not strong enough" });
+    }
+
+    // Create the admin user record
     const newAdmin = await User.create({ username, password, role: "admin" });
-    res
-      .status(201)
-      .json({ message: "User created successfully", user: newAdmin });
+
+    res.status(201).json({ message: "Admin user created successfully", user: newAdmin });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error creating admin user:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 const viewPendPh = async (req, res) => {
   try {
