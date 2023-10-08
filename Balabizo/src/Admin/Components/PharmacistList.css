@@ -1,0 +1,16 @@
+/* PharmacistList.css */
+
+.pharmacist-list {
+  padding: 20px;
+  border: 1px solid #ccc;
+  margin: 20px;
+  position: fixed;
+  left: 800px;
+  width: 450px;
+}
+
+.pharmacist-list h2 {
+  margin: 0;
+}
+
+/* You can add more styles as needed for the pharmacist list container */
