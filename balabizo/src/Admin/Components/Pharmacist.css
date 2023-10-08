@@ -1,0 +1,26 @@
+/* Pharmacist.css */
+
+.pharmacist {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.pharmacist p {
+  margin: 0;
+}
+
+.pharmacist button {
+  background-color: #6e077e;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.pharmacist button:hover {
+  background-color: #178bff;
+}

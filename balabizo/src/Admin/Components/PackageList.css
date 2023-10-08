@@ -1,0 +1,21 @@
+/* PackageList.css */
+
+.package-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.add-package-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.add-package-button:hover {
+  background-color: #0056b3;
+}

@@ -1,0 +1,26 @@
+/* Patient.css */
+
+.patient {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.patient p {
+  margin: 0;
+}
+
+.patient button {
+  background-color: #ff5733;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.patient button:hover {
+  background-color: #ff3417;
+}
