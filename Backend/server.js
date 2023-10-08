@@ -2,10 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 mongoose.set("strictQuery", false);
-const {login }= require("./controllers/userController.js");
+
 
 const connectDB = require("./config/db");
-const userRoute = require("./Routes/userRoute");
+const MongoURI = process.env.MONGO_URI;
+
 // App variables
 const app = express(); // Move this line to the top
 const port = process.env.PORT || "8000";
@@ -14,9 +15,9 @@ app.use(express.json());
 
 app.use(cors());
 
-const MongoURI = process.env.MONGO_URI;
+const {login }= require("./controllers/userController");
  app.post('/api/login', login);
-
+ const userRoute = require("./Routes/userRoute");
 // Importing the adRouter
 const adRouter = require("./Routes/adRoutes");
 app.use("/api/admin", adRouter);
