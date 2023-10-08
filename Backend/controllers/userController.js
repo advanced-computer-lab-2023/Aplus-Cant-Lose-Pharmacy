@@ -3,6 +3,7 @@ const Pharmacist = require("../Models/pharmacist.js");
 const Patient = require("../Models/patient.js");
 const Medicine = require("../Models/medicine.js");
 const { default: mongoose } = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const createUser = async (req, res) => {
   const { username, password, role } = req.body;
@@ -79,14 +80,13 @@ const checkUser = async (req, res) => {
     : res.status(400).json({ error: "Incorrect password" });
 };
 const login = async (req, res) => {
-  const { username, password } = req.body;
-
   try {
+    const { username, password } = req.body;
     // Find the user by username
-    const user = await User.findOne({ username });
-
+    const user = await User.findOne(username);
+    console.log(username);
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "not  credentials" });
     }
 
     // Compare the provided password with the hashed password in the database

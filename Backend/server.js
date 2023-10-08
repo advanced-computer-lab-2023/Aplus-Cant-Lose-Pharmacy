@@ -1,45 +1,47 @@
 const express = require("express");
-const mongoose = require('mongoose');
-const cors = require('cors');
-mongoose.set('strictQuery', false);
-require("dotenv").config();
-const login = require('./controllers/userController');
-const connectDB = require('./config/db')
+const mongoose = require("mongoose");
+const cors = require("cors");
+mongoose.set("strictQuery", false);
+const {login }= require("./controllers/userController.js");
 
+const connectDB = require("./config/db");
+const userRoute = require("./Routes/userRoute");
 // App variables
 const app = express(); // Move this line to the top
 const port = process.env.PORT || "8000";
 
 app.use(express.json());
+
 app.use(cors());
 
-const MongoURI = process.env.MONGO_URI ;
+const MongoURI = process.env.MONGO_URI;
+ app.post('/api/login', login);
 
 // Importing the adRouter
-const adRouter = require('./Routes/adRoutes');
-app.use('/api/admin', adRouter);
-const paRouter = require('./Routes/paRoutes');
-app.use('/api/patient', paRouter);
-const phRouter = require('./Routes/phRoutes');
-app.use('/api/pharmacist', phRouter);
-app.post('/api/login', login);
+const adRouter = require("./Routes/adRoutes");
+app.use("/api/admin", adRouter);
+const paRouter = require("./Routes/paRoutes");
+app.use("/api/patient", paRouter);
+const phRouter = require("./Routes/phRoutes");
+app.use("/api/pharmacist", phRouter);
 
 // configurations
 // Mongo DB
-connectDB()
-.then(() => {
-  console.log("MongoDB is now connected!");
-
-  // Starting server
-  app.listen(port, () => {
-    console.log(`Listening to requests on http://localhost:${port}`);
-  });
-})
-.catch(err => console.log(err));
 
 // Rest of your code
 app.get("/home", (req, res) => {
   res.status(200).send("You have everything installed!");
 });
+
+connectDB()
+  .then(() => {
+    console.log("MongoDB is now connected!");
+
+    // Starting server
+    app.listen(port, () => {
+      console.log(`Listening to requests on http://localhost:${port}`);
+    });
+  })
+  .catch((err) => console.log(err));
 
 // Routing to userController here
