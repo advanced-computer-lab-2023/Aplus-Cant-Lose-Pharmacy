@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
-
+const login = require('./controllers/userController');
 const connectDB = require('./config/db')
 
 // App variables
@@ -22,7 +22,7 @@ const paRouter = require('./Routes/paRoutes');
 app.use('/api/patient', paRouter);
 const phRouter = require('./Routes/phRoutes');
 app.use('/api/pharmacist', phRouter);
-
+app.post('/api/login', login);
 
 // configurations
 // Mongo DB
