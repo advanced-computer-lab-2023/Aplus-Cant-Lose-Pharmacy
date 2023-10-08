@@ -3,6 +3,11 @@ const User = require("../Models/user");
 const Pharmacist = require("../Models/pharmacist");
 const validator = require('validator');
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+
+function generateToken(data) {
+    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+}
 
 const addPatient = async (req, res) => {
   try {
@@ -56,8 +61,11 @@ const addPatient = async (req, res) => {
       password: hashedPassword,
       role: "patient",
     });
-  
-    res.status(201).json({ message: "Patient created successfully", patient });
+    const data = {
+      _id: pharmacist._id
+    };
+    const token= generateToken(data)
+    res.status(201).json({ message: "Patient created successfully", patient ,token});
   } catch (error) {
     console.error("Error creating patient:", error);
     res.status(500).json({ error: "Internal Server Error" });

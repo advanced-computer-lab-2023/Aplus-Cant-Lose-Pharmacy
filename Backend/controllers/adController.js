@@ -3,6 +3,11 @@ const Pharmacist = require("../Models/pharmacist");
 const Patient = require("../Models/patient");
 const validator = require('validator');
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+
+function generateToken(data) {
+    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+}
 
 const createAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -34,8 +39,11 @@ const createAdmin = async (req, res) => {
       password: hashedPassword,
       role: "admin",
     });
-  
-    res.status(201).json({ message: "Admin user created successfully", user: newAdmin });
+    const data = {
+      _id: pharmacist._id
+    };
+    const token= generateToken(data)
+    res.status(201).json({ message: "Admin user created successfully", user: newAdmin,token });
   } catch (error) {
     console.error("Error creating admin user:", error);
     res.status(500).json({ error: "Internal Server Error" });

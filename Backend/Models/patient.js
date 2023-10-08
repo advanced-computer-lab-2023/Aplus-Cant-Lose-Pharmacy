@@ -31,6 +31,8 @@ const paSchema = new mongoose.Schema(
       fullName: String,
       mobile: Number,
       relation: String,
+    
+
     },
   }
 );
