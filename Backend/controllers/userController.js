@@ -4,10 +4,10 @@ const Patient = require("../Models/patient.js");
 const Medicine = require("../Models/medicine.js");
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 function generateToken(data) {
-  return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+  return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: "1800s" });
 }
 const createUser = async (req, res) => {
   const { username, password, role } = req.body;
@@ -87,8 +87,8 @@ const login = async (req, res) => {
   try {
     const { username, password } = req.body;
     // Find the user by username
-  
-    const user = await User.findOne({username:req.body.username});
+
+    const user = await User.findOne({ username: req.body.username });
     console.log(user.username);
     if (!user) {
       return res.status(401).json({ error: "not  credentials" });
@@ -101,14 +101,20 @@ const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
     const data = {
-      _id: user._id
+      _id: user._id,
     };
-    
+
     // If the password is valid, generate a JWT token
     const token = generateToken(data);
     res
       .status(201)
-      .json({ message: "user logged in successfully", user, token });
+      .json({
+        message: "user logged in successfully",
+        role: user.role,
+        username: user.usrername,
+        password: user.password,
+        token,
+      });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Internal Server Error" });
