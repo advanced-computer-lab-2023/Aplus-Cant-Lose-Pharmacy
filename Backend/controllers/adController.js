@@ -2,6 +2,7 @@ const User = require("../Models/user");
 const Pharmacist = require("../Models/pharmacist");
 const Patient = require("../Models/patient");
 const validator = require('validator');
+const bcrypt = require("bcrypt");
 
 const createAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -24,8 +25,16 @@ const createAdmin = async (req, res) => {
     }
 
     // Create the admin user record
-    const newAdmin = await User.create({ username, password, role: "admin" });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Create the new user
+    const newAdmin = await User.create({
+      username,
+      password: hashedPassword,
+      role: "admin",
+    });
+  
     res.status(201).json({ message: "Admin user created successfully", user: newAdmin });
   } catch (error) {
     console.error("Error creating admin user:", error);

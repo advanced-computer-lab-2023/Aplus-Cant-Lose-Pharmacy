@@ -2,15 +2,37 @@ const Pharmacist = require("../Models/pharmacist");
 const User = require("../Models/user");
 const Medicine = require("../Models/medicine");
 const Patient = require("../Models/patient");
-const validator = require('validator');
+const validator = require("validator");
+const bcrypt = require("bcrypt");
 
 const addPharmacist = async (req, res) => {
   try {
-    const { name, email, username, dBirth, gender, rate, affilation, background, docs, password } =
-      req.body;
+    const {
+      name,
+      email,
+      username,
+      dBirth,
+      gender,
+      rate,
+      affilation,
+      background,
+      docs,
+      password,
+    } = req.body;
 
     // Validate input fields
-    if (!name || !email || !username || !dBirth || !gender || !rate || !affilation || !background || !docs || !password) {
+    if (
+      !name ||
+      !email ||
+      !username ||
+      !dBirth ||
+      !gender ||
+      !rate ||
+      !affilation ||
+      !background ||
+      !docs ||
+      !password
+    ) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -18,6 +40,12 @@ const addPharmacist = async (req, res) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email format" });
+    }
+    if (!validator.isStrongPassword(password)) {
+      return res.status(400).json({ error: "Password not strong enough" });
+    }
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: "Invalid email" });
     }
 
     // Check if the username is already in use
@@ -31,11 +59,6 @@ const addPharmacist = async (req, res) => {
     const emailFoundPharmacist = await Pharmacist.findOne({ email });
     if (emailFoundPatient || emailFoundPharmacist) {
       return res.status(400).json({ error: "Email already exists" });
-    }
-
-    // Password strength validation
-    if (!validator.isStrongPassword(password)) {
-      return res.status(400).json({ error: "Password not strong enough" });
     }
 
     // Default status is "pending"
@@ -52,16 +75,21 @@ const addPharmacist = async (req, res) => {
       affilation,
       background,
       docs,
-      status
+      status,
     });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await User.create({
+    // Create the new user
+    const newUser = await User.create({
       username,
-      password,
+      password: hashedPassword,
       role: "pharmacist",
     });
 
-    res.status(201).json({ message: "Pharmacist created successfully", pharmacist });
+    res
+      .status(201)
+      .json({ message: "Pharmacist created successfully", pharmacist });
   } catch (error) {
     console.error("Error creating pharmacist:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -71,7 +99,7 @@ const addPharmacist = async (req, res) => {
 const addMedicine = async (req, res) => {
   try {
     const { activeElement, price, use, name, amount, imgurl } = req.body;
-    const nameFound = await Medicine.findOne({name: name});
+    const nameFound = await Medicine.findOne({ name: name });
     if (nameFound) {
       res.status(400).json({ error: "Medicine already exists" });
       return;
@@ -99,11 +127,16 @@ const updateMedicineDetails = async (req, res) => {
 
     // Validate that at least one field (name, activeElement, or price) is provided
     if (!name && !activeElement && !price) {
-      return res.status(400).json({ error: "At least one field (name, activeElement, or price) must be provided for the update." });
+      return res
+        .status(400)
+        .json({
+          error:
+            "At least one field (name, activeElement, or price) must be provided for the update.",
+        });
     }
 
     // Find the medicine by ID
-    const medicine = await Medicine.findOne({name: oldName});
+    const medicine = await Medicine.findOne({ name: oldName });
 
     if (!medicine) {
       return res.status(404).json({ error: "Medicine not found" });
@@ -111,7 +144,7 @@ const updateMedicineDetails = async (req, res) => {
 
     // Update the medicine's details if provided
     if (name) {
-      const nameExists = await Medicine.findOne({name: name});
+      const nameExists = await Medicine.findOne({ name: name });
       if (nameExists) {
         return res.status(400).json({ error: "Medicine already exists" });
       }
@@ -130,13 +163,13 @@ const updateMedicineDetails = async (req, res) => {
     // Save the updated medicine
     await medicine.save();
 
-    res.status(200).json({ message: "Medicine details updated successfully", medicine });
+    res
+      .status(200)
+      .json({ message: "Medicine details updated successfully", medicine });
   } catch (error) {
     console.error("Error updating medicine details:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-
-
-module.exports={addPharmacist, addMedicine, updateMedicineDetails};
+module.exports = { addPharmacist, addMedicine, updateMedicineDetails };

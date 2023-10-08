@@ -7,7 +7,7 @@ const { default: mongoose } = require("mongoose");
 const createUser = async (req, res) => {
   const { username, password, role } = req.body;
   try {
-    const userfound = await mongoose.findOne({username: username});
+    const userfound = await User.findOne({username: username});
     if (userfound) {
       res.status(400).json({ error: "User already exists" });
       return;
