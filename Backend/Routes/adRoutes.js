@@ -29,8 +29,8 @@ router.post("/createAdmin", createAdmin);
 router.get("/viewPendPh", viewPendPh);
 router.get("/viewJoinedPh", viewJoinedPh);
 router.get("/viewPatients", viewPatients);
-router.delete("/deletePatient", deletePatient);
-router.delete("/deletePharmacist", deletePharmacist);
-router.delete("/deleteAdmin", deleteAdmin);
+router.delete("/deletePatient/:id", deletePatient);
+router.delete("/deletePharmacist/:id", deletePharmacist);
+router.delete("/deleteAdmin/:id", deleteAdmin);
 
 module.exports = router; // Export the router instance

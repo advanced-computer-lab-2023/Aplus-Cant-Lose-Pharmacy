@@ -85,39 +85,50 @@ const viewPatients = async (req, res) => {
 };
 
 const deletePatient = async (req, res) => {
+  const patientId = req.params.id; // Assuming the ID is passed as a parameter
+
   try {
-    const patient = await Patient.deleteOne({ username: req.query.username });
-    const user = await User.deleteOne({ username: req.query.username });
-    res
-      .status(201)
-      .json({ message: "patient r deleted  successfully", patient });
+    const patient = await Patient.findByIdAndDelete(patientId);
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    // You may also want to delete the associated user
+    const user = await User.findOneAndDelete({ username: patient.username });
+
+    res.status(201).json({ message: "Patient deleted successfully", patient });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error deleting patient:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-const deletePharmacist = async (req, res) => {
-  try {
-    ///
-    const pharmacist = await Pharmacist.deleteOne({
-      username: req.query.username,
-    });
-    const user = await User.deleteOne({ username: req.query.username });
+//
 
-    res
-      .status(201)
-      .json({ message: "pharmacist r got successfully", pharmacist });
+
+
+const deletePharmacist = async (req, res) => {
+  const pharmacistId = req.params.id; // Assuming the ID is passed as a parameter
+
+  try {
+    const pharmacist = await Pharmacist.findByIdAndDelete(pharmacistId);
+    if (!pharmacist) {
+      return res.status(404).json({ error: "pharmacist not found" });
+    }
+
+    // You may also want to delete the associated user
+    const user = await User.findOneAndDelete({ username: pharmacist.username });
+
+    res.status(201).json({ message: "pharmacist deleted successfully", pharmacist });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error deleting pharmacist:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 const deleteAdmin = async (req, res) => {
   try {
-    ///
-    const admin = await User.deleteOne({ username: req.query.username });
-
-    res.status(201).json({ message: "pharmacist r got successfully", admin });
+    const adminId = req.params.id; 
+    const admin = await User.findByIdAndDelete(adminId);
+    res.status(201).json({ message: "admin r deleted successfully", admin });
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ error: "Internal Server Error" });
