@@ -62,7 +62,7 @@ const addPatient = async (req, res) => {
       role: "patient",
     });
     const data = {
-      _id: pharmacist._id
+      _id: patient._id
     };
     const token= generateToken(data)
     res.status(201).json({ message: "Patient created successfully", patient ,token});
