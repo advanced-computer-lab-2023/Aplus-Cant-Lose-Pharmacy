@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "pharmacist", "patient"], // Define allowed values for the 'role' field
+      enum: ["admin", "doctor", "patient"], // Define allowed values for the 'role' field
       default: "patient",
       required: true,
     },
