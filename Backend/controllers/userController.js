@@ -7,8 +7,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 function generateToken(data) {
-  return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: "1800s" });
+  return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: "3d" });
 }
+
 const createUser = async (req, res) => {
   const { username, password, role } = req.body;
   try {
@@ -26,6 +27,8 @@ const createUser = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
 
 const getUser = async (req, res) => {
   const username = req.query.username;
