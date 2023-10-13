@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 
 function generateToken(data) {
-    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '"3d"' });
+    return jwt.sign(data, process.env.TOKEN_SECRET);
 }
 
 const addPharmacist = async (req, res) => {
@@ -35,7 +35,7 @@ const addPharmacist = async (req, res) => {
       !rate ||
       !affilation ||
       !background ||
-      !docs ||
+      
       !password
     ) {
       return res.status(400).json({ error: "All fields are required" });
@@ -131,20 +131,10 @@ const addMedicine = async (req, res) => {
 };
 const updateMedicineDetails = async (req, res) => {
   try {
-    const { oldName, name, activeElement, price } = req.body;
-
-    // Validate that at least one field (name, activeElement, or price) is provided
-    if (!name && !activeElement && !price) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "At least one field (name, activeElement, or price) must be provided for the update.",
-        });
-    }
+    const { id, name, activeElement, price, use, amount, imgurl } = req.body;
 
     // Find the medicine by ID
-    const medicine = await Medicine.findOne({ name: oldName });
+    const medicine = await Medicine.findOne({ _id: id });
 
     if (!medicine) {
       return res.status(404).json({ error: "Medicine not found" });
@@ -152,28 +142,28 @@ const updateMedicineDetails = async (req, res) => {
 
     // Update the medicine's details if provided
     if (name) {
-      const nameExists = await Medicine.findOne({ name: name });
-      if (nameExists) {
-        return res.status(400).json({ error: "Medicine already exists" });
-      }
       medicine.name = name;
     }
-
     if (activeElement) {
       medicine.activeElement = activeElement;
     }
-
-    // Update the medicine's price if provided
     if (price) {
       medicine.price = price;
     }
+    if (use) {
+      medicine.use = use;
+    }
+    if (amount) {
+      medicine.amount = amount;
+    }
+    if (imgurl) {
+      medicine.imgurl = imgurl;
+    }
 
-    // Save the updated medicine
-    await medicine.save();
+    // Save the updated medicine to the database
+    const updatedMedicine = await medicine.save();
 
-    res
-      .status(200)
-      .json({ message: "Medicine details updated successfully", medicine });
+    res.status(200).json({ message: "Medicine details updated successfully", medicine: updatedMedicine });
   } catch (error) {
     console.error("Error updating medicine details:", error);
     res.status(500).json({ error: "Internal Server Error" });

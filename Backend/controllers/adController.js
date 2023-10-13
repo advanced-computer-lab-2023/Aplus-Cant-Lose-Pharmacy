@@ -1,13 +1,26 @@
 const User = require("../Models/user");
 const Pharmacist = require("../Models/pharmacist");
 const Patient = require("../Models/patient");
-const validator = require('validator');
+const validator = require("validator");
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 function generateToken(data) {
-    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '"3d"' });
+  return jwt.sign(data, process.env.TOKEN_SECRET);
 }
+const getAdmins = async (req, res) => {
+  try {
+    const fUser = await User.find({ role: "admin" });
+    console.log(fUser);
+    res.status(201).json({
+      message: "Admin found successfully",
+      admins: [...fUser],
+    });
+  } catch (error) {
+    console.error("Error finding Admins:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 const createAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -15,7 +28,9 @@ const createAdmin = async (req, res) => {
   try {
     // Validate input fields
     if (!username || !password) {
-      return res.status(400).json({ error: "Username and password are required" });
+      return res
+        .status(400)
+        .json({ error: "Username and password are required" });
     }
 
     // Check if the username is already in use
@@ -40,16 +55,21 @@ const createAdmin = async (req, res) => {
       role: "admin",
     });
     const data = {
-      _id: pharmacist._id
+      _id: newAdmin._id,
     };
-    const token= generateToken(data)
-    res.status(201).json({ message: "Admin user created successfully", user: newAdmin,token });
+    const token = generateToken(data);
+    res
+      .status(201)
+      .json({
+        message: "Admin user created successfully",
+        userAdmin: newAdmin,
+        token,
+      });
   } catch (error) {
     console.error("Error creating admin user:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 const viewPendPh = async (req, res) => {
   try {
@@ -104,8 +124,6 @@ const deletePatient = async (req, res) => {
 };
 //
 
-
-
 const deletePharmacist = async (req, res) => {
   const pharmacistId = req.params.id; // Assuming the ID is passed as a parameter
 
@@ -118,7 +136,9 @@ const deletePharmacist = async (req, res) => {
     // You may also want to delete the associated user
     const user = await User.findOneAndDelete({ username: pharmacist.username });
 
-    res.status(201).json({ message: "pharmacist deleted successfully", pharmacist });
+    res
+      .status(201)
+      .json({ message: "pharmacist deleted successfully", pharmacist });
   } catch (error) {
     console.error("Error deleting pharmacist:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -126,7 +146,7 @@ const deletePharmacist = async (req, res) => {
 };
 const deleteAdmin = async (req, res) => {
   try {
-    const adminId = req.params.id; 
+    const adminId = req.params.id;
     const admin = await User.findByIdAndDelete(adminId);
     res.status(201).json({ message: "admin r deleted successfully", admin });
   } catch (error) {
@@ -156,8 +176,6 @@ const deleteAdmin = async (req, res) => {
 // };
 ///HEalth pack
 
-
-
 module.exports = {
   createAdmin,
   viewPendPh,
@@ -166,4 +184,5 @@ module.exports = {
   deletePatient,
   deletePharmacist,
   deleteAdmin,
-  };
+  getAdmins,
+};

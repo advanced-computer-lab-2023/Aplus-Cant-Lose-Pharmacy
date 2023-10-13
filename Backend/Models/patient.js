@@ -37,7 +37,6 @@ const paSchema = new mongoose.Schema(
         fullName: String,
         NID: {
           type: Number,
-          unique: true,
         },
         age: Number,
         gender:{

@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 
 function generateToken(data) {
-    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '"3d"' });
+    return jwt.sign(data, process.env.TOKEN_SECRET);
 }
 
 const addPatient = async (req, res) => {

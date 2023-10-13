@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
-
+    // activeElement: String,
+      // price: Number,
+      // use: String,
+      // name: String,
+      // amount: Number,
+      // imgurl: String,
 const phSchema = new mongoose.Schema(
   {
     name: {
@@ -16,7 +21,7 @@ const phSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    Dbirth: Date,
+    dBirth: Date,
     gender: {
       type: String,
       enum: ["male", "female", "none"], // Define allowed values for the 'role' field
@@ -39,7 +44,7 @@ const phSchema = new mongoose.Schema(
       {
         url: String, // Store the URL to the uploaded image
         desc: String, // Optional description for the image
-      },
+      }
     ],
     status: {
       type: String,
