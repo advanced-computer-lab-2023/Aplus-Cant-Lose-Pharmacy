@@ -1,7 +1,26 @@
 const User = require("../Models/user");
 const Pharmacist = require("../Models/pharmacist");
 const Patient = require("../Models/patient");
-const validator = require('validator');
+const validator = require("validator");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+function generateToken(data) {
+  return jwt.sign(data, process.env.TOKEN_SECRET);
+}
+const getAdmins = async (req, res) => {
+  try {
+    const fUser = await User.find({ role: "admin" });
+    console.log(fUser);
+    res.status(201).json({
+      message: "Admin found successfully",
+      admins: [...fUser],
+    });
+  } catch (error) {
+    console.error("Error finding Admins:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 const createAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -9,7 +28,9 @@ const createAdmin = async (req, res) => {
   try {
     // Validate input fields
     if (!username || !password) {
-      return res.status(400).json({ error: "Username and password are required" });
+      return res
+        .status(400)
+        .json({ error: "Username and password are required" });
     }
 
     // Check if the username is already in use
@@ -24,15 +45,31 @@ const createAdmin = async (req, res) => {
     }
 
     // Create the admin user record
-    const newAdmin = await User.create({ username, password, role: "admin" });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    res.status(201).json({ message: "Admin user created successfully", user: newAdmin });
+    // Create the new user
+    const newAdmin = await User.create({
+      username,
+      password: hashedPassword,
+      role: "admin",
+    });
+    const data = {
+      _id: newAdmin._id,
+    };
+    const token = generateToken(data);
+    res
+      .status(201)
+      .json({
+        message: "Admin user created successfully",
+        userAdmin: newAdmin,
+        token,
+      });
   } catch (error) {
     console.error("Error creating admin user:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 const viewPendPh = async (req, res) => {
   try {
@@ -68,39 +105,50 @@ const viewPatients = async (req, res) => {
 };
 
 const deletePatient = async (req, res) => {
+  const patientId = req.params.id; // Assuming the ID is passed as a parameter
+
   try {
-    const patient = await Patient.deleteOne({ username: req.query.username });
-    const user = await User.deleteOne({ username: req.query.username });
-    res
-      .status(201)
-      .json({ message: "patient r deleted  successfully", patient });
+    const patient = await Patient.findByIdAndDelete(patientId);
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    // You may also want to delete the associated user
+    const user = await User.findOneAndDelete({ username: patient.username });
+
+    res.status(201).json({ message: "Patient deleted successfully", patient });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error deleting patient:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+//
+
 const deletePharmacist = async (req, res) => {
+  const pharmacistId = req.params.id; // Assuming the ID is passed as a parameter
+
   try {
-    ///
-    const pharmacist = await Pharmacist.deleteOne({
-      username: req.query.username,
-    });
-    const user = await User.deleteOne({ username: req.query.username });
+    const pharmacist = await Pharmacist.findByIdAndDelete(pharmacistId);
+    if (!pharmacist) {
+      return res.status(404).json({ error: "pharmacist not found" });
+    }
+
+    // You may also want to delete the associated user
+    const user = await User.findOneAndDelete({ username: pharmacist.username });
 
     res
       .status(201)
-      .json({ message: "pharmacist r got successfully", pharmacist });
+      .json({ message: "pharmacist deleted successfully", pharmacist });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error deleting pharmacist:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 const deleteAdmin = async (req, res) => {
   try {
-    ///
-    const admin = await User.deleteOne({ username: req.query.username });
-
-    res.status(201).json({ message: "pharmacist r got successfully", admin });
+    const adminId = req.params.id;
+    const admin = await User.findByIdAndDelete(adminId);
+    res.status(201).json({ message: "admin r deleted successfully", admin });
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -128,8 +176,6 @@ const deleteAdmin = async (req, res) => {
 // };
 ///HEalth pack
 
-
-
 module.exports = {
   createAdmin,
   viewPendPh,
@@ -138,4 +184,5 @@ module.exports = {
   deletePatient,
   deletePharmacist,
   deleteAdmin,
-  };
+  getAdmins,
+};

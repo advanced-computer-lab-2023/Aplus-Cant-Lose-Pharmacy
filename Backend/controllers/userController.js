@@ -3,11 +3,17 @@ const Pharmacist = require("../Models/pharmacist.js");
 const Patient = require("../Models/patient.js");
 const Medicine = require("../Models/medicine.js");
 const { default: mongoose } = require("mongoose");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+function generateToken(data) {
+  return jwt.sign(data, process.env.TOKEN_SECRET);
+}
 
 const createUser = async (req, res) => {
   const { username, password, role } = req.body;
   try {
-    const userfound = await mongoose.findOne({username: username});
+    const userfound = await User.findOne({ username: username });
     if (userfound) {
       res.status(400).json({ error: "User already exists" });
       return;
@@ -22,6 +28,8 @@ const createUser = async (req, res) => {
   }
 };
 
+
+
 const getUser = async (req, res) => {
   const username = req.query.username;
   console.log(username);
@@ -33,10 +41,10 @@ const getUser = async (req, res) => {
       case "patient":
         try {
           const pa = await Patient.findByUsername(fUser.username);
-          res
-            .status(201)
-            .json({ message: "User created successfully", user: { fUser, pa }});
-          return { fUser, pa };
+          res.status(201).json({
+            message: "patient found successflly",
+            user: { fUser, pa },
+          });
         } catch (err) {
           console.error("Error handling patient:", err);
           res.status(500).json({ error: "Internal Server Error" });
@@ -45,9 +53,10 @@ const getUser = async (req, res) => {
       case "pharmacist":
         try {
           const ph = await Pharmacist.findByUsername(fUser.username);
-          res
-            .status(201)
-            .json({ message: "User created successfully", user: { fUser, ph }});
+          res.status(201).json({
+            message: "pharmacist found successflly",
+            user: { fUser, ph },
+          });
           return { fUser, ph };
         } catch (error) {
           console.error("Error handling pharmacist:", error);
@@ -76,6 +85,44 @@ const checkUser = async (req, res) => {
   return user.password === req.password
     ? res.status(201).json({ message: "User created successfully", user })
     : res.status(400).json({ error: "Incorrect password" });
+};
+const login = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    // Find the user by username
+
+    const user = await User.findOne({ username: req.body.username });
+    console.log(user.username);
+    if (!user) {
+      return res.status(401).json({ error: "not  credentials" });
+    }
+
+    // Compare the provided password with the hashed password in the database
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    const data = {
+      _id: user._id,
+    };
+
+    // If the password is valid, generate a JWT token
+    const token = generateToken(data);
+    res
+      .status(201)
+      .json({
+        message: "user logged in successfully",
+        role: user.role,
+        username: user.usrername,
+        password: user.password,
+        token,
+        id:user._id
+      });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 const updateUser = async (req, res) => {
@@ -119,23 +166,24 @@ const viewMedicine = async (req, res) => {
   }
 };
 
-
 const searchMedicineByName = async (req, res) => {
   try {
     const { name } = req.query;
 
     // Validate the 'name' parameter
     if (!name || name.trim() === "") {
-      return res.status(400).json({ error: "Invalid or missing 'name' parameter" });
+      return res
+        .status(400)
+        .json({ error: "Invalid or missing 'name' parameter" });
     }
 
     // Perform the medicine search by name (partial match)
-    const meds = await Medicine.find({ name: { $regex: name, $options: 'i' } });
-    
+    const meds = await Medicine.find({ name: { $regex: name, $options: "i" } });
+
     if (meds.length === 0) {
       return res.status(404).json({ error: "Medicine not found" });
     }
-    
+
     // Send a successful response with a 200 status code
     res.status(200).json({ message: "Medicines retrieved successfully", meds });
   } catch (error) {
@@ -144,31 +192,35 @@ const searchMedicineByName = async (req, res) => {
   }
 };
 
-
 const filterMedicineByUse = async (req, res) => {
   try {
     const { use } = req.query;
 
     // Validate the 'use' parameter
     if (!use || use.trim() === "") {
-      return res.status(400).json({ error: "Invalid or missing 'use' parameter" });
+      return res
+        .status(400)
+        .json({ error: "Invalid or missing 'use' parameter" });
     }
 
     // Perform the medicine search by 'use' (partial match)
-    const medicines = await Medicine.find({ use: { $regex: use, $options: 'i' } });
-    
+    const medicines = await Medicine.find({
+      use: { $regex: use, $options: "i" },
+    });
+
     if (medicines.length === 0) {
       return res.status(404).json({ error: "Medicine not found" });
     }
-    
+
     // Send a successful response with a 200 status code
-    res.status(200).json({ message: "Medicines retrieved successfully", medicines });
+    res
+      .status(200)
+      .json({ message: "Medicines retrieved successfully", medicines });
   } catch (error) {
     console.error("Error searching for medicine by use:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 module.exports = {
   createUser,
@@ -179,4 +231,5 @@ module.exports = {
   viewMedicine,
   searchMedicineByName,
   filterMedicineByUse,
+  login,
 };

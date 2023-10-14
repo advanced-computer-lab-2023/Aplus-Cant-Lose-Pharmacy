@@ -15,7 +15,7 @@ const {
   viewPatients,
   deletePatient,
   deletePharmacist,
-  deleteAdmin
+  deleteAdmin,getAdmins
 } = require("../controllers/adController");
 
 // Define your routes and route handlers
@@ -29,8 +29,8 @@ router.post("/createAdmin", createAdmin);
 router.get("/viewPendPh", viewPendPh);
 router.get("/viewJoinedPh", viewJoinedPh);
 router.get("/viewPatients", viewPatients);
-router.delete("/deletePatient", deletePatient);
-router.delete("/deletePharmacist", deletePharmacist);
-router.delete("/deleteAdmin", deleteAdmin);
-
+router.delete("/deletePatient/:id", deletePatient);
+router.delete("/deletePharmacist/:id", deletePharmacist);
+router.delete("/deleteAdmin/:id", deleteAdmin);
+router.get("/getAdmins", getAdmins);
 module.exports = router; // Export the router instance

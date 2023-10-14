@@ -1,11 +1,6 @@
 const mongoose = require("mongoose");
-    // activeElement: String,
-      // price: Number,
-      // use: String,
-      // name: String,
-      // amount: Number,
-      // imgurl: String,
-const phSchema = new mongoose.Schema(
+
+const drSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -21,7 +16,7 @@ const phSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    dBirth: Date,
+    Dbirth: Date,
     gender: {
       type: String,
       enum: ["male", "female", "none"], // Define allowed values for the 'role' field
@@ -44,7 +39,7 @@ const phSchema = new mongoose.Schema(
       {
         url: String, // Store the URL to the uploaded image
         desc: String, // Optional description for the image
-      }
+      },
     ],
     status: {
       type: String,
@@ -54,8 +49,8 @@ const phSchema = new mongoose.Schema(
   }
 );
 
-phSchema.statics.findByUsername = async function (username) {
+drSchema.statics.findByUsername = async function (username) {
   return this.find({ username });
 };
 
-module.exports = mongoose.model("Pharmacist", phSchema);
+module.exports = mongoose.model("Doctor", drSchema);
