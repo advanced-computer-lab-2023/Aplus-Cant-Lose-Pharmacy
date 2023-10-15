@@ -5,7 +5,7 @@ const {addPharmacist, addMedicine,updateMedicineDetails} = require("../controlle
 
 router.post("/addPharmacist", addPharmacist); 
 router.post("/addMedicine", addMedicine);
-router.put("/updateMedicineDetails", updateMedicineDetails);
+router.put("/updateMedicineDetails/:id", updateMedicineDetails);
 
 const {viewMedicine, searchMedicineByName, filterMedicineByUse} = require("../controllers/userController");
 router.get("/viewMedicine", viewMedicine);

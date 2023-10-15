@@ -50,10 +50,10 @@ export const updateMedicineDetails = createAsyncThunk(
   "pharmacist/updateMedicineDetails",
   async (data) => {
     const response = await axios.put(
-      `${API_URL}/pharmacist/updateMedicineDetails`,
-      {
+      `${API_URL}/pharmacist/updateMedicineDetails/${data.id}`,
+      
         data
-      }
+      
     );
 
     return response;

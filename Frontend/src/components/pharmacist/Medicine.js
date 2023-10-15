@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -15,7 +14,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { useContext ,useEffect} from "react";
+import { useContext ,useEffect,useState} from "react";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import Fab from "@mui/material/Fab";
@@ -145,12 +144,12 @@ function createData(name, price, use, activeelements, amount, imagelink) {
 
 function BasicTable({ rows, nameFilter, useFilter }) {
   const snackbarMessage = useContext(SnackbarContext);
+  const dispatch = useDispatch();
   const [editRow, setEditRow] = useState({});
   const [isOpen, setIsOpen] = useState(false);
   const [idx, setIdx] = useState(-1);
-  const [id, setId] = useState(1);
+  const [id, setId] = useState("1");
 
-  const dispatch = useDispatch();
 
   const handleEditClick = (row, index) => {
     setIsOpen(true);
@@ -299,11 +298,12 @@ function BasicTable({ rows, nameFilter, useFilter }) {
                 row.name.toLowerCase().includes(nameFilter.toLowerCase())
               );
             })
-            .filter((row) => {
-              return (
-                useFilter === "" ||
-                row.name.toLowerCase().includes(useFilter.toLowerCase())
-              );
+              .filter((row) => {
+                return (
+                  useFilter === "" ||
+                  row.use.toLowerCase().includes(useFilter.toLowerCase())
+                );
+            
             })
             .map((row, index) => (
               <TableRow
