@@ -270,18 +270,11 @@ function BasicTable({ rows, nameFilter, useFilter }) {
 
         <TableBody>
           {rows
-            .filter((row) => {
-              return (
-                nameFilter === "" ||
-                row.name.toLowerCase().includes(nameFilter.toLowerCase())
-              );
-            })
-            .filter((row) => {
-              return (
-                useFilter === "" ||
-                row.name.toLowerCase().includes(useFilter.toLowerCase())
-              );
-            })
+              .filter((row) => {
+                const nameMatch = nameFilter === "" || row.name.toLowerCase().includes(nameFilter.toLowerCase());
+                const useMatch = useFilter === "" || row.use.toLowerCase().includes(useFilter.toLowerCase());
+                return nameMatch && useMatch;
+              })
             .map((row, index) => (
               <TableRow
                 key={index}
@@ -295,7 +288,7 @@ function BasicTable({ rows, nameFilter, useFilter }) {
                 <TableCell align="right">{row.activeElement}</TableCell>
                 <TableCell align="right">{row.amount}</TableCell>
                 <TableCell align="right">{row.imgurl}</TableCell>
-                {/* <TableCell align="right">{row.sales}</TableCell> */}
+                <TableCell align="right">0</TableCell>
               
               </TableRow>
             ))}

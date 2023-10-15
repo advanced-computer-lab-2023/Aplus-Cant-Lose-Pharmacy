@@ -47,7 +47,7 @@ const MedicineList = () => {
                 <TableCell>{medicine.price}</TableCell>
                 <TableCell>{medicine.use}</TableCell>
                 <TableCell>{medicine.amount}</TableCell>
-                <TableCell>{medicine.sales}</TableCell>
+                <TableCell>0</TableCell>
               </TableRow>
             ))}
           </TableBody>
