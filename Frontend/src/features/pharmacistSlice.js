@@ -50,17 +50,9 @@ export const updateMedicineDetails = createAsyncThunk(
   "pharmacist/updateMedicineDetails",
   async (data) => {
     const response = await axios.put(
-      `${API_URL}/pharmacist/updateMedicineDetails/${data._id}`,
+      `${API_URL}/pharmacist/updateMedicineDetails`,
       {
-        activeElement: data.activeElement,
-        price: data.price,
-        use: data.use,
-        name: data.name,
-        id:data._id,
-        amount: data.amount,
-        imgurl: data.imgurl,
-
-      
+        data
       }
     );
 
@@ -162,4 +154,4 @@ export const pharmacist = createSlice({
 });
 
 export default pharmacist.reducer;
-export const { login, deleteMedicine,editMedicine } = pharmacist.actions;
+export const { login, deleteMedicine, editMedicine } = pharmacist.actions;

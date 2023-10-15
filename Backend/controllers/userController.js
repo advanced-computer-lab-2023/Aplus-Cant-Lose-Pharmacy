@@ -89,12 +89,12 @@ const checkUser = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
-    // Find the user by username
 
-    const user = await User.findOne({ username: req.body.username });
-    console.log(user.username);
+    // Find the user by username
+    const user = await User.findOne({ username });
+
     if (!user) {
-      return res.status(401).json({ error: "not  credentials" });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     // Compare the provided password with the hashed password in the database
@@ -103,22 +103,54 @@ const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+
     const data = {
       _id: user._id,
     };
 
     // If the password is valid, generate a JWT token
     const token = generateToken(data);
-    res
-      .status(201)
-      .json({
-        message: "user logged in successfully",
-        role: user.role,
-        username: user.usrername,
-        password: user.password,
-        token,
-        id:user._id
-      });
+
+    // Fetch additional user data based on the user's role
+    let userData = { fUser: user }; // Initialize with the user data
+
+    switch (user.role) {
+      case "admin":
+        // Handle admin-specific data here if needed
+        break;
+
+      case "patient":
+        try {
+          const pa = await Patient.findOne({ username });
+          userData.fUser = pa;
+        } catch (err) {
+          console.error("Error handling patient:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+        break;
+
+      case "pharmacist":
+        try {
+          const ph = await Pharmacist.findOne({ username });
+          if(ph.status==="pending") throw error;
+          userData.fUser = ph;
+        } catch (error) {
+          console.error("Error handling pharmacist:", error);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+        break;
+
+      default:
+        return res.status(400).json({ error: "Unknown role" });
+    }
+console.log(userData.fUser._id);
+    // Send the response once after the switch statement
+    res.status(201).json({
+      message: "User logged in successfully",
+      role: user.role,
+      userData,
+      token,
+    });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Internal Server Error" });

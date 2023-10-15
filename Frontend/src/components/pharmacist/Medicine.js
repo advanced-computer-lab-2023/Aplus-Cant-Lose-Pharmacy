@@ -15,7 +15,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { useContext } from "react";
+import { useContext ,useEffect} from "react";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import Fab from "@mui/material/Fab";
@@ -148,9 +148,26 @@ function BasicTable({ rows, nameFilter, useFilter }) {
   const [editRow, setEditRow] = useState({});
   const [isOpen, setIsOpen] = useState(false);
   const [idx, setIdx] = useState(-1);
+  const [id, setId] = useState(1);
+
+  const dispatch = useDispatch();
+
+  const handleEditClick = (row, index) => {
+    setIsOpen(true);
+    setEditRow(row);
+    setId(row._id);
+    console.log(id)
+    setIdx(index);
+  };
+  useEffect(() => {
+    // This will log the updated id value
+      }, [handleEditClick]);
+    
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+
 
     const sampleData = {
       activeElement: event.target.elements.activeElement.value,
@@ -159,7 +176,8 @@ function BasicTable({ rows, nameFilter, useFilter }) {
       name: event.target.elements.name.value,
       amount: event.target.elements.amount.value,
       imgurl: event.target.elements.imgurl.value,
-      _id: editRow._id,
+     
+      id: id
     };
 
     console.log(sampleData);
@@ -168,10 +186,11 @@ function BasicTable({ rows, nameFilter, useFilter }) {
 
     response.then((responseData) => {
       console.log(responseData);
-      if (responseData.payload.status < 300) {
-        snackbarMessage("You have successfully edited", "success");
-      } else {
+      if (responseData.payload=== undefined) {
         snackbarMessage(`error: ${responseData} has occurred`, "error");
+      
+      } else {
+        snackbarMessage("You have successfully edited", "success");
       }
     });
     setIsOpen(false);
@@ -184,12 +203,11 @@ function BasicTable({ rows, nameFilter, useFilter }) {
     boxShadow: "5px 5px 5px 5px #8585854a",
   };
 
-  const dispatch = useDispatch();
-  const handleEditClick = (row, index) => {
-    setIsOpen(true);
-    setEditRow(row);
-    setIdx(index);
-  };
+
+
+
+
+  
   return (
     <TableContainer component={Paper} style={tableContainerStyle}>
       <Dialog open={isOpen}>
@@ -300,7 +318,8 @@ function BasicTable({ rows, nameFilter, useFilter }) {
                 <TableCell align="right">{row.activeElement}</TableCell>
                 <TableCell align="right">{row.amount}</TableCell>
                 <TableCell align="right">{row.imgurl}</TableCell>
-                {/* <TableCell align="right">{row.sales}</TableCell> */}
+                <TableCell align="right">{row.sales}</TableCell>
+         
                 <Button
                   sx={{ cursor: "pointer" }}
                   onClick={() => {

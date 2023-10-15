@@ -26,10 +26,11 @@ function App() {
         snackbarMessage(`error: user not found`, "error");
       } else {
         snackbarMessage("You have successfully logged in", "success");
+        setIsSubmitted(true);
         navigate("/Home");
       }
     });
-    setIsSubmitted(true);
+    
   };
 
   const renderForm = (

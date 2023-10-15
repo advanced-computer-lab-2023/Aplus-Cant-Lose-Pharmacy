@@ -33,6 +33,7 @@ const MedicineList = () => {
               <TableCell>Price</TableCell>
               <TableCell>Use</TableCell>
               <TableCell>Amount</TableCell>
+              <TableCell>Sales</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -46,6 +47,7 @@ const MedicineList = () => {
                 <TableCell>{medicine.price}</TableCell>
                 <TableCell>{medicine.use}</TableCell>
                 <TableCell>{medicine.amount}</TableCell>
+                <TableCell>{medicine.sales}</TableCell>
               </TableRow>
             ))}
           </TableBody>
