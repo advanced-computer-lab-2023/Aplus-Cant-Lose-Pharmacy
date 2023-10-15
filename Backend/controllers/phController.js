@@ -131,37 +131,24 @@ const addMedicine = async (req, res) => {
 };
 const updateMedicineDetails = async (req, res) => {
   try {
-    const { id, name, activeElement, price, use, amount, imgurl } = req.body;
+    const id = req.params.id; // Get the ID from request parameters
+    const { name, activeElement, price, use, amount, imgurl } = req.body;
 
-    // Find the medicine by ID
-    const medicine = await Medicine.findOne({ _id: id });
+    // Use findByIdAndUpdate to find and update the medicine
+    const updatedMedicine = await Medicine.findByIdAndUpdate(id, {
+      $set: {
+        name: name,
+        activeElement: activeElement,
+        price: price,
+        use: use,
+        amount: amount,
+        imgurl: imgurl,
+      },
+    }, { new: true }); // { new: true } returns the updated document
 
-    if (!medicine) {
+    if (!updatedMedicine) {
       return res.status(404).json({ error: "Medicine not found" });
     }
-
-    // Update the medicine's details if provided
-    if (name) {
-      medicine.name = name;
-    }
-    if (activeElement) {
-      medicine.activeElement = activeElement;
-    }
-    if (price) {
-      medicine.price = price;
-    }
-    if (use) {
-      medicine.use = use;
-    }
-    if (amount) {
-      medicine.amount = amount;
-    }
-    if (imgurl) {
-      medicine.imgurl = imgurl;
-    }
-
-    // Save the updated medicine to the database
-    const updatedMedicine = await medicine.save();
 
     res.status(200).json({ message: "Medicine details updated successfully", medicine: updatedMedicine });
   } catch (error) {
