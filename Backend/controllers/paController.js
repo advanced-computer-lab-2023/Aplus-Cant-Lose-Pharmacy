@@ -72,4 +72,45 @@ const addPatient = async (req, res) => {
   }
 };
 
-module.exports={addPatient};
+const addMedicineToCart = async (req, res) => {
+  try {
+    const { userId } = req.params; // User ID is passed as a parameter
+    const { medicineId } = req.body; // Medicine ID is passed in the request body
+
+    // Check if the user with the given ID exists
+    const patient = await Patient.findById(userId);
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    if (typeof medicineId === 'undefined') {
+      return res.status(400).json({ error: "Medicine ID is missing in the request body" });
+    }
+
+    
+    // Check if the medicine is already in the patient's cart
+    const existingMedicine = patient.cart.find(
+      (item) => item.medicineID && item.medicineID.toString() === medicineId
+    );
+
+    if (existingMedicine) {
+      // If the medicine already exists in the cart, increase the amount by 1
+      existingMedicine.amount += 1;
+    } else {
+      // If the medicine is not in the cart, add it with an amount of 1
+      patient.cart.push({ medicineID: medicineId, amount: 1 });
+    }
+
+    // Save the updated patient document
+    await patient.save();
+
+    res.status(200).json({ message: "Medicine added to cart successfully", patient });
+  } catch (error) {
+    console.error("Error adding medicine to cart:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+module.exports={addPatient, addMedicineToCart};

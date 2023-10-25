@@ -72,7 +72,7 @@ const paSchema = new mongoose.Schema(
       {
         medicineID:{
           type: mongoose.Schema.Types.ObjectId,
-          ref:medicine,
+          ref: "Medicine",
         },
         amount: Number,
       }
