@@ -68,6 +68,15 @@ const paSchema = new mongoose.Schema(
         desc: String, // Optional description for the image
       },
     ],
+    cart: [
+      {
+        medicineID:{
+          type: mongoose.Schema.Types.ObjectId,
+          ref:medicine,
+        },
+        amount: Number,
+      }
+    ]
   }
 );
 
