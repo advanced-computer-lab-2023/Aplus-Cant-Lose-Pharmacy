@@ -113,4 +113,40 @@ const addMedicineToCart = async (req, res) => {
 };
 
 
-module.exports={addPatient, addMedicineToCart};
+
+const viewCart = async (req, res) => {
+  try {
+    const { userId } = req.params; // User ID is passed as a parameter
+
+    // Check if the user with the given ID exists
+    const patient = await Patient.findById(userId).populate("cart.medicineID");
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    // Extract the cart information with medicine details
+    const cartWithMedicineInfo = patient.cart.map((cartItem) => {
+      const { medicineID, amount } = cartItem;
+      if (medicineID) {
+        return {
+          medicineID: medicineID._id,
+          name: medicineID.name,
+          activeElement: medicineID.activeElement,
+          price: medicineID.price,
+          amount,
+          imgurl: medicineID.imgurl,
+        };
+      }
+    });
+
+    res.status(200).json({ cart: cartWithMedicineInfo });
+  } catch (error) {
+    console.error("Error viewing cart:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
+module.exports={addPatient, addMedicineToCart, viewCart};
