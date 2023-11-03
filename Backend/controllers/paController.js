@@ -112,6 +112,86 @@ const addMedicineToCart = async (req, res) => {
   }
 };
 
+const removeMedicineFromCart = async (req, res) => {
+  try {
+    const { userId } = req.params; // User ID is passed as a parameter
+    const { medicineId } = req.body; // Medicine ID is passed in the request body
+
+    // Check if the user with the given ID exists
+    const patient = await Patient.findById(userId);
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    if (typeof medicineId === 'undefined') {
+      return res.status(400).json({ error: "Medicine ID is missing in the request body" });
+    }
+    
+    // Check if the medicine is in the patient's cart
+    const medicineIndex = patient.cart.findIndex(
+      (item) => item.medicineID && item.medicineID.toString() === medicineId
+    );
+
+    if (medicineIndex > -1) {
+      // If the medicine exists in the cart, remove it
+      patient.cart.splice(medicineIndex, 1);
+    } else {
+      // If the medicine is not in the cart, send an error response
+      return res.status(404).json({ error: "Medicine not found in cart" });
+    }
+
+    // Save the updated patient document
+    await patient.save();
+
+    res.status(200).json({ message: "Medicine removed from cart successfully", patient });
+  } catch (error) {
+    console.error("Error removing medicine from cart:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const decreaseMedicine = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { medicineId } = req.body;
+
+    // Check if the patient exists
+    const patient = await Patient.findById(userId);
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    if (typeof medicineId === 'undefined') {
+      return res.status(400).json({ error: "Medicine ID is missing in the request body" });
+    }
+
+    // Find the medicine in the cart
+    const medicineIndex = patient.cart.findIndex(item => item.medicineID.toString() === medicineId);
+
+    if (medicineIndex === -1) {
+      return res.status(404).json({ error: "Medicine not found in cart" });
+    }
+
+    // Decrease the medicine amount by 1
+    patient.cart[medicineIndex].amount -= 1;
+
+    // If the amount reaches 0, remove the item from the cart
+    if (patient.cart[medicineIndex].amount <= 0) {
+      patient.cart.splice(medicineIndex, 1);
+    }
+
+    // Save the updated patient document
+    await patient.save();
+
+    res.status(200).json({ message: "Medicine count updated successfully", patient });
+  } catch (error) {
+    console.error("Error updating medicine count:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 
 
 const viewCart = async (req, res) => {
@@ -149,4 +229,4 @@ const viewCart = async (req, res) => {
 
 
 
-module.exports={addPatient, addMedicineToCart, viewCart};
+module.exports={addPatient, addMedicineToCart, viewCart, removeMedicineFromCart, decreaseMedicine};
