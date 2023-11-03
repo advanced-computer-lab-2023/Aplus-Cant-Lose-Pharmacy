@@ -196,19 +196,22 @@ const decreaseMedicine = async (req, res) => {
 
 const viewCart = async (req, res) => {
   try {
-    const { userId } = req.params; // User ID is passed as a parameter
+    const { userId } = req.params;
 
-    // Check if the user with the given ID exists
     const patient = await Patient.findById(userId).populate("cart.medicineID");
 
     if (!patient) {
       return res.status(404).json({ error: "Patient not found" });
     }
 
-    // Extract the cart information with medicine details
+    let grandTotal = 0; // Initialize grand total to 0
+
     const cartWithMedicineInfo = patient.cart.map((cartItem) => {
       const { medicineID, amount } = cartItem;
-      if (medicineID) {
+      if (medicineID && medicineID._id && medicineID.name && medicineID.activeElement && medicineID.price && medicineID.imgurl) {
+        const totalPrice = amount * medicineID.price; // Calculate total price for the medicine item
+        grandTotal += totalPrice; // Add the total price to the grand total
+
         return {
           medicineID: medicineID._id,
           name: medicineID.name,
@@ -216,16 +219,18 @@ const viewCart = async (req, res) => {
           price: medicineID.price,
           amount,
           imgurl: medicineID.imgurl,
+          totalPrice, // Include the total price in the response
         };
       }
     });
 
-    res.status(200).json({ cart: cartWithMedicineInfo });
+    res.status(200).json({ cart: cartWithMedicineInfo, grandTotal });
   } catch (error) {
     console.error("Error viewing cart:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 
