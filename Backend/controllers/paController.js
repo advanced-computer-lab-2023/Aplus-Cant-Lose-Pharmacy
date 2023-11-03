@@ -372,6 +372,58 @@ const payForCart = async (req, res) => {
   }
 };
 
+const getPatientOrders = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find the patient by userId
+    const patient = await Patient.findById(userId);
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    // Fetch patient's orders and extract necessary details
+    const orders = await Order.find({ pID: userId }).select('_id orderDate location totalPrice');
+
+    return res.status(200).json({ orders });
+  } catch (error) {
+    console.error("Error fetching patient orders:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+const getOrderDetailsById = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    // Find the order by orderId and populate the necessary fields
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Extract necessary order details along with patient details
+    const orderDetails = {
+      orderId: order._id,
+      orderDate: order.orderDate,
+      location: order.location, // Assuming 'location' is a property in the Order schema
+      status: order.status,
+      payment: order.payment,
+      totalPrice: order.totalPrice,
+      cart: order.cart
+    };
+
+    return res.status(200).json({ orderDetails });
+  } catch (error) {
+    console.error("Error fetching order details:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 module.exports = {
   addPatient,
   addMedicineToCart,
@@ -381,4 +433,6 @@ module.exports = {
   addAddress,
   getAddresses,
   payForCart,
+  getPatientOrders,
+  getOrderDetailsById
 };

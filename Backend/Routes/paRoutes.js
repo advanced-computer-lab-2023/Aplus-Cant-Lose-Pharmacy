@@ -10,6 +10,8 @@ const {
   addAddress,
   getAddresses,
   payForCart,
+  getPatientOrders,
+  getOrderDetailsById
 } = require("../controllers/paController");
 router.post("/addPatient", addPatient);
 
@@ -29,5 +31,7 @@ router.post("/decreaseMedicine/:userId", decreaseMedicine);
 router.post("/addAddress/:userId", addAddress);
 router.get("/getAddresses/:userId", getAddresses);
 router.post("/payForCart/:userId", payForCart);
+router.get("/getPatientOrders/:userId", getPatientOrders);
+router.get("/getOrderDetailsById/:orderId", getOrderDetailsById);
 
 module.exports = router;

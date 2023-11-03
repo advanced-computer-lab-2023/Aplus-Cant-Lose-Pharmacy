@@ -26,6 +26,7 @@ const orderSchema = new mongoose.Schema(
       enum: ["Cash On Delivery", "Credit Card", "Wallet"], 
     },
     address: String,
+    totalPrice: Number,
   }
 );
 module.exports = mongoose.model("Order", orderSchema);
