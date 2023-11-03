@@ -1,6 +1,8 @@
 const Patient = require("../Models/patient");
 const User = require("../Models/user");
 const Pharmacist = require("../Models/pharmacist");
+const Order = require("../Models/orders");
+const Medicine = require("../Models/medicine");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -312,6 +314,64 @@ const getAddresses = async (req, res) => {
   }
 };
 
+const payForCart = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { paymentType, address } = req.body;
+
+    // Find the patient by userId
+    const patient = await Patient.findById(userId);
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    // Calculate the total price of the items in the cart using Promise.all
+    const totalPrice = await Promise.all(patient.cart.map(async (cartItem) => {
+      const { medicineID, amount } = cartItem;
+      const medicine = await Medicine.findById(medicineID);
+      if (!medicine) {
+        throw new Error(`Medicine with ID ${medicineID} not found`);
+      }
+      const itemPrice = medicine.price * amount;
+      return itemPrice;
+    })).then((prices) => prices.reduce((acc, price) => acc + price, 0));
+
+    // Check if the payment type is 'Wallet'
+    if (paymentType === 'Wallet') {
+      // Check if the patient's wallet balance is sufficient for the purchase
+      if (patient.wallet < totalPrice) {
+        return res.status(400).json({ error: "Insufficient funds in the wallet" });
+      }
+
+      // Deduct the total price from the patient's wallet
+      patient.wallet -= totalPrice;
+    }
+
+    // Create a new order
+    const order = new Order({
+      orderDate: new Date(),
+      pID: patient._id,
+      cart: patient.cart,
+      payment: paymentType,
+      totalPrice: totalPrice,
+      address: address,
+    });
+
+    // Save the order to the database
+    await order.save();
+
+    // Clear the cart in the patient's attributes
+    patient.cart = [];
+    await patient.save();
+
+    return res.status(201).json({ message: "Order placed successfully", order });
+  } catch (error) {
+    console.error("Error processing order:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   addPatient,
   addMedicineToCart,
@@ -320,4 +380,5 @@ module.exports = {
   decreaseMedicine,
   addAddress,
   getAddresses,
+  payForCart,
 };
