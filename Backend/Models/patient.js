@@ -76,7 +76,16 @@ const paSchema = new mongoose.Schema(
         },
         amount: Number,
       }
-    ]
+    ],
+    addresses: [
+      {
+        location: String, 
+      },
+    ],
+    wallet: {
+      type:Number,
+      default: 0,
+    }
   }
 );
 

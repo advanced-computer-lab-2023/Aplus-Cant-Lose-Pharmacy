@@ -231,7 +231,28 @@ const viewCart = async (req, res) => {
   }
 };
 
+const addAddress = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { location } = req.body;
+
+    // Find the patient by userId
+    const patient = await Patient.findById(userId);
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    // Add the new address to the patient's addresses array
+    patient.addresses.push({ location });
+    await patient.save();
+
+    res.status(201).json({ message: "Address added successfully", patient });
+  } catch (error) {
+    console.error("Error adding address:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 
-
-module.exports={addPatient, addMedicineToCart, viewCart, removeMedicineFromCart, decreaseMedicine};
+module.exports={addPatient, addMedicineToCart, viewCart, removeMedicineFromCart, decreaseMedicine, addAddress};
