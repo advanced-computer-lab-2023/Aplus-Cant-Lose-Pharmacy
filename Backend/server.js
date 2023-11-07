@@ -15,7 +15,7 @@ app.use(express.json());
 
 app.use(cors());
 
-const {login }= require("./controllers/userController");
+const {login,sendResetEmail,changePassword }= require("./controllers/userController");
  app.post('/api/login', login);
  const userRoute = require("./Routes/userRoute");
 // Importing the adRouter
@@ -46,3 +46,5 @@ connectDB()
   .catch((err) => console.log(err));
 
 // Routing to userController here
+app.post("/api/sendResetEmail", sendResetEmail);
+app.post("/api/changePassword/:id/:token", changePassword);

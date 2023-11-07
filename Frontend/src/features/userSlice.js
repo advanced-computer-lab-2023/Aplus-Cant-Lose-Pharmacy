@@ -11,6 +11,54 @@ const userInitial = {
   response: "",
   id: 0,
 };
+export const sendResetEmail = createAsyncThunk(
+  "user/sendResetEmail",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/sendResetEmail`, {
+        email: data,
+      });
+
+      console.log(response.token);
+
+      return response;
+    } catch (error) {
+      // return custom error message from API if any
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
+
+export const changePassword = createAsyncThunk(
+  "user/changePassword",
+  async (data, { rejectWithValue }) => {
+    try {
+      const id = data.id;
+      const token = data.token;
+      const response = await axios.post(
+        `${API_URL}/changePassword/${id}/${token}`,
+        {
+          password: data.password,
+        }
+      );
+
+      console.log(response.token);
+
+      return response;
+    } catch (error) {
+      // return custom error message from API if any
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
 export const loginGuest = createAsyncThunk("user/loginGuest", async (data) => {
   const response = await axios.post(`${API_URL}/login`, {
     username: data.username,

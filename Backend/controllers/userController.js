@@ -10,6 +10,97 @@ function generateToken(data) {
   return jwt.sign(data, process.env.TOKEN_SECRET);
 }
 
+const sendResetEmail = async (req, res) => {
+  const { email } = req.body;
+  let user; // Declare the user variable
+
+  const u1 = await Patient.findOne({ email });
+  const u2 = await Doctor.findOne({ email });
+  const u3 = await User.findOne({ email });
+  const u4 = await Pharmacist.findOne({ email });
+
+  if (u1) user = u1;
+  else if (u2) user = u2;
+  else if (u3) user = u3;
+  else if (u4) user = u4;
+
+  if (!user) {
+    return res.send({ Status: "User not found" });
+  }
+  const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET, {
+    expiresIn: "1d",
+  });
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "sohailahakeem17@gmail.com",
+      pass: "yvxbdrovrmhebgxv",
+    },
+  });
+
+  var mailOptions = {
+    from: "apluscantlose@gmail.com",
+    to: email,
+    subject: "Reset Password Link",
+    text: `http://localhost:3000/reset_password/${user._id}/${token}`,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+      return res.send({ Status: "Error sending email" }); // Handle the error and send a response
+    } else {
+      return res.send({ Status: "Success" });
+    }
+  });
+};
+const changePassword = async (req, res) => {
+  const { id, token } = req.params;
+  const { password } = req.body;
+
+  try {
+    // First, validate the token
+    jwt.verify(token, process.env.TOKEN_SECRET, async (err, decoded) => {
+      if (err) {
+        return res.json({ Status: "Error with token" });
+      } else {
+        // Find the user by ID
+        const user = await Patient.findById(id) || await User.findById(id) || await Doctor.findById(id) || await Pharmacist.findById(id);
+
+        if (!user) {
+          return res.json({ Status: "User not found" });
+        }
+
+        // Find the user by username
+        const fuser = await User.findOne({ username: user.username });
+
+        if (!fuser) {
+          return res.json({ Status: "User not found" });
+        }
+
+        // Hash the new password
+        bcrypt.hash(password, 10, async (hashErr, hash) => {
+          if (hashErr) {
+            return res.json({ Status: hashErr });
+          }
+
+          // Update the user's password
+          fuser.password = hash;
+
+          // Save the user with the new password
+          try {
+            await fuser.save();
+            return res.json({ Status: "Password changed successfully" });
+          } catch (saveErr) {
+            return res.json({ Status: saveErr });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    return res.json({ Status: error });
+  }
+};
 const createUser = async (req, res) => {
   const { username, password, role } = req.body;
   try {
@@ -125,26 +216,31 @@ const login = async (req, res) => {
           userData.fUser = pa;
         } catch (err) {
           console.error("Error handling patient:", err);
-          return res.status(500).json({ error: "Internal Server Error" });
+          return res.status(500).json({ error: "user not found" });
         }
         break;
 
-      case "pharmacist":
+      case "doctor":
         try {
-          const ph = await Pharmacist.findOne({ username });
-          if(ph.status==="pending") throw error;
-          userData.fUser = ph;
+          const dr = await Doctor.findOne({ username });
+          if (dr.status === "pending") throw error;
+          userData.fUser = dr;
         } catch (error) {
-          console.error("Error handling pharmacist:", error);
+          console.error("Error handling doctor:", error);
           return res.status(500).json({ error: "Internal Server Error" });
         }
         break;
 
       default:
-        return res.status(400).json({ error: "Unknown role" });
+        return res.status(500).json({ error: "Unknown role" });
     }
-console.log(userData.fUser._id);
-    // Send the response once after the switch statement
+
+    // Set the JWT as a cookie
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7 * 1000, // 7 days in milliseconds
+    });
+
     res.status(201).json({
       message: "User logged in successfully",
       role: user.role,
@@ -264,4 +360,6 @@ module.exports = {
   searchMedicineByName,
   filterMedicineByUse,
   login,
+  sendResetEmail,
+  changePassword,
 };

@@ -20,7 +20,8 @@ import RegisterAsPatient from "./components/Authentication/RegisterAsPatient";
 import RegisterAsPharmacist from "./components/Authentication/RegisterAsPharmacist";
 import UploadDocs from "./components/Authentication/Upload_docs";
 
-
+import ResetPassword from "./components/Authentication/ResetPassword";
+import ChangePass from "./components/Authentication/ChangePass";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -37,6 +38,8 @@ const router = createBrowserRouter(
     <Route>
       <Route index element={<Start />} />
       <Route path="/Login" element={<Login />} />
+      <Route path="/reset_password/:id/:token" element={<ChangePass />} />
+      <Route path="/ResetPassword" element={<ResetPassword />} />
       <Route path="/RegisterAs" element={<RegisterAs />} />
       <Route path="/RegisterAsPatient" element={<RegisterAsPatient />} />
       <Route path="/RegisterAsPharmacist" element={<RegisterAsPharmacist />} />
@@ -44,17 +47,14 @@ const router = createBrowserRouter(
 
       <Route path="/Home" element={<HomeDirect />} />
       <Route path="/Medicine/add" element={<AddMedicine />} />
-    
-
 
       <Route path="*" element={<Error />} />
     </Route>
   )
 );
 
-
 // Severitys:
-// success 
+// success
 // error
 // info
 // warning
@@ -65,10 +65,10 @@ const App = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  function displaySnackbar(message, severity){
-    setSnackbarOpen(true)
-    setSnackbarMessage(message)
-    setSnackbarSeverity(severity)
+  function displaySnackbar(message, severity) {
+    setSnackbarOpen(true);
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
   }
 
   return (
