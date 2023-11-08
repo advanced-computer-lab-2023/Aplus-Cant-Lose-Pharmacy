@@ -11,7 +11,8 @@ const {
   getAddresses,
   payForCart,
   getPatientOrders,
-  getOrderDetailsById
+  getOrderDetailsById,
+  cancelOrder
 } = require("../controllers/paController");
 router.post("/addPatient", addPatient);
 
@@ -33,5 +34,6 @@ router.get("/getAddresses/:userId", getAddresses);
 router.post("/payForCart/:userId", payForCart);
 router.get("/getPatientOrders/:userId", getPatientOrders);
 router.get("/getOrderDetailsById/:orderId", getOrderDetailsById);
+router.delete("/cancelOrder/:orderId", cancelOrder);
 
 module.exports = router;

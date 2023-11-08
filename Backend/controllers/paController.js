@@ -423,6 +423,40 @@ const getOrderDetailsById = async (req, res) => {
   }
 };
 
+const cancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    // Find the order by orderId
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Check if the payment type is 'Cash On Delivery'
+    if (order.payment !== 'Cash On Delivery') {
+      // Refund the total price into the patient's wallet
+      const patient = await Patient.findById(order.pID);
+      if (!patient) {
+        return res.status(404).json({ error: "Patient not found" });
+      }
+
+      patient.wallet += order.totalPrice;
+      await patient.save();
+    }
+
+    // Delete the order
+    await Order.findByIdAndDelete(orderId);
+
+    return res.status(200).json({ message: "Order cancelled successfully" });
+  } catch (error) {
+    console.error("Error cancelling order:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 
 module.exports = {
   addPatient,
@@ -434,5 +468,6 @@ module.exports = {
   getAddresses,
   payForCart,
   getPatientOrders,
-  getOrderDetailsById
+  getOrderDetailsById,
+  cancelOrder
 };
