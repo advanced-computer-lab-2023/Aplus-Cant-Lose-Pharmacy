@@ -403,6 +403,7 @@ module.exports = {
   filterMedicineByUse,
   login,
   sendResetEmail,
-  changePassword,
   changePass,
+  changePassword,
+
 };
