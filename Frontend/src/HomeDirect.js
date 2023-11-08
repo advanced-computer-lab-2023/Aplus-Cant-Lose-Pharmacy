@@ -6,6 +6,19 @@ import PhHome from "./components/pharmacist/PhHome";
 
 import Error from "./Error";
 import { Outlet } from "react-router-dom";
+import AccountAvatar from "./components/Authentication/AccountAvatar" // Import the AccountAvatar component
+const containerStyles = {
+  display: "flex",
+  justifyContent: "flex-end", // Align content to the right
+  alignItems: "center",
+
+  height: "fit-content",
+  backgroundColor: "whitesmoke",
+  borderRadius: "7px",
+  paddingRight: "15px",
+  paddingBottom: "2px",
+  paddingTop: "2px", // Center items vertically
+};
 const HomeDirect = () => {
   const { role } = useSelector((state) => state.user);
 
@@ -13,13 +26,28 @@ const HomeDirect = () => {
   let content = null;
   switch (role) {
     case "admin":
-      content = <Admin />;
+      content = (
+        <>
+          <AccountAvatar sx={containerStyles} /> {/* Add AccountAvatar component here */}
+          <Admin />
+        </>
+      );
       break;
     case "pharmacist":
-      content = <PhHome />;
+      content = (
+        <>
+          <AccountAvatar sx={containerStyles}/> {/* Add AccountAvatar component here */}
+          <PhHome />
+        </>
+      );
       break;
     case "patient":
-      content = <PaHome />;
+      content = (
+        <>
+          <AccountAvatar sx={containerStyles}/> {/* Add AccountAvatar component here */}
+          <PaHome />
+        </>
+      );
       break;
     default:
       // Handle unknown or invalid roles here

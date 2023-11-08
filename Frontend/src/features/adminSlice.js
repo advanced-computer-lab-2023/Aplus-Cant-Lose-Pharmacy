@@ -12,7 +12,7 @@ const adminInitial = {
   phpending: [],
   response: "",
   admins: [],
-  medicine:[],
+  medicine: [],
 };
 
 export const viewPatients = createAsyncThunk("admin/viewPatients", async () => {
@@ -33,6 +33,7 @@ export const viewMedicine = createAsyncThunk("admin/viewMedicine", async () => {
   const response = await axios.get(`${API_URL}/admin/viewMedicine`);
   return response;
 });
+
 
 
 // export const searchMedicineByName = createAsyncThunk(
@@ -86,9 +87,8 @@ export const createAdmin = createAsyncThunk(
 export const deletePatient = createAsyncThunk(
   "admin/deletePatient",
   async (id) => {
-    const response = await axios.delete(
-      `${API_URL}/admin/deletePatient/${id}`
-    );
+    const response = await axios.delete(`${API_URL}/admin/deletePatient/${id}`);
+
     return id;
   }
 );
@@ -110,19 +110,23 @@ export const deletePPharmacist = createAsyncThunk(
     return response;
   }
 );
-export const deleteAdmin = createAsyncThunk(
-  "admin/deleteAdmin",
-  async (id) => {
-    const response = await axios.delete(`${API_URL}/admin/deleteAdmin/${id}`);
-    return id;
-  }
-);
+export const deleteAdmin = createAsyncThunk("admin/deleteAdmin", async (id) => {
+  const response = await axios.delete(`${API_URL}/admin/deleteAdmin/${id}`);
+  return id;
+});
+export const acceptPh = createAsyncThunk("admin/acceptPh", async (id) => {
+  const response = await axios.post(`${API_URL}/admin/sendAcceptEmail`, { id });
+  return id;
+});
+export const rejectPh = createAsyncThunk("admin/rejectPh", async (id) => {
+  const response = await axios.post(`${API_URL}/admin/sendRejectEmail`, { id });
+  return id;
+});
 
 const admin = createSlice({
   name: "admin",
   initialState: adminInitial,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(viewPatients.pending, (state) => {
@@ -130,7 +134,7 @@ const admin = createSlice({
       })
       .addCase(viewPatients.fulfilled, (state, action) => {
         state.loading = false;
-        state.patients =action.payload.data.patient;
+        state.patients = action.payload.data.patient;
         state.response = "viewPatients";
       })
       .addCase(viewPatients.rejected, (state, action) => {
@@ -142,7 +146,7 @@ const admin = createSlice({
 
       .addCase(getAdmins.fulfilled, (state, action) => {
         state.loading = false;
-        state.admins=action.payload.data.admins;
+        state.admins = action.payload.data.admins;
         state.response = "getAdmins";
       })
       .addCase(getAdmins.rejected, (state, action) => {
@@ -202,15 +206,15 @@ const admin = createSlice({
     ///////////////////////
 
     builder
-    
-    .addCase(deleteJPharmacist.fulfilled, (state, action) => {
-      state.loading = false;
-      state.phJoined = state.phJoined.filter(
-        (item) => item._id !== action.payload
-      );
-      state.response = "delete";
-    })
-    
+
+      .addCase(deleteJPharmacist.fulfilled, (state, action) => {
+        state.loading = false;
+        state.phJoined = state.phJoined.filter(
+          (item) => item._id !== action.payload
+        );
+        state.response = "delete";
+      })
+
       .addCase(deleteJPharmacist.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
@@ -231,6 +235,27 @@ const admin = createSlice({
         state.loading = false;
         state.error = action.error.message;
       });
+    builder
+      .addCase(acceptPh.fulfilled, (state, action) => {
+        console.log(action.payload);
+        state.loading = false;
+        state.phpending = state.phpending.filter(
+          (item) => item._id !== action.payload
+        );
+        state.response = "delete HealthPackages";
+      })
+      .addCase(acceptPh.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
+    builder.addCase(rejectPh.fulfilled, (state, action) => {
+      state.loading = false;
+      state.phpending = state.phpending.filter(
+        (item) => item._id !== action.payload
+      );
+      state.response = "delete HealthPackages";
+    });
+
   },
 });
 

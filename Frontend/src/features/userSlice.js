@@ -69,7 +69,17 @@ export const loginGuest = createAsyncThunk("user/loginGuest", async (data) => {
 
   return response;
 });
-
+export const changePass = createAsyncThunk("admin/changePass", async (data) => {
+  const response = axios
+    .post(`/api/changePass/${data.username}`, data)
+    .then((response) => {
+      console.log("Response:", response.data);
+    })
+    .catch((error) => {
+      console.error("Error:", error.response.data);
+    });
+  return response;
+});
 const user = createSlice({
   name: "user",
   initialState: userInitial,
@@ -92,6 +102,11 @@ const user = createSlice({
         state.username = "";
         state.id = 0;
         state.role = "none";
+      });
+      builder.addCase(changePass.fulfilled, (state, action) => {
+        state.loading = false;
+      state.password=action.payload.data.password;
+        state.response = "delete HealthPackages";
       });
   },
 });

@@ -15,7 +15,7 @@ const sendResetEmail = async (req, res) => {
   let user; // Declare the user variable
 
   const u1 = await Patient.findOne({ email });
-  const u2 = await Doctor.findOne({ email });
+  const u2 = await Pharmacist.findOne({ email });
   const u3 = await User.findOne({ email });
   const u4 = await Pharmacist.findOne({ email });
 
@@ -54,6 +54,54 @@ const sendResetEmail = async (req, res) => {
     }
   });
 };
+
+// Controller method for changing the user's password
+const changePass = async (req, res) => {
+  const { username } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  try {
+    // Find the user by username
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if the old password matches the user's current password
+
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Current password is incorrect" });
+    }
+    // Update the password with the new one
+    bcrypt.hash(newPassword, 10, async (hashErr, hash) => {
+      if (hashErr) {
+        return res.json({ Status: hashErr });
+      }
+
+      // Update the user's password
+      user.password = hash;
+
+      // Save the user with the new password
+      try {
+        await user.save();
+        return res.json({ Status: "Password changed successfully" });
+      } catch (saveErr) {
+        return res.json({ Status: saveErr });
+      }
+    });
+
+    return res.status(200).json({
+      message: "Password updated successfully",
+      password: newPassword,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 const changePassword = async (req, res) => {
   const { id, token } = req.params;
   const { password } = req.body;
@@ -65,7 +113,11 @@ const changePassword = async (req, res) => {
         return res.json({ Status: "Error with token" });
       } else {
         // Find the user by ID
-        const user = await Patient.findById(id) || await User.findById(id) || await Doctor.findById(id) || await Pharmacist.findById(id);
+        const user =
+          (await Patient.findById(id)) ||
+          (await User.findById(id)) ||
+          (await Pharmacist.findById(id)) ||
+          (await Pharmacist.findById(id));
 
         if (!user) {
           return res.json({ Status: "User not found" });
@@ -118,8 +170,6 @@ const createUser = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
 
 const getUser = async (req, res) => {
   const username = req.query.username;
@@ -184,17 +234,9 @@ const login = async (req, res) => {
     // Find the user by username
     const user = await User.findOne({ username });
 
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
     // Compare the provided password with the hashed password in the database
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
+    console.log(isPasswordValid);
     const data = {
       _id: user._id,
     };
@@ -220,13 +262,13 @@ const login = async (req, res) => {
         }
         break;
 
-      case "doctor":
+      case "pharmacist":
         try {
-          const dr = await Doctor.findOne({ username });
-          if (dr.status === "pending") throw error;
-          userData.fUser = dr;
+          const ph = await Pharmacist.findOne({ username });
+          if (ph.status === "pending") throw error;
+          userData.fUser = ph;
         } catch (error) {
-          console.error("Error handling doctor:", error);
+          console.error("Error handling Pharmacist:", error);
           return res.status(500).json({ error: "Internal Server Error" });
         }
         break;
@@ -362,4 +404,5 @@ module.exports = {
   login,
   sendResetEmail,
   changePassword,
+  changePass,
 };

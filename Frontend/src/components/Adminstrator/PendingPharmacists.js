@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState ,useContext} from "react";
+import { SnackbarContext } from "../../App";
+
 import {
   Table,
   TableBody,
@@ -8,30 +10,35 @@ import {
   TableRow,
   Paper,
   Button,
-} from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { viewPendPh } from '../../features/adminSlice';
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { viewPendPh, acceptPh, rejectPh } from "../../features/adminSlice";
 
 const JoinRequests = () => {
-  const dispatch=useDispatch();
+  const snackbarMessage = useContext(SnackbarContext);
+  const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(viewPendPh())
+    dispatch(viewPendPh());
   }, [dispatch]);
-  const dummyData =  useSelector((state) => state.admin.phpending);
-  const handleDelete = (requestId) => {
-    
-  };
+  const dummyData = useSelector((state) => state.admin.phpending);
+  const handleDelete = (requestId) => {};
 
-  const handleApprove = (requestId) => {
-    // Implement logic to approve the join request and update the server
-    // You can remove or modify this function according to your actual needs
+  const handleApprove = (id) => {
+    const responseData =  dispatch(acceptPh(id));
+    if (responseData === undefined) {
+      snackbarMessage(`error: username already exist has occurred`, "error");
+    } else {
+      snackbarMessage("Email sent to accepted Pahrmacist", "success");
+    }
   };
-
-  const handleReject = (requestId) => {
-    // Implement logic to reject the join request and update the server
-    // You can remove or modify this function according to your actual needs
+  const handleReject = (id) => {
+    const responseData = dispatch(rejectPh(id));
+    if (responseData === undefined) {
+      snackbarMessage(`error: username already exist has occurred`, "error");
+    } else {
+      snackbarMessage("Email sent to rejected Pahrmacist", "success");
+    }
   };
-
   return (
     <div>
       <h1>Join Requests</h1>
@@ -52,7 +59,7 @@ const JoinRequests = () => {
           </TableHead>
           <TableBody>
             {dummyData.map((request) => (
-              <TableRow key={request.id}>
+              <TableRow key={request._id}>
                 <TableCell>{request.name}</TableCell>
                 <TableCell>{request.email}</TableCell>
                 <TableCell>{request.username}</TableCell>
@@ -63,14 +70,14 @@ const JoinRequests = () => {
                 <TableCell>{request.background}</TableCell>
                 <TableCell>
                   <Button
-                    onClick={() => handleApprove(request.id)}
+                    onClick={() => handleApprove(request._id)}
                     variant="contained"
                     color="primary"
                   >
                     Approve
                   </Button>
                   <Button
-                    onClick={() => handleReject(request.id)}
+                    onClick={() => handleReject(request._id)}
                     variant="contained"
                     color="secondary"
                   >

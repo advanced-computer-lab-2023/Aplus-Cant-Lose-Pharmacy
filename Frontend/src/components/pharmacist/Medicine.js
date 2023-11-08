@@ -209,74 +209,7 @@ function BasicTable({ rows, nameFilter, useFilter }) {
   
   return (
     <TableContainer component={Paper} style={tableContainerStyle}>
-      <Dialog open={isOpen}>
-        <form className="form" onSubmit={handleSubmit}>
-          <div className="form-body">
-            <label className="form__label" for="name">
-              name
-            </label>
-            <input
-              style={{ width: "92%" }}
-              type="text"
-              id="name"
-              defaultValue={editRow.name}
-              required
-            />
-            <label for="activeElement">Active element</label>
-            <input
-              type="text"
-              id="activeElement"
-              defaultValue={editRow.activeElement}
-              required
-            />
-            <label for="use">Medicinal use</label>
-            <input
-              style={{ width: "92%" }}
-              type="text"
-              id="use"
-              defaultValue={editRow.use}
-              required
-            />
-
-            <label className="form__label" for="price">
-              Price
-            </label>
-            <input
-              type="number"
-              id="price"
-              required
-              style={{ width: "94%", borderRadius: "3px" }}
-              defaultValue={editRow.price}
-            />
-
-            <label className="form__label" for="amount">
-              Available Quantity{" "}
-            </label>
-            <input
-              type="number"
-              id="amount"
-              defaultValue={editRow.amount}
-              required
-              style={{ width: "94%", borderRadius: "3px" }}
-            />
-
-            <label for="imgurl">Image url</label>
-            <input
-              style={{ width: "92%" }}
-              type="text"
-              id="imgurl"
-              defaultValue={editRow.imgurl}
-              required
-            />
-          </div>
-          <div className="footer">
-            <button type="submit" class="btn">
-              Edit
-            </button>
-          </div>
-        </form>
-        <p>gyrfeijkwosxdvhr</p>
-      </Dialog>
+      
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -320,15 +253,7 @@ function BasicTable({ rows, nameFilter, useFilter }) {
                 <TableCell align="right">{row.imgurl}</TableCell>
                 <TableCell align="right">{row.sales}</TableCell>
          
-                <Button
-                  sx={{ cursor: "pointer" }}
-                  onClick={() => {
-                    handleEditClick(row, index);
-                  }}
-                  align="right"
-                >
-                  Edit
-                </Button>
+        
               </TableRow>
             ))}
         </TableBody>

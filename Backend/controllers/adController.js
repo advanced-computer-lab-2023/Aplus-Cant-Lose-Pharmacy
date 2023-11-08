@@ -4,6 +4,7 @@ const Patient = require("../Models/patient");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const nodemailer = require('nodemailer');
 
 function generateToken(data) {
   return jwt.sign(data, process.env.TOKEN_SECRET);
@@ -155,6 +156,104 @@ const deleteAdmin = async (req, res) => {
   }
 };
 
+const sendAcceptEmail = async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    // Find the user by ID
+    const user = await Pharmacist.findById(id);
+
+    if (!user) {
+      return res.status(404).send({ Status: "User not found" });
+    }
+
+    // Update the user's status to "accepted"
+    user.status = "accepted";
+    await user.save();
+
+    // Create a transporter for sending email
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_FROM,
+        pass: process.env.Password,
+      },
+    });
+
+    // Define email options
+    const mailOptions = {
+      
+      from: process.env.EMAIL_FROM,
+      to: user.email, // Assuming the user has an 'email' field, adjust as needed
+      subject: "Acceptance Confirmation",
+      text: `Congratulations! You have been accepted to join El7a2ni Pharmacy as a Pharmacist.
+      
+      El7a2ni Pharmacy`,
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+        return res.status(500).send({ Status: "Error sending email" });
+      } else {
+        return res.status(200).send({ Status: "Success" });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ Status: "Server Error" });
+  }
+};
+const sendRejectEmail = async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    // Find the user by ID
+    const user = await Pharmacist.findById(id);
+
+    if (!user) {
+      return res.status(404).send({ Status: "User not found" });
+    }
+
+    // Update the user's status to "accepted"
+    user.status = "rejected";
+    await user.save();
+
+    // Create a transporter for sending email
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_FROM,
+        pass: process.env.Password,
+      },
+    });
+
+    // Define email options
+    const mailOptions = {
+      from:process.env.EMAIL_FROM,
+      to: user.email, // Assuming the user has an 'email' field, adjust as needed
+      subject: "Rejection Confirmation",
+      text: `Unfortunately! You did not get accepted  to join El7a2ni Pharmacy as a Pharmacist.
+          
+      El7a2ni Pharmacy`,
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+        return res.status(500).send({ Status: "Error sending email" });
+      } else {
+        return res.status(200).send({ Status: "Success" });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ Status: "Server Error" });
+  }
+};
+
 // const acceptPharmacist = async (req, res) => {
 //   try {
 //     const Pharmacist = await Pharmacist.updateOne({username: req.username },{$set:{status:"accepted"}});
@@ -185,4 +284,6 @@ module.exports = {
   deletePharmacist,
   deleteAdmin,
   getAdmins,
+  sendAcceptEmail,
+  sendRejectEmail
 };

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router(); // Create an instance of the Express router
-
+const nodemailer = require('nodemailer');
 const {
   getUser,
   viewMedicine,
@@ -15,7 +15,8 @@ const {
   viewPatients,
   deletePatient,
   deletePharmacist,
-  deleteAdmin,getAdmins
+  deleteAdmin,getAdmins,sendRejectEmail,
+  sendAcceptEmail
 } = require("../controllers/adController");
 
 // Define your routes and route handlers
@@ -33,4 +34,9 @@ router.delete("/deletePatient/:id", deletePatient);
 router.delete("/deletePharmacist/:id", deletePharmacist);
 router.delete("/deleteAdmin/:id", deleteAdmin);
 router.get("/getAdmins", getAdmins);
+router.post("/sendAcceptEmail", sendAcceptEmail);
+router.post("/sendRejectEmail", sendRejectEmail);
+
+
+
 module.exports = router; // Export the router instance
