@@ -2,6 +2,9 @@ const User = require("../Models/user.js");
 const Pharmacist = require("../Models/pharmacist.js");
 const Patient = require("../Models/patient.js");
 const Medicine = require("../Models/medicine.js");
+const Admin = require("../Models/admin.js");
+const nodemailer = require('nodemailer');
+
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -11,36 +14,38 @@ function generateToken(data) {
 }
 
 const sendResetEmail = async (req, res) => {
-  const { email } = req.body;
+
+  const { username } = req.body;
+  console.log(username);
+
   let user; // Declare the user variable
 
-  const u1 = await Patient.findOne({ email });
-  const u2 = await Pharmacist.findOne({ email });
-  const u3 = await User.findOne({ email });
-  const u4 = await Pharmacist.findOne({ email });
+  const u1 = await Patient.findOne({ username });
+  const u2 = await Pharmacist.findOne({ username });
+  const u3 = await Admin.findOne({ username });
 
   if (u1) user = u1;
   else if (u2) user = u2;
   else if (u3) user = u3;
-  else if (u4) user = u4;
 
   if (!user) {
     return res.send({ Status: "User not found" });
   }
+  
   const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET, {
     expiresIn: "1d",
   });
   var transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "sohailahakeem17@gmail.com",
-      pass: "yvxbdrovrmhebgxv",
+      user: "apluscantlose@gmail.com",
+      pass: "xphjykxmoqljnpen",
     },
   });
-
+console.log(user.email);
   var mailOptions = {
     from: "apluscantlose@gmail.com",
-    to: email,
+    to: user.email,
     subject: "Reset Password Link",
     text: `http://localhost:3000/reset_password/${user._id}/${token}`,
   };
@@ -69,28 +74,16 @@ const changePass = async (req, res) => {
     }
 
     // Check if the old password matches the user's current password
-
+    console.log(user.password);
     const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Current password is incorrect" });
     }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashedPassword;
+    await user.save();
     // Update the password with the new one
-    bcrypt.hash(newPassword, 10, async (hashErr, hash) => {
-      if (hashErr) {
-        return res.json({ Status: hashErr });
-      }
-
-      // Update the user's password
-      user.password = hash;
-
-      // Save the user with the new password
-      try {
-        await user.save();
-        return res.json({ Status: "Password changed successfully" });
-      } catch (saveErr) {
-        return res.json({ Status: saveErr });
-      }
-    });
 
     return res.status(200).json({
       message: "Password updated successfully",
@@ -236,7 +229,9 @@ const login = async (req, res) => {
 
     // Compare the provided password with the hashed password in the database
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log(isPasswordValid);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Incorrect password" });
+    }
     const data = {
       _id: user._id,
     };
@@ -249,7 +244,13 @@ const login = async (req, res) => {
 
     switch (user.role) {
       case "admin":
-        // Handle admin-specific data here if needed
+        try {
+          const pa = await Admin.findOne({ username });
+          userData.fUser = pa;
+        } catch (err) {
+          console.error("Error handling patient:", err);
+          return res.status(500).json({ error: "user not found" });
+        }
         break;
 
       case "patient":
@@ -264,9 +265,10 @@ const login = async (req, res) => {
 
       case "pharmacist":
         try {
-          const ph = await Pharmacist.findOne({ username });
+          const ph = await Pharmacist.findOne({ username :username});
           if (ph.status === "pending") throw error;
           userData.fUser = ph;
+
         } catch (error) {
           console.error("Error handling Pharmacist:", error);
           return res.status(500).json({ error: "Internal Server Error" });
@@ -405,5 +407,4 @@ module.exports = {
   sendResetEmail,
   changePass,
   changePassword,
-
 };

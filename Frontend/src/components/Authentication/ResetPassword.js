@@ -32,10 +32,10 @@ const ResetPassword = () => {
         <div style={styles.formContainer}>
           <form onSubmit={handleSubmit} style={styles.form}>
             <label htmlFor="email" style={styles.label}>
-              Email:
+              Username:
             </label>
             <input
-              type="email"
+              type="text"
               id="email"
               name="email"
               value={email}

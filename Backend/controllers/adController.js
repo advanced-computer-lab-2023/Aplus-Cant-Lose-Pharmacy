@@ -1,4 +1,6 @@
 const User = require("../Models/user");
+const Admin = require("../Models/admin");
+
 const Pharmacist = require("../Models/pharmacist");
 const Patient = require("../Models/patient");
 const validator = require("validator");
@@ -24,7 +26,7 @@ const getAdmins = async (req, res) => {
 };
 
 const createAdmin = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password,email } = req.body;
 
   try {
     // Validate input fields
@@ -39,6 +41,14 @@ const createAdmin = async (req, res) => {
     if (userFound) {
       return res.status(400).json({ error: "Username already exists" });
     }
+    const emailFoundPatient = await Patient.findOne({ email });
+    const emailFoundPharmacist = await Pharmacist.findOne({ email });
+    const emailFoundadmin = await Admin.findOne({ email });
+
+    if (emailFoundPatient || emailFoundPharmacist || emailFoundadmin) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
 
     // Password strength validation
     if (!validator.isStrongPassword(password)) {
@@ -50,10 +60,15 @@ const createAdmin = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create the new user
-    const newAdmin = await User.create({
+    const newAdmin2 = await User.create({
       username,
       password: hashedPassword,
       role: "admin",
+    });
+    const newAdmin = await Admin.create({
+      username,
+      password: hashedPassword,
+      email
     });
     const data = {
       _id: newAdmin._id,

@@ -6,7 +6,7 @@ const userInitial = {
   loading: false,
   username: "",
   password: "",
-  role: "admin",
+  role: "",
   error: "",
   response: "",
   id: 0,
@@ -16,10 +16,9 @@ export const sendResetEmail = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/sendResetEmail`, {
-        email: data,
+        username: data,
       });
 
-      console.log(response.token);
 
       return response;
     } catch (error) {
@@ -45,6 +44,25 @@ export const changePassword = createAsyncThunk(
           password: data.password,
         }
       );
+
+      console.log(response.token);
+
+      return response;
+    } catch (error) {
+      // return custom error message from API if any
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
+export const logout = createAsyncThunk(
+  "user/logout",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${API_URL}/logout`);
 
       console.log(response.token);
 
@@ -105,8 +123,25 @@ const user = createSlice({
       });
       builder.addCase(changePass.fulfilled, (state, action) => {
         state.loading = false;
-      state.password=action.payload.data.password;
+      state.password=action.payload.password;
         state.response = "delete HealthPackages";
+      });
+      builder.addCase(changePassword.fulfilled, (state, action) => {
+        state.loading = false;
+      state.password=action.payload.password;
+        state.response = "delete HealthPackages";
+      });
+      builder.addCase(logout.fulfilled, (state, action) => {
+        state.token = null;
+        state.logged = false;
+        state.username = "";
+        state.password = "";
+        state.role = "";
+        state.id = "";
+        localStorage.removeItem("userToken"); // Remove the user token
+  
+        console.log(action.payload);
+        console.log(state);
       });
   },
 });

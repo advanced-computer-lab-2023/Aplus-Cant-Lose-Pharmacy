@@ -13,6 +13,9 @@ import Button from "@mui/material/Button";
 import { useDispatch, useSelector } from "react-redux";
 import {changePass} from "../../features/userSlice"
 import { SnackbarContext } from "../../App";
+import { Link,useNavigate } from "react-router-dom";
+import { logout } from "../../features/userSlice";
+
 
 const myAccountStyles = {
   cursor: "pointer",
@@ -46,7 +49,14 @@ const avatarStyles = {
 
 const AccountAvatar = () => {
   const snackbarMessage = useContext(SnackbarContext);
-
+  const dispatch=useDispatch();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    // Dispatch the logout action and handle any other logout logic
+    dispatch(logout());
+    // Use navigate to redirect to the login page or wherever you want after logout
+    navigate('/login');
+  };
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -54,9 +64,8 @@ const AccountAvatar = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [emptyFieldError, setEmptyFieldError] = useState(false);
-  const dispatch = useDispatch();
   useEffect(() => {
-  
+    
   }, [dispatch]);
   const isPasswordValid = (password) => {
     // Check if the password meets the criteria
@@ -127,6 +136,9 @@ const AccountAvatar = () => {
       <Typography component="span" onClick={handleAvatarClick} sx={myAccountStyles}>
         Account
       </Typography>
+      <Link to="/logout" style={{ marginLeft: "10px", textDecoration: "none", color: "#007bff" }} onClick={handleLogout}>
+        Logout
+      </Link>
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
