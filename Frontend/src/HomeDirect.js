@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import Admin from "./components/Adminstrator/Admin";
 import PaHome from "./components/patient/PaHome";
 import PhHome from "./components/pharmacist/PhHome";
-
 import Error from "./Error";
 import { Outlet } from "react-router-dom";
 import AccountAvatar from "./components/Authentication/AccountAvatar" // Import the AccountAvatar component
@@ -20,10 +19,10 @@ const containerStyles = {
   paddingTop: "2px", // Center items vertically
 };
 const HomeDirect = () => {
-  const { role } = useSelector((state) => state.user);
-
+  const { role ,loading} = useSelector((state) => state.user);
+  
   // Depending on the user's role, render the corresponding component
-  let content = null;
+  let content = (<></>);
   switch (role) {
     case "admin":
       content = (
@@ -51,7 +50,10 @@ const HomeDirect = () => {
       break;
     default:
       // Handle unknown or invalid roles here
-      content = <Error />;
+      if(!loading){
+
+        content = <Error />;
+      }
   }
 
   return <>{content}</>;

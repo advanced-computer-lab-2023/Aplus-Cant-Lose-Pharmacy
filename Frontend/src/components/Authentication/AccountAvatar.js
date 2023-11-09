@@ -57,6 +57,8 @@ const AccountAvatar = () => {
     // Use navigate to redirect to the login page or wherever you want after logout
     navigate('/login');
   };
+  const { username } = useSelector((state) => state.user);
+  console.log(username);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -85,13 +87,13 @@ const AccountAvatar = () => {
     setOpenDialog(true);
     handleAvatarClose();
   };
-
+  
   const closeChangePasswordDialog = () => {
     setOpenDialog(false);
     setPasswordError("");
     setEmptyFieldError(false);
   };
-
+  
   const savePassword = () => {
     if (currentPassword === "" || newPassword === "" || confirmNewPassword === "") {
       setEmptyFieldError(true);
@@ -128,7 +130,6 @@ const AccountAvatar = () => {
     }
     closeChangePasswordDialog();
   };
-  const { username } = useSelector((state) => state.user);
 
   return (
     <div sx={containerStyles}>

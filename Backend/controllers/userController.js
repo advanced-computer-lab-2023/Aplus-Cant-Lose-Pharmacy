@@ -64,6 +64,9 @@ console.log(user.email);
 const changePass = async (req, res) => {
   const { username } = req.params;
   const { oldPassword, newPassword } = req.body;
+  console.log(username)
+  console.log(oldPassword)
+  console.log(newPassword)
 
   try {
     // Find the user by username
@@ -226,9 +229,12 @@ const login = async (req, res) => {
 
     // Find the user by username
     const user = await User.findOne({ username });
-
+    console.log(user);
     // Compare the provided password with the hashed password in the database
+    
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log(isPasswordValid);
+
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Incorrect password" });
     }

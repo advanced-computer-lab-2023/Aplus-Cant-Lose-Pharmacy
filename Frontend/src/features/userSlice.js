@@ -3,7 +3,7 @@ import axios from "axios";
 import { API_URL } from "../Consts";
 const userInitial = {
   logged: false,
-  loading: false,
+  loading: true,
   username: "",
   password: "",
   role: "",
@@ -87,10 +87,11 @@ export const loginGuest = createAsyncThunk("user/loginGuest", async (data) => {
 
   return response;
 });
-export const changePass = createAsyncThunk("admin/changePass", async (data) => {
+export const changePass = createAsyncThunk("user/changePass", async (data) => {
+console.log(data);
   const response = axios
-    .post(`/api/changePass/${data.username}`, data)
-    .then((response) => {
+  .post(`${API_URL}/changePass/${data.username}`, data)
+      .then((response) => {
       console.log("Response:", response.data);
     })
     .catch((error) => {
@@ -111,8 +112,8 @@ const user = createSlice({
         state.loading = false;
         state.logged = true;
         state.role = action.payload.data.role;
-        state.username = action.payload.data.username;
-        state.id = action.payload.data.id;
+        state.username = action.payload.data.userData.fUser.username;
+        state.id = action.payload.data.userData.fUser._id;
         console.log(action.payload);
       })
       .addCase(loginGuest.rejected, (state, action) => {
@@ -123,7 +124,6 @@ const user = createSlice({
       });
       builder.addCase(changePass.fulfilled, (state, action) => {
         state.loading = false;
-      state.password=action.payload.password;
         state.response = "delete HealthPackages";
       });
       builder.addCase(changePassword.fulfilled, (state, action) => {
