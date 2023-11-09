@@ -25,7 +25,7 @@ export default function PhHome() {
     dispatch(viewMedicine());
   }, [dispatch]);
 
-  console.log(medicineList)
+  // console.log(medicineList)
 
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>

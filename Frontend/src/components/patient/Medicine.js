@@ -39,6 +39,7 @@ import {
   updateMedicineDetails,
   editMedicine,
 } from "../../features/pharmacistSlice";
+import {addMedicineToCart} from "../../features/patientSlice";
 import { AutoFixNormal } from "@mui/icons-material";
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -49,6 +50,8 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
 }));
+
+
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
@@ -169,6 +172,20 @@ function BasicTable({ rows, nameFilter, useFilter }) {
     });
     setIsOpen(false);
   };
+  const HandleAdd = (id, pid) => {
+    try {
+      const response = dispatch(addMedicineToCart({ userId: pid, medicineId: id }));
+      if (response.error) {
+        snackbarMessage(`Error: ${response.error.message}`, "error");
+      } else {
+        snackbarMessage("Added successfully", "success");
+      }
+    } catch (error) {
+      snackbarMessage(`Error: ${error.message}`, "error");
+    }
+  };
+  
+  const pid = useSelector((state) => state.user.id);
 
   const tableContainerStyle = {
     maxWidth: "80%", // Adjust the maximum width as needed
@@ -302,6 +319,7 @@ function BasicTable({ rows, nameFilter, useFilter }) {
                     <IconButton
                       color="primary"
                       aria-label="add to shopping cart"
+                      onClick={() => HandleAdd(row._id, pid)}
                     >
                       <AddShoppingCartIcon />
                     </IconButton>

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
+import { useDispatch, useSelector } from 'react-redux';
 import { API_URL } from "../Consts";
 export const addPatient = createAsyncThunk(
   "patient/addPatient",
@@ -40,6 +40,24 @@ const patient = createSlice({
   },
   extraReducers: (builder) => {},
 });
+
+export const addMedicineToCart = createAsyncThunk(
+  "patient/addMedicineToCart",
+  async (data) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/patient/addMedicineToCart/${data.userId}`,
+        {
+          medicineId: data.medicineId,
+        }
+      );
+
+      return response; // Return the response data
+    } catch (error) {
+      throw error; // Throw the error so you can handle it in your components
+    }
+  }
+);
 
 export default patient.reducer;
 export const { login } = patient.actions;
