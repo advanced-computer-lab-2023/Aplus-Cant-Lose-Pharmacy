@@ -112,16 +112,30 @@ const addMedicineToCart = async (req, res) => {
         .json({ error: "Medicine ID is missing in the request body" });
     }
 
+    // Find the medicine by its ID
+    const medicine = await Medicine.findById(medicineId);
+
+    if (!medicine) {
+      return res.status(404).json({ error: "Medicine not found" });
+    }
+
     // Check if the medicine is already in the patient's cart
     const existingMedicine = patient.cart.find(
       (item) => item.medicineID && item.medicineID.toString() === medicineId
     );
 
     if (existingMedicine) {
-      // If the medicine already exists in the cart, increase the amount by 1
+      // If the medicine already exists in the cart, check if adding one more exceeds the available amount
+      if (existingMedicine.amount + 1 > medicine.amount) {
+        return res.status(400).json({ error: "Exceeded available quantity" });
+      }
+      // Increase the amount by 1
       existingMedicine.amount += 1;
     } else {
       // If the medicine is not in the cart, add it with an amount of 1
+      if (1 > medicine.amount) {
+        return res.status(400).json({ error: "Exceeded available quantity" });
+      }
       patient.cart.push({ medicineID: medicineId, amount: 1 });
     }
 
@@ -136,6 +150,7 @@ const addMedicineToCart = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 const removeMedicineFromCart = async (req, res) => {
   try {
@@ -334,6 +349,12 @@ const payForCart = async (req, res) => {
         throw new Error(`Medicine with ID ${medicineID} not found`);
       }
       const itemPrice = medicine.price * amount;
+
+      // Update the medicine's amount and sales
+      medicine.amount -= amount;
+      medicine.sales += amount;
+      await medicine.save();
+
       return itemPrice;
     })).then((prices) => prices.reduce((acc, price) => acc + price, 0));
 
@@ -371,6 +392,7 @@ const payForCart = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 const getPatientOrders = async (req, res) => {
   try {

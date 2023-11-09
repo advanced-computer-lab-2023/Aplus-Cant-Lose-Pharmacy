@@ -32,6 +32,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import CloseIcon from "@mui/icons-material/Close";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 
 import {
   deleteMedicine,
@@ -111,7 +112,6 @@ export default function Medicine({ medicines }) {
               console.log(e.target.value);
               setUseFilter(e.target.value);
             }}
-
             sx={{
               height: "80%",
               borderRadius: "15px",
@@ -128,8 +128,6 @@ export default function Medicine({ medicines }) {
         nameFilter={nameFilter}
         useFilter={useFilter}
       />
-
-    
     </Box>
   );
 }
@@ -264,17 +262,21 @@ function BasicTable({ rows, nameFilter, useFilter }) {
             <TableCell align="right">Active Elements</TableCell>
             <TableCell align="right">Amount</TableCell>
             <TableCell align="right">Image Link</TableCell>
-            <TableCell align="right">sales</TableCell>
+            <TableCell align="right">Add to cart</TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
           {rows
-              .filter((row) => {
-                const nameMatch = nameFilter === "" || row.name.toLowerCase().includes(nameFilter.toLowerCase());
-                const useMatch = useFilter === "" || row.use.toLowerCase().includes(useFilter.toLowerCase());
-                return nameMatch && useMatch;
-              })
+            .filter((row) => {
+              const nameMatch =
+                nameFilter === "" ||
+                row.name.toLowerCase().includes(nameFilter.toLowerCase());
+              const useMatch =
+                useFilter === "" ||
+                row.use.toLowerCase().includes(useFilter.toLowerCase());
+              return nameMatch && useMatch;
+            })
             .map((row, index) => (
               <TableRow
                 key={index}
@@ -288,8 +290,23 @@ function BasicTable({ rows, nameFilter, useFilter }) {
                 <TableCell align="right">{row.activeElement}</TableCell>
                 <TableCell align="right">{row.amount}</TableCell>
                 <TableCell align="right">{row.imgurl}</TableCell>
-                <TableCell align="right">0</TableCell>
-              
+                <TableCell align="right" >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      marginLeft: "auto"
+                    }}
+                  >
+                    <IconButton
+                      color="primary"
+                      aria-label="add to shopping cart"
+                    >
+                      <AddShoppingCartIcon />
+                    </IconButton>
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
         </TableBody>
