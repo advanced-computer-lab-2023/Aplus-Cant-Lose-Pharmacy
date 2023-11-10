@@ -104,6 +104,8 @@ const addPharmacist = async (req, res) => {
   }
 };
 
+
+
 const addMedicine = async (req, res) => {
   try {
     const { activeElement, price, use, name, amount, imgurl } = req.body;
