@@ -36,6 +36,7 @@ import {
 } from "@mui/icons-material";
 import { SnackbarContext } from "../../App";
 import { viewCart } from "../../features/patientSlice";
+import { NavLink } from "react-router-dom";
 
 
 import {
@@ -75,7 +76,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Cart({ cart }) {
-  console.log(cart);
   if (!cart || cart.length === 0) {
     return <div>No items in the cart</div>;
   }
@@ -234,9 +234,10 @@ function BasicTable({rows}) {
             </TableCell>
             <TableCell align="right">{rows.grandTotal}</TableCell>
             <TableCell align="center">
+            <NavLink exact to="/Checkout">
               <Button variant="contained" color="primary">
                 Checkout
-              </Button>
+              </Button></NavLink>
             </TableCell>
           </TableRow>
         </TableBody>

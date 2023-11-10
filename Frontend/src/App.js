@@ -7,6 +7,8 @@ import HomeDirect from "./HomeDirect";
 import AdminDirect from "./AdminDirect";
 import PharmacistDirect from "./PharmacistDirect";
 import Start from "./components/Start";
+import Checkout from "./components/patient/Checkout";
+
 
 import "dayjs/plugin/weekOfYear";
 import "dayjs/plugin/customParseFormat";
@@ -44,6 +46,7 @@ const router = createBrowserRouter(
       <Route path="/RegisterAsPatient" element={<RegisterAsPatient />} />
       <Route path="/RegisterAsPharmacist" element={<RegisterAsPharmacist />} />
       <Route path="/Upload_docs_Register" element={<UploadDocs />} />
+      <Route path="/Checkout" element={<Checkout />} />
 
       <Route path="/Home" element={<HomeDirect />} />
       <Route path="/Medicine/add" element={<AddMedicine />} />

@@ -40,8 +40,8 @@ export default function PhHome() {
       dispatch(viewCart({ userId: pid }));
     }
   }, [dispatch, pid, value]);
-  console.log(cart);
 
+  console.log(cart);
   // console.log(medicineList)
 
   return (
