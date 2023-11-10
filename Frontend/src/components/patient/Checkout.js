@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { viewCart, getAddresses, addAddress } from "../../features/patientSlice";
+import { viewCart, getAddresses, addAddress, getWallet } from "../../features/patientSlice";
 
 import {
   Box,
@@ -16,11 +16,12 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
+import { NavLink } from "react-router-dom";
 
 const CheckoutPage = () => {
   const dispatch = useDispatch();
   const pid = useSelector((state) => state.user.id);
-  const { cart, addresses } = useSelector((state) => state.patient);
+  const { cart, addresses, wallet } = useSelector((state) => state.patient);
 
   const [selectedLocation, setSelectedLocation] = useState("");
   const [isAddLocationOpen, setAddLocationOpen] = useState(false);
@@ -29,6 +30,7 @@ const CheckoutPage = () => {
   useEffect(() => {
     dispatch(viewCart({ userId: pid }));
     dispatch(getAddresses({ userId: pid }));
+    dispatch(getWallet({ userId: pid }));
   }, [dispatch, pid]);
 
   const handleLocationChange = (event) => {
@@ -66,10 +68,23 @@ const CheckoutPage = () => {
 
   console.log(addresses);
 
+  const formattedWallet = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD', // or your preferred currency code
+  }).format(wallet);
+
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
+        <div style={{ position: 'absolute', top: 0, left: 0, padding: '10px' }}>
+        <NavLink exact to="/Home">
+        <Button variant="outlined" color="primary">
+          Return
+        </Button>
+        </NavLink>
+      </div>
+      <Typography variant="h4" gutterBottom style={{ marginTop: '50px' }}>
         Checkout Summary
+        <div align="right" style={{ fontSize: '16px' }}>Wallet: {formattedWallet}</div>
       </Typography>
       <Typography variant="h6" gutterBottom>
         {sum} items

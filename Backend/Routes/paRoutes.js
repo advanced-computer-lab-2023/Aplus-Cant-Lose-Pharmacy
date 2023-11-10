@@ -12,7 +12,8 @@ const {
   payForCart,
   getPatientOrders,
   getOrderDetailsById,
-  cancelOrder
+  cancelOrder,
+  getWallet
 } = require("../controllers/paController");
 router.post("/addPatient", addPatient);
 
@@ -31,6 +32,7 @@ router.delete("/removeMedicineFromCart/:userId", removeMedicineFromCart);
 router.post("/decreaseMedicine/:userId", decreaseMedicine);
 router.post("/addAddress/:userId", addAddress);
 router.get("/getAddresses/:userId", getAddresses);
+router.get("/getWallet/:userId", getWallet);
 router.post("/payForCart/:userId", payForCart);
 router.get("/getPatientOrders/:userId", getPatientOrders);
 router.get("/getOrderDetailsById/:orderId", getOrderDetailsById);

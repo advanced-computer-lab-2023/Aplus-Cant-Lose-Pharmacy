@@ -60,22 +60,42 @@ const patient = createSlice({
       })
       .addCase(viewCart.fulfilled, (state, action) => {
         state.loading = false;
-        if (action.payload.data && action.payload.data.cart) {
+        if (action.payload.data) {
           state.cart = action.payload.data; // Adjust the property names based on your API response
         }
       })
       .addCase(viewCart.rejected, (state, action) => {
         state.loading = false;
       })
+      .addCase(getAddresses.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(getAddresses.fulfilled, (state, action) => {
         state.loading = false;
         console.log(action.payload.data);
-        if (action.payload.data) {
+        if (action.payload.data && action.payload.data.addresses) {
           state.addresses = action.payload.data.addresses; // Adjust the property names based on your API response
         }
+      })
+      .addCase(getAddresses.rejected, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(getWallet.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getWallet.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(action.payload.data);
+        if (action.payload.data && action.payload.data.wallet) {
+          state.wallet = action.payload.data.wallet; // Adjust the property names based on your API response
+        }
+      })
+      .addCase(getWallet.rejected, (state, action) => {
+        state.loading = false;
       });
   },
 });
+
 
 // Create async thunk for adding medicine to the cart
 export const addMedicineToCart = createAsyncThunk(
@@ -132,6 +152,16 @@ export const getAddresses = createAsyncThunk(
   async (data) => {
     const response = await axios.get(
       `${API_URL}/patient/getAddresses/${data.userId}`
+    );
+    return response;
+  }
+);
+
+export const getWallet = createAsyncThunk(
+  "patient/getWallet",
+  async (data) => {
+    const response = await axios.get(
+      `${API_URL}/patient/getWallet/${data.userId}`
     );
     return response;
   }

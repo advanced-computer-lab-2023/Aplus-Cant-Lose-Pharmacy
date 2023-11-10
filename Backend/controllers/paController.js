@@ -329,6 +329,27 @@ const getAddresses = async (req, res) => {
   }
 };
 
+const getWallet = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find the patient by userId
+    const patient = await Patient.findById(userId);
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    // Extract wallet from the patient object
+    const wallet = patient.wallet;
+
+    res.status(200).json({ wallet });
+  } catch (error) {
+    console.error("Error getting wallet:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const payForCart = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -491,5 +512,6 @@ module.exports = {
   payForCart,
   getPatientOrders,
   getOrderDetailsById,
-  cancelOrder
+  cancelOrder,
+  getWallet
 };
