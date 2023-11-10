@@ -139,7 +139,7 @@ function createData(name, price, use, activeelements, amount, imagelink) {
   return { name, price, use, activeelements, amount, imagelink };
 }
 
-function BasicTable({ rows, nameFilter, useFilter }) {
+function BasicTable({ rows = [], nameFilter, useFilter }) {
   const snackbarMessage = useContext(SnackbarContext);
   const [editRow, setEditRow] = useState({});
   const [isOpen, setIsOpen] = useState(false);

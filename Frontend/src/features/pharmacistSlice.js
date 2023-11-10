@@ -51,9 +51,8 @@ export const updateMedicineDetails = createAsyncThunk(
   async (data) => {
     const response = await axios.put(
       `${API_URL}/pharmacist/updateMedicineDetails/${data.id}`,
-      
-        data
-      
+
+      data
     );
 
     return response;
@@ -119,8 +118,10 @@ export const pharmacist = createSlice({
       })
       .addCase(viewMedicine.fulfilled, (state, action) => {
         state.loading = false;
-        state.medicineList = action.payload.data.medicines;
-        console.log(action.payload.data.medicines);
+        if (action.payload.data && action.payload.data.medicines) {
+          state.medicineList = action.payload.data.medicines;
+          console.log(action.payload.data.medicines);
+        }
       })
       .addCase(viewMedicine.rejected, (state, action) => {
         state.loading = false;
