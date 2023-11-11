@@ -32,8 +32,8 @@ function RegisterAsPharmacist() {
     response.then((responseData) => {
       console.log(responseData);
       if (responseData.payload.status < 300) {
-        snackbarMessage("You have successfully registered", "success");
-        navigate("/login");
+        snackbarMessage("You have successfully applied but please continue other documents uploads", "success");
+        navigate("/Upload");
       } else {
         snackbarMessage(`error: ${responseData} has occurred`, "error");
       }

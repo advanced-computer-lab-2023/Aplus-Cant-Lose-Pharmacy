@@ -1,25 +1,34 @@
 const mongoose = require('mongoose');
 
-const fileSchema = mongoose.Schema(
+const fileSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
+    files: [
+      {
+        title: {
+          type: String,
+          required: true,
+          trim: true
+        },
+        description: {
+          type: String,
+          required: true,
+          trim: true
+        },
+        file_path: {
+          type: String,
+          required: true
+        },
+        file_mimetype: {
+          type: String,
+          required: true
+        }
+      }
+    ],
+    phID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Pharmacist", // Reference to the Doctor model
       required: true,
-      trim: true
     },
-    description: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    file_path: {
-      type: String,
-      required: true
-    },
-    file_mimetype: {
-      type: String,
-      required: true
-    }
   },
   {
     timestamps: true

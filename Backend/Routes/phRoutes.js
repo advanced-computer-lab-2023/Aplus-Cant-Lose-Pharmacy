@@ -3,7 +3,6 @@ const router = express.Router(); // Create an instance of the Express router
 const path = require('path');
 const multer = require('multer');
 const File = require('../Models/file');
-
 const upload = multer({
   storage: multer.diskStorage({
     destination(req, file, cb) {
@@ -13,42 +12,37 @@ const upload = multer({
       cb(null, `${new Date().getTime()}_${file.originalname}`);
     }
   }),
-  limits: {
-    fileSize: 1000000 // max file size 1MB = 1000000 bytes
-  },
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpeg|jpg|png|pdf|doc|docx|xlsx|xls)$/)) {
-      return cb(
-        new Error(
-          'only upload files with jpg, jpeg, png, pdf, doc, docx, xslx, xls format.'
-        )
-      );
-    }
-    cb(undefined, true); // continue with upload
+    // Allow any file type
+    cb(null, true);
   }
 });
 
 router.post(
-  '/upload',
-  upload.single('file'),
+  '/upload/:id',
+  upload.array('files', 3), // Use upload.array to accept multiple files
   async (req, res) => {
     try {
-      const { title, description } = req.body;
-      const { path, mimetype } = req.file;
-      const file = new File({
-        title,
-        description,
-        file_path: path,
-        file_mimetype: mimetype
-      });
-      await file.save();
-      res.send('file uploaded successfully.');
+      const files = req.files;
+
+      const fileObjects = files.map((file, index) => ({
+        title: index === 0 ? 'id' : index === 1 ? 'degree' : 'license',
+        description: 'File description', // You can customize this
+        file_path: file.path,
+        file_mimetype: file.mimetype
+      }));
+
+      await File.create({ files: fileObjects ,phID:req.params.id}); // Corrected typo
+
+      res.send('Files uploaded successfully.');
     } catch (error) {
-      res.status(400).send('Error while uploading file. Try again later.');
+      console.error(error);
+      res.status(400).send('Error while uploading files. Try again later.');
     }
   },
   (error, req, res, next) => {
     if (error) {
+      console.error(error);
       res.status(500).send(error.message);
     }
   }
@@ -61,6 +55,7 @@ router.post("/addMedicine", addMedicine);
 router.put("/updateMedicineDetails/:id", updateMedicineDetails);
 
 const {viewMedicine, searchMedicineByName, filterMedicineByUse} = require("../controllers/userController");
+const { title } = require("process");
 router.get("/viewMedicine", viewMedicine);
 router.get("/searchMedicineByName", searchMedicineByName);
 router.get("/filterMedicineByUse", filterMedicineByUse);
