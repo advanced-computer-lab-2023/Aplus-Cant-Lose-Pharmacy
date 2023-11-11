@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const fileSchema = new mongoose.Schema(
+const filePhSchema = new mongoose.Schema(
   {
     files: [
       {
@@ -35,6 +35,6 @@ const fileSchema = new mongoose.Schema(
   }
 );
 
-const File = mongoose.model('File', fileSchema);
+const FilePh = mongoose.model('FilePh', filePhSchema);
 
-module.exports = File;
+module.exports = FilePh;

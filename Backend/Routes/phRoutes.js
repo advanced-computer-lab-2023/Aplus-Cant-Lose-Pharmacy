@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router(); // Create an instance of the Express router
 const path = require('path');
 const multer = require('multer');
-const File = require('../Models/file');
+const FilePh = require('../Models/filePh');
 const upload = multer({
   storage: multer.diskStorage({
     destination(req, file, cb) {
@@ -32,7 +32,7 @@ router.post(
         file_mimetype: file.mimetype
       }));
 
-      await File.create({ files: fileObjects ,phID:req.params.id}); // Corrected typo
+      await FilePh.create({ files: fileObjects ,phID:req.params.id}); // Corrected typo
 
       res.send('Files uploaded successfully.');
     } catch (error) {
@@ -47,7 +47,27 @@ router.post(
     }
   }
 );
+const storage = multer.diskStorage({
+  destination: "./medicines",
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
+  },
+});
 
+const upload2 = multer({
+  storage: storage,
+}).single("file");
+
+router.post("/upload2", (req, res) => {
+  upload2(req, res, (err) => {
+    if (err) {
+      console.error("Error uploading file:", err);
+      res.status(500).send("Error uploading file");
+    } else {
+      res.send(req.file.filename);
+    }
+  });
+});
 const {addPharmacist, addMedicine,updateMedicineDetails} = require("../controllers/phController");
 
 router.post("/addPharmacist", addPharmacist); 
