@@ -14,7 +14,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { useContext ,useEffect,useState} from "react";
+import { useContext, useEffect, useState } from "react";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import Fab from "@mui/material/Fab";
@@ -31,7 +31,9 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import CloseIcon from "@mui/icons-material/Close";
-
+import download from "downloadjs"; // Import download function
+import axios from "axios";
+import { API_URL } from "../../Consts.js";
 import {
   deleteMedicine,
   updateMedicineDetails,
@@ -47,6 +49,20 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
 }));
+
+
+
+const handleDownload = async (mId) => {
+  try {
+    const result = await axios.get(`${API_URL}/pharmacist/downloadm/${mId}`, {
+      responseType: "blob",
+    });
+    const filename = "medicine"; // Set the filename as needed
+    download(result.data, filename);
+  } catch (error) {
+    console.error("Error while downloading file. Try again later.", error);
+  }
+};
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
@@ -150,23 +166,19 @@ function BasicTable({ rows, nameFilter, useFilter }) {
   const [idx, setIdx] = useState(-1);
   const [id, setId] = useState("1");
 
-
   const handleEditClick = (row, index) => {
     setIsOpen(true);
     setEditRow(row);
     setId(row._id);
-    console.log(id)
+    console.log(id);
     setIdx(index);
   };
   useEffect(() => {
     // This will log the updated id value
-      }, [handleEditClick]);
-    
+  }, [handleEditClick]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-
 
     const sampleData = {
       activeElement: event.target.elements.activeElement.value,
@@ -175,8 +187,8 @@ function BasicTable({ rows, nameFilter, useFilter }) {
       name: event.target.elements.name.value,
       amount: event.target.elements.amount.value,
       imgurl: event.target.elements.imgurl.value,
-     
-      id: id
+
+      id: id,
     };
 
     console.log(sampleData);
@@ -185,9 +197,8 @@ function BasicTable({ rows, nameFilter, useFilter }) {
 
     response.then((responseData) => {
       console.log(responseData);
-      if (responseData.payload=== undefined) {
+      if (responseData.payload === undefined) {
         snackbarMessage(`error: ${responseData} has occurred`, "error");
-      
       } else {
         snackbarMessage("You have successfully edited", "success");
       }
@@ -202,14 +213,8 @@ function BasicTable({ rows, nameFilter, useFilter }) {
     boxShadow: "5px 5px 5px 5px #8585854a",
   };
 
-
-
-
-
-  
   return (
     <TableContainer component={Paper} style={tableContainerStyle}>
-      
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -218,7 +223,7 @@ function BasicTable({ rows, nameFilter, useFilter }) {
             <TableCell align="right">Use</TableCell>
             <TableCell align="right">Active Elements</TableCell>
             <TableCell align="right">Amount</TableCell>
-            <TableCell align="right">Image Link</TableCell>
+            <TableCell align="right" sx={{paddingRight:"0px"}}>Image Link</TableCell>
             <TableCell align="right">sales</TableCell>
           </TableRow>
         </TableHead>
@@ -231,12 +236,11 @@ function BasicTable({ rows, nameFilter, useFilter }) {
                 row.name.toLowerCase().includes(nameFilter.toLowerCase())
               );
             })
-              .filter((row) => {
-                return (
-                  useFilter === "" ||
-                  row.use.toLowerCase().includes(useFilter.toLowerCase())
-                );
-            
+            .filter((row) => {
+              return (
+                useFilter === "" ||
+                row.use.toLowerCase().includes(useFilter.toLowerCase())
+              );
             })
             .map((row, index) => (
               <TableRow
@@ -250,10 +254,16 @@ function BasicTable({ rows, nameFilter, useFilter }) {
                 <TableCell align="right">{row.use}</TableCell>
                 <TableCell align="right">{row.activeElement}</TableCell>
                 <TableCell align="right">{row.amount}</TableCell>
-                <TableCell align="right">{row.imgurl}</TableCell>
+                <TableCell align="right" sx={{ paddingRight: "4px" }}>
+  <Button
+    onClick={() => handleDownload(row._id)}
+    variant="contained"
+    color="primary"
+  >
+    Download
+  </Button>
+</TableCell>
                 <TableCell align="right">{row.sales}</TableCell>
-         
-        
               </TableRow>
             ))}
         </TableBody>

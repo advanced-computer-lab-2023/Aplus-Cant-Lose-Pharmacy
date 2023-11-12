@@ -6,7 +6,15 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addMedicine } from "../../features/pharmacistSlice";
 import { SnackbarContext } from "../../App";
-
+const uploadButtonStyle = {
+  backgroundColor: '#4CAF50',
+  color: 'white',
+  padding: '10px 15px',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  marginTop: '10px', 
+  width:"20%"// Add margin-top for spacing
+};
 const AddMedicine = (params) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -17,14 +25,18 @@ const AddMedicine = (params) => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
+  
     reader.onloadend = () => {
-      setImgUrl(reader.result);
+      const base64data = reader.result;
+      console.log('Base64 Image Data:', base64data);
+      setImgUrl(base64data);
     };
+  
     if (file) {
       reader.readAsDataURL(file);
     }
   };
-
+  
   const handleSubmit = (event) => {
     event.preventDefault();
   
@@ -58,7 +70,9 @@ const AddMedicine = (params) => {
         console.error("Error uploading image:", error);
       });
   };
-  
+  const fileInputStyle = {
+    display: 'none',
+  };
   return (
     
     <form className="form" onSubmit={handleSubmit}>
@@ -86,7 +100,7 @@ const AddMedicine = (params) => {
         </label>
         <input type="number" id="amount" required style={{width:"94%",borderRadius:"3px"}} />
 
-       <label className="form__label" htmlFor="imgFile">
+        <label className="form__label" htmlFor="imgFile">
           Image File
         </label>
         <input
@@ -96,7 +110,14 @@ const AddMedicine = (params) => {
           name="imgFile"
           accept="image/*"
           onChange={handleFileChange}
+          style={fileInputStyle}
         />
+    
+    <img src={imgUrl} alt="Uploaded Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+
+        <label htmlFor="imgFile" style={uploadButtonStyle}>
+          Upload Image
+        </label>
       </div>
       <div className="footer">
         <button type="submit" class="btn">
@@ -106,5 +127,6 @@ const AddMedicine = (params) => {
     </form>
   );
 };
+
 
 export default AddMedicine;

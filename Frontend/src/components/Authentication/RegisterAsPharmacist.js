@@ -6,14 +6,24 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addPharmacist } from "../../features/pharmacistSlice";
 import { SnackbarContext } from "../../App";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 function RegisterAsPharmacist() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const snackbarMessage = useContext(SnackbarContext);
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
+
     const sampleData = {
       name: event.target.elements.name.value,
       email: event.target.elements.email.value,
@@ -32,13 +42,15 @@ function RegisterAsPharmacist() {
     response.then((responseData) => {
       console.log(responseData);
       if (responseData.payload.status < 300) {
-        snackbarMessage("You have successfully applied but please continue other documents uploads", "success");
+        snackbarMessage(
+          "You have successfully applied but please continue other documents uploads",
+          "success"
+        );
         navigate("/Upload");
       } else {
         snackbarMessage(`error: ${responseData} has occurred`, "error");
       }
     });
-  
   };
 
   return (
@@ -50,7 +62,6 @@ function RegisterAsPharmacist() {
           id="username"
           placeholder="Enter your username here..."
           required
-
         />
 
         <label className="form__label" for="name">
@@ -75,13 +86,18 @@ function RegisterAsPharmacist() {
         <label className="form__label" for="password">
           Password
         </label>
-        <input
-          style={{ width: "92%" }}
-          type="password"
-          id="password"
-          placeholder="Enter your password here..."
-          required
-        />
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <input
+            style={{ width: "92%" }}
+            type={showPassword ? "text" : "password"}
+            id="password"
+            placeholder="Enter your password here..."
+            required
+          />
+          <div style={{ cursor: "pointer" }} onClick={handleTogglePassword}>
+            {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+          </div>
+        </div>
 
         <label for="gender">Gender</label>
         <select style={{ width: "92%" }} id="gender" name="Gender">
@@ -93,7 +109,13 @@ function RegisterAsPharmacist() {
         <label className="form__label" for="dBirth">
           Date of Birth
         </label>
-        <input type="date" id="dBirth" required />
+        <input
+          className="dob-input"
+          type="date"
+          id="dBirth"
+          required
+          max="2001-12-31" // set the maximum date to 2001-12-31
+        />
 
         <label for="rate">Hourly Rate</label>
         <input
@@ -130,4 +152,5 @@ function RegisterAsPharmacist() {
     </form>
   );
 }
+
 export default RegisterAsPharmacist;

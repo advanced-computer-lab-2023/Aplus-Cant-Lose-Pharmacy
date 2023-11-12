@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -15,7 +14,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import Fab from "@mui/material/Fab";
@@ -32,14 +31,14 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import CloseIcon from "@mui/icons-material/Close";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-
+import download from "downloadjs"; // Import download function
+import axios from "axios";
+import { API_URL } from "../../Consts.js";
 import {
   deleteMedicine,
   updateMedicineDetails,
   editMedicine,
 } from "../../features/pharmacistSlice";
-import {addMedicineToCart} from "../../features/patientSlice";
 import { AutoFixNormal } from "@mui/icons-material";
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -51,7 +50,17 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
   justifyContent: "center",
 }));
 
-
+const handleDownload = async (mId) => {
+  try {
+    const result = await axios.get(`${API_URL}/pharmacist/downloadm/${mId}`, {
+      responseType: "blob",
+    });
+    const filename = "medicine"; // Set the filename as needed
+    download(result.data, filename);
+  } catch (error) {
+    console.error("Error while downloading file. Try again later.", error);
+  }
+};
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
@@ -112,7 +121,6 @@ export default function Medicine({ medicines }) {
           <TextField
             value={useFilter}
             onChange={(e) => {
-              console.log(e.target.value);
               setUseFilter(e.target.value);
             }}
             sx={{
@@ -131,6 +139,8 @@ export default function Medicine({ medicines }) {
         nameFilter={nameFilter}
         useFilter={useFilter}
       />
+
+    
     </Box>
   );
 }
@@ -139,11 +149,24 @@ function createData(name, price, use, activeelements, amount, imagelink) {
   return { name, price, use, activeelements, amount, imagelink };
 }
 
-function BasicTable({ rows = [], nameFilter, useFilter }) {
+function BasicTable({ rows, nameFilter, useFilter }) {
   const snackbarMessage = useContext(SnackbarContext);
+  const dispatch = useDispatch();
   const [editRow, setEditRow] = useState({});
   const [isOpen, setIsOpen] = useState(false);
   const [idx, setIdx] = useState(-1);
+  const [id, setId] = useState("1");
+
+  const handleEditClick = (row, index) => {
+    setIsOpen(true);
+    setEditRow(row);
+    setId(row._id);
+    console.log(id);
+    setIdx(index);
+  };
+  useEffect(() => {
+    // This will log the updated id value
+  }, [handleEditClick]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -155,7 +178,8 @@ function BasicTable({ rows = [], nameFilter, useFilter }) {
       name: event.target.elements.name.value,
       amount: event.target.elements.amount.value,
       imgurl: event.target.elements.imgurl.value,
-      _id: editRow._id,
+
+      id: id,
     };
 
     console.log(sampleData);
@@ -164,28 +188,14 @@ function BasicTable({ rows = [], nameFilter, useFilter }) {
 
     response.then((responseData) => {
       console.log(responseData);
-      if (responseData.payload.status < 300) {
-        snackbarMessage("You have successfully edited", "success");
-      } else {
+      if (responseData.payload === undefined) {
         snackbarMessage(`error: ${responseData} has occurred`, "error");
+      } else {
+        snackbarMessage("You have successfully edited", "success");
       }
     });
     setIsOpen(false);
   };
-  const HandleAdd = (id, pid) => {
-    try {
-      const response = dispatch(addMedicineToCart({ userId: pid, medicineId: id }));
-      if (response.error) {
-        snackbarMessage(`Error: ${response.error.message}`, "error");
-      } else {
-        snackbarMessage("Added successfully", "success");
-      }
-    } catch (error) {
-      snackbarMessage(`Error: ${error.message}`, "error");
-    }
-  };
-  
-  const pid = useSelector((state) => state.user.id);
 
   const tableContainerStyle = {
     maxWidth: "80%", // Adjust the maximum width as needed
@@ -194,82 +204,8 @@ function BasicTable({ rows = [], nameFilter, useFilter }) {
     boxShadow: "5px 5px 5px 5px #8585854a",
   };
 
-  const dispatch = useDispatch();
-  const handleEditClick = (row, index) => {
-    setIsOpen(true);
-    setEditRow(row);
-    setIdx(index);
-  };
   return (
     <TableContainer component={Paper} style={tableContainerStyle}>
-      <Dialog open={isOpen}>
-        <form className="form" onSubmit={handleSubmit}>
-          <div className="form-body">
-            <label className="form__label" for="name">
-              name
-            </label>
-            <input
-              style={{ width: "92%" }}
-              type="text"
-              id="name"
-              defaultValue={editRow.name}
-              required
-            />
-            <label for="activeElement">Active element</label>
-            <input
-              type="text"
-              id="activeElement"
-              defaultValue={editRow.activeElement}
-              required
-            />
-            <label for="use">Medicinal use</label>
-            <input
-              style={{ width: "92%" }}
-              type="text"
-              id="use"
-              defaultValue={editRow.use}
-              required
-            />
-
-            <label className="form__label" for="price">
-              Price
-            </label>
-            <input
-              type="number"
-              id="price"
-              required
-              style={{ width: "94%", borderRadius: "3px" }}
-              defaultValue={editRow.price}
-            />
-
-            <label className="form__label" for="amount">
-              Available Quantity{" "}
-            </label>
-            <input
-              type="number"
-              id="amount"
-              defaultValue={editRow.amount}
-              required
-              style={{ width: "94%", borderRadius: "3px" }}
-            />
-
-            <label for="imgurl">Image url</label>
-            <input
-              style={{ width: "92%" }}
-              type="text"
-              id="imgurl"
-              defaultValue={editRow.imgurl}
-              required
-            />
-          </div>
-          <div className="footer">
-            <button type="submit" class="btn">
-              Edit
-            </button>
-          </div>
-        </form>
-        <p>gyrfeijkwosxdvhr</p>
-      </Dialog>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -278,21 +214,25 @@ function BasicTable({ rows = [], nameFilter, useFilter }) {
             <TableCell align="right">Use</TableCell>
             <TableCell align="right">Active Elements</TableCell>
             <TableCell align="right">Amount</TableCell>
-            <TableCell align="right">Image Link</TableCell>
-            <TableCell align="right">Add to cart</TableCell>
+            <TableCell align="right" sx={{ paddingRight: "0px" }}>
+              Image Link
+            </TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
           {rows
             .filter((row) => {
-              const nameMatch =
+              return (
                 nameFilter === "" ||
-                row.name.toLowerCase().includes(nameFilter.toLowerCase());
-              const useMatch =
+                row.name.toLowerCase().includes(nameFilter.toLowerCase())
+              );
+            })
+            .filter((row) => {
+              return (
                 useFilter === "" ||
-                row.use.toLowerCase().includes(useFilter.toLowerCase());
-              return nameMatch && useMatch;
+                row.use.toLowerCase().includes(useFilter.toLowerCase())
+              );
             })
             .map((row, index) => (
               <TableRow
@@ -306,24 +246,14 @@ function BasicTable({ rows = [], nameFilter, useFilter }) {
                 <TableCell align="right">{row.use}</TableCell>
                 <TableCell align="right">{row.activeElement}</TableCell>
                 <TableCell align="right">{row.amount}</TableCell>
-                <TableCell align="right">{row.imgurl}</TableCell>
-                <TableCell align="right" >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      flexWrap: "wrap",
-                      marginLeft: "auto"
-                    }}
+                <TableCell align="right" sx={{ paddingRight: "4px" }}>
+                  <Button
+                    onClick={() => handleDownload(row._id)}
+                    variant="contained"
+                    color="primary"
                   >
-                    <IconButton
-                      color="primary"
-                      aria-label="add to shopping cart"
-                      onClick={() => HandleAdd(row._id, pid)}
-                    >
-                      <AddShoppingCartIcon />
-                    </IconButton>
-                  </div>
+                    Download
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
