@@ -6,6 +6,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addMedicine } from "../../features/pharmacistSlice";
 import { SnackbarContext } from "../../App";
+import Error from "../../Error";
 const uploadButtonStyle = {
   backgroundColor: '#4CAF50',
   color: 'white',
@@ -19,6 +20,7 @@ const AddMedicine = (params) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const snackbarMessage = useContext(SnackbarContext);
+  const {role} = useSelector(state => state.user);
 
   const [imgUrl, setImgUrl] = useState(""); // Add this line
 
@@ -74,7 +76,7 @@ const AddMedicine = (params) => {
     display: 'none',
   };
   return (
-    
+    role === "pharmacist" ? (
     <form className="form" onSubmit={handleSubmit}>
       <div className="form-body">
       <label className="form__label" for="name">
@@ -125,7 +127,7 @@ const AddMedicine = (params) => {
           Add
         </button>
       </div>
-    </form>
+    </form>):(<Error/ >)
   );
 };
 

@@ -50,10 +50,10 @@ const HomeDirect = () => {
       break;
     default:
       // Handle unknown or invalid roles here
-      if(!loading){
+
 
         content = <Error />;
-      }
+      
   }
 
   return <>{content}</>;

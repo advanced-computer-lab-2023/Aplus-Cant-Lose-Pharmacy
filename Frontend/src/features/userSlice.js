@@ -38,6 +38,8 @@ export const changePassword = createAsyncThunk(
     try {
       const id = data.id;
       const token = data.token;
+      console.log(data.token);
+
       const response = await axios.post(
         `${API_URL}/changePassword/${id}/${token}`,
         {
@@ -45,7 +47,6 @@ export const changePassword = createAsyncThunk(
         }
       );
 
-      console.log(response.token);
 
       return response;
     } catch (error) {
@@ -111,6 +112,8 @@ const user = createSlice({
     builder
       .addCase(loginGuest.pending, (state) => {
         state.loading = true;
+        state.error = false;
+
       })
       .addCase(loginGuest.fulfilled, (state, action) => {
         state.loading = false;
@@ -118,6 +121,8 @@ const user = createSlice({
         state.role = action.payload.data.role;
         state.username = action.payload.data.userData.fUser.username;
         state.id = action.payload.data.userData.fUser._id;
+        state.error = false;
+
         localStorage.setItem("user", JSON.stringify({
           username: state.username,
           role: state.role,
@@ -129,6 +134,8 @@ const user = createSlice({
         state.logged = false;
         state.username = "";
         state.id = 0;
+        state.loading = false;
+
         state.role = "none";
         state.error = true;
       });
@@ -148,6 +155,8 @@ const user = createSlice({
       state.password = "";
       state.role = "";
       state.id = "";
+      state.loading = false;
+
       localStorage.removeItem("user"); // Remove the user token
 
       console.log(action.payload);

@@ -14,6 +14,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 const ChangePass = () => {
   const [email, setEmail] = useState("");
   const { id, token } = useParams();
+  console.log(id, token);
   const snackbarMessage = useContext(SnackbarContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();

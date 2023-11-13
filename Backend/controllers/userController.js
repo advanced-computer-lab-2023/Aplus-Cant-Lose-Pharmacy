@@ -113,7 +113,7 @@ const changePassword = async (req, res) => {
           (await Patient.findById(id)) ||
           (await User.findById(id)) ||
           (await Pharmacist.findById(id)) ||
-          (await Pharmacist.findById(id));
+          (await Admin.findById(id));
 
         if (!user) {
           return res.json({ Status: "User not found" });

@@ -73,6 +73,7 @@ const filePathStyle = {
 
 
 function Upload() {
+
   const navigate = useNavigate();
   const [idFile, setIdFile] = useState(null);
   const [degreeFile, setDegreeFile] = useState(null);
