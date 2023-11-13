@@ -1,21 +1,46 @@
 import React, { useState, useContext } from "react";
-import ReactDOM from "react-dom";
+import { useDispatch,useSelector } from "react-redux";
 import { loginGuest } from "../../features/userSlice";
 import "./login.css";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { SnackbarContext } from "../../App";
 import { NavLink, useNavigate } from "react-router-dom";
-// ... Other import statements ...
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 function App() {
   const navigate = useNavigate();
-  // React States
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const snackbarMessage = useContext(SnackbarContext);
 
   const dispatch = useDispatch();
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const user = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (user.logged) {
+      snackbarMessage("You have successfully logged in", "success");
+      setIsSubmitted(true);
+      navigate("/Home");
+    } else if (user.error) {
+      snackbarMessage("Error: user not found", "error");
+    }
+  }, [user]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const guest = {
+      username: event.target.elements.username.value,
+      password: event.target.elements.password.value,
+    };
+    const response = dispatch(loginGuest(guest));
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const linkStyle = {
     textDecoration: "none",
@@ -27,45 +52,6 @@ function App() {
   const hoverStyle = {
     borderBottom: "1px solid #0073e6",
   };
-  useEffect(() => {
-    // Other side effects related to the user state, if any
-    console.log("User state changed:", user);
-  
-    // Cleanup logic, if needed
-    return () => {
-      console.log("Cleanup");
-    };
-  }, [user]);
-  
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const guest = {
-      username: event.target.elements.username.value,
-      password: event.target.elements.password.value,
-    };
-  
-    try {
-      // Dispatch the loginGuest action
-      await dispatch(loginGuest(guest));
-      
-      // Check the user state after the dispatch
-      if (user.logged) {
-        // If logged in, show success snackbar and navigate
-        snackbarMessage("You have successfully logged in", "success");
-        setIsSubmitted(true);
-        navigate("/Home");
-      } else {
-        // If not logged in, show an appropriate error snackbar
-        snackbarMessage("Error: user not found", "error");
-      }
-    } catch (error) {
-      // Handle any errors that might occur during the dispatch
-      console.error("Login error:", error);
-      // Show an error snackbar based on the error received from the server or other issues
-      snackbarMessage("An error occurred during login", "error");
-    }
-  };
-  
 
   return (
     <div className="app">
@@ -82,7 +68,19 @@ function App() {
               </div>
               <div className="input-container">
                 <label htmlFor="password">Password </label>
-                <input type="password" id="password" name="password" required />
+                <div className="password-input">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    required
+                  /><span>
+                  <InputAdornment position="end">
+                    <IconButton sx={{}}onClick={toggleShowPassword}>
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment></span>
+                </div>
               </div>
 
               <div className="options">

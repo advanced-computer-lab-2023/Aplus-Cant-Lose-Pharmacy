@@ -1,4 +1,4 @@
-import React, { useState,useEffect,useContext} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import Popover from "@mui/material/Popover";
@@ -11,11 +11,10 @@ import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useDispatch, useSelector } from "react-redux";
-import {changePass} from "../../features/userSlice"
+import { changePass } from "../../features/userSlice";
 import { SnackbarContext } from "../../App";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../features/userSlice";
-
 
 const myAccountStyles = {
   cursor: "pointer",
@@ -33,39 +32,43 @@ const myAccountStyles = {
 
 const containerStyles = {
   display: "flex",
-  justifyContent: "flex-end",
   alignItems: "center",
   height: "fit-content",
+  width: "fit-content",
   backgroundColor: "whitesmoke",
   borderRadius: "7px",
-  paddingRight: "15px",
-  paddingBottom: "2px",
-  paddingTop: "2px",
+  padding: "10px",
 };
 
 const avatarStyles = {
-  marginRight: "8px",
+};
+
+const logoutButtonStyles = {
+  marginLeft: "0px",
+  textDecoration: "none",
+  postion: "absolute",
+  right: "0px",
+  width: "10%",
+  padding: "0px",
+  color: "#ff0000", // Red color
 };
 
 const AccountAvatar = () => {
   const snackbarMessage = useContext(SnackbarContext);
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleLogout = () => {
-    // Dispatch the logout action and handle any other logout logic
     dispatch(logout())
       .then(() => {
-        // Use navigate to redirect to the login page or wherever you want after logout
-        navigate('/Login');
+        navigate("/Login");
       })
       .catch((error) => {
-        // Handle any errors that might occur during logout
         console.error("Logout error:", error);
       });
   };
-  
+
   const { username } = useSelector((state) => state.user);
-  console.log(username);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -73,11 +76,10 @@ const AccountAvatar = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [emptyFieldError, setEmptyFieldError] = useState(false);
-  useEffect(() => {
-    
-  }, [dispatch]);
+
+  useEffect(() => {}, [dispatch]);
+
   const isPasswordValid = (password) => {
-    // Check if the password meets the criteria
     const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$/;
     return passwordRegex.test(password);
   };
@@ -94,13 +96,13 @@ const AccountAvatar = () => {
     setOpenDialog(true);
     handleAvatarClose();
   };
-  
+
   const closeChangePasswordDialog = () => {
     setOpenDialog(false);
     setPasswordError("");
     setEmptyFieldError(false);
   };
-  
+
   const savePassword = () => {
     if (currentPassword === "" || newPassword === "" || confirmNewPassword === "") {
       setEmptyFieldError(true);
@@ -126,13 +128,11 @@ const AccountAvatar = () => {
       return;
     }
 
-    // If all checks pass, you can proceed with the password change logic here
     console.log("Password changed");
-    const response =dispatch(changePass({oldPassword:currentPassword , newPassword ,username }));
-    if (response===undefined) {
-      snackbarMessage("incorrect old Password", "error");
+    const response = dispatch(changePass({ oldPassword: currentPassword, newPassword, username }));
+    if (response === undefined) {
+      snackbarMessage("Incorrect old Password", "error");
     } else {
-
       snackbarMessage("You have successfully added", "success");
     }
     closeChangePasswordDialog();
@@ -144,7 +144,7 @@ const AccountAvatar = () => {
       <Typography component="span" onClick={handleAvatarClick} sx={myAccountStyles}>
         Account
       </Typography>
-      <Button style={{ marginLeft: "10px", textDecoration: "none", color: "#007bff" }} onClick={handleLogout}>
+      <Button style={logoutButtonStyles} onClick={handleLogout}>
         Logout
       </Button>
       <Popover

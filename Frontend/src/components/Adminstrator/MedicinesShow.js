@@ -34,6 +34,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import download from "downloadjs"; // Import download function
 import axios from "axios";
 import { API_URL } from "../../Consts.js";
+
+import { viewMedicine } from "../../features/adminSlice";
 import {
   deleteMedicine,
   updateMedicineDetails,
@@ -79,9 +81,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function Medicine({ medicines }) {
+
+export default function Medicine() {
   const [nameFilter, setNameFilter] = useState("");
   const [useFilter, setUseFilter] = useState("");
+  const dispatch = useDispatch();
+  const snackbarMessage = useContext(SnackbarContext);
+
+  useEffect(() => {
+    dispatch(viewMedicine());
+  }, [dispatch]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -134,24 +143,28 @@ export default function Medicine({ medicines }) {
           />
         </Toolbar>
       </AppBar>
+
       <BasicTable
-        rows={medicines}
         nameFilter={nameFilter}
         useFilter={useFilter}
+  
       />
-
-    
     </Box>
   );
 }
-
 function createData(name, price, use, activeelements, amount, imagelink) {
   return { name, price, use, activeelements, amount, imagelink };
 }
 
-function BasicTable({ rows, nameFilter, useFilter }) {
-  const snackbarMessage = useContext(SnackbarContext);
+function BasicTable({ nameFilter, useFilter }) {
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(viewMedicine());
+ }, [dispatch]);
+  const medicineList  = useSelector((state) => state.admin.medicine);
+
+  const snackbarMessage = useContext(SnackbarContext);
   const [editRow, setEditRow] = useState({});
   const [isOpen, setIsOpen] = useState(false);
   const [idx, setIdx] = useState(-1);
@@ -164,9 +177,10 @@ function BasicTable({ rows, nameFilter, useFilter }) {
     console.log(id);
     setIdx(index);
   };
+  
   useEffect(() => {
     // This will log the updated id value
-  }, [handleEditClick]);
+  }, [medicineList]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -220,9 +234,8 @@ function BasicTable({ rows, nameFilter, useFilter }) {
             <TableCell align="right">sales</TableCell>
           </TableRow>
         </TableHead>
-
         <TableBody>
-          {rows
+          {medicineList
             .filter((row) => {
               return (
                 nameFilter === "" ||

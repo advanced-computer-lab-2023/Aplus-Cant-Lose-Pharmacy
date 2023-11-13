@@ -405,7 +405,7 @@ const logout = async (req, res) => {
     // Blacklist the token associated with the logged-out user
 
     // Clear the token cookie
-    res.clearCookie("jwt");
+ res.clearCookie("jwt");
 
     res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {

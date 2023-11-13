@@ -64,7 +64,7 @@ export const viewMedicine = createAsyncThunk(
   "pharmacist/viewMedicine",
   async () => {
     const response = await axios.get(
-      "http://localhost:8000/api/pharmacist/viewMedicine"
+      `${API_URL}/pharmacist/viewMedicine`
     );
     return response;
   }
