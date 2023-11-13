@@ -8,6 +8,7 @@ const userInitial = {
   username: "",
   password: "",
   role: "",
+  token:"",
   error: false,
   response: "",
   id: 0,
@@ -122,11 +123,13 @@ const user = createSlice({
         state.username = action.payload.data.userData.fUser.username;
         state.id = action.payload.data.userData.fUser._id;
         state.error = false;
+        state.token = action.payload.data.token;
 
         localStorage.setItem("user", JSON.stringify({
           username: state.username,
           role: state.role,
           id: state.id,
+          token: state.token,
         }));
         console.log(action.payload);
       })
@@ -149,7 +152,7 @@ const user = createSlice({
       state.response = "delete HealthPackages";
     });
     builder.addCase(logout.fulfilled, (state, action) => {
-      state.token = null;
+      state.token = "";
       state.logged = false;
       state.username = "";
       state.password = "";

@@ -1,3 +1,4 @@
+// Import necessary libraries and constants
 import React, { useState, useEffect, useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
@@ -15,6 +16,11 @@ import { changePass } from "../../features/userSlice";
 import { SnackbarContext } from "../../App";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../features/userSlice";
+import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import axios from "axios";
+import { API_URL } from "../../Consts";
 
 const myAccountStyles = {
   cursor: "pointer",
@@ -40,16 +46,17 @@ const containerStyles = {
   padding: "10px",
 };
 
-const avatarStyles = {
-};
+const avatarStyles = {};
 
 const logoutButtonStyles = {
-  marginLeft: "0px",
-  textDecoration: "none",
-  postion: "absolute",
+  marginRight: "10px",
+
+  textDecoration: "underline",
+  position: "absolute", // Corrected typo in 'position'
   right: "0px",
-  width: "10%",
+fontSize  : "20px",
   padding: "0px",
+  width:"fit-content",
   color: "#ff0000", // Red color
 };
 
@@ -76,6 +83,7 @@ const AccountAvatar = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [emptyFieldError, setEmptyFieldError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {}, [dispatch]);
 
@@ -103,8 +111,12 @@ const AccountAvatar = () => {
     setEmptyFieldError(false);
   };
 
-  const savePassword = () => {
-    if (currentPassword === "" || newPassword === "" || confirmNewPassword === "") {
+  const savePassword = async () => {
+    if (
+      currentPassword === "" ||
+      newPassword === "" ||
+      confirmNewPassword === ""
+    ) {
       setEmptyFieldError(true);
       setPasswordError("");
       return;
@@ -124,24 +136,52 @@ const AccountAvatar = () => {
 
     if (!isPasswordValid(newPassword)) {
       setEmptyFieldError(false);
-      setPasswordError("Password must be at least 8 characters, contain an uppercase letter, and a special character (@#$%^&+=)");
+      setPasswordError(
+        "Password must be at least 8 characters, contain an uppercase letter, and a special character (@#$%^&+=)"
+      );
       return;
     }
 
-    console.log("Password changed");
-    const response = dispatch(changePass({ oldPassword: currentPassword, newPassword, username }));
-    if (response === undefined) {
-      snackbarMessage("Incorrect old Password", "error");
-    } else {
-      snackbarMessage("You have successfully added", "success");
+    try {
+      const response = await axios.post(
+        `${API_URL}/changePass/${username}`,
+        { oldPassword: currentPassword, newPassword, username }
+      );
+
+      console.log("Response:", response);
+
+      if (response.data.message) {
+        snackbarMessage("Password has been changed", "success");
+        closeChangePasswordDialog();
+        dispatch(logout()).then(()=>{        navigate("/Login");
+      })
+      } else {
+        snackbarMessage(
+          `An error occurred: ${response.data.error || "Unknown error"}`,
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error.response.data);
+      snackbarMessage(
+        `An error occurred: ${error.response.data.error || "Unknown error"}`,
+        "error"
+      );
     }
-    closeChangePasswordDialog();
   };
 
   return (
     <div sx={containerStyles}>
-      <Avatar src="/path-to-your-avatar-image.jpg" sx={avatarStyles} onClick={handleAvatarClick} />
-      <Typography component="span" onClick={handleAvatarClick} sx={myAccountStyles}>
+      <Avatar
+        src="/path-to-your-avatar-image.jpg"
+        sx={avatarStyles}
+        onClick={handleAvatarClick}
+      />
+      <Typography
+        component="span"
+        onClick={handleAvatarClick}
+        sx={myAccountStyles}
+      >
         Account
       </Typography>
       <Button style={logoutButtonStyles} onClick={handleLogout}>
@@ -171,31 +211,49 @@ const AccountAvatar = () => {
         <DialogContent>
           <TextField
             label="Current Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             fullWidth
             margin="normal"
-            value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
           />
           <TextField
             label="New Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             fullWidth
             margin="normal"
-            value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
           />
           <TextField
             label="Confirm New Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             fullWidth
             margin="normal"
-            value={confirmNewPassword}
             onChange={(e) => setConfirmNewPassword(e.target.value)}
             required
             error={emptyFieldError || passwordError !== ""}
             helperText={emptyFieldError ? "Must enter a value" : passwordError}
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
           />
         </DialogContent>
         <DialogActions>
