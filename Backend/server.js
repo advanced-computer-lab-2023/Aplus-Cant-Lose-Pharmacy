@@ -15,8 +15,10 @@ app.use(express.json());
 
 app.use(cors());
 
-const {login,sendResetEmail,changePassword ,changePass}= require("./controllers/userController");
+const {login,sendResetEmail,changePassword ,changePass,logout}= require("./controllers/userController");
  app.post('/api/login', login);
+ app.get('/api/logout', logout);
+
  const userRoute = require("./Routes/userRoute");
 // Importing the adRouter
 const adRouter = require("./Routes/adRoutes");

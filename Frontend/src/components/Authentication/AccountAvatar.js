@@ -53,10 +53,17 @@ const AccountAvatar = () => {
   const navigate = useNavigate();
   const handleLogout = () => {
     // Dispatch the logout action and handle any other logout logic
-    dispatch(logout());
-    // Use navigate to redirect to the login page or wherever you want after logout
-    navigate('/login');
+    dispatch(logout())
+      .then(() => {
+        // Use navigate to redirect to the login page or wherever you want after logout
+        navigate('/Login');
+      })
+      .catch((error) => {
+        // Handle any errors that might occur during logout
+        console.error("Logout error:", error);
+      });
   };
+  
   const { username } = useSelector((state) => state.user);
   console.log(username);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -137,9 +144,9 @@ const AccountAvatar = () => {
       <Typography component="span" onClick={handleAvatarClick} sx={myAccountStyles}>
         Account
       </Typography>
-      <Link to="/logout" style={{ marginLeft: "10px", textDecoration: "none", color: "#007bff" }} onClick={handleLogout}>
+      <Button style={{ marginLeft: "10px", textDecoration: "none", color: "#007bff" }} onClick={handleLogout}>
         Logout
-      </Link>
+      </Button>
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}

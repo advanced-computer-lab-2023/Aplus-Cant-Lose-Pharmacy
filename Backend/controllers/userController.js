@@ -399,6 +399,20 @@ const filterMedicineByUse = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const logout = async (req, res) => {
+  try {
+    // Add logic for token blacklisting if needed
+    // Blacklist the token associated with the logged-out user
+
+    // Clear the token cookie
+    res.clearCookie("jwt");
+
+    res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 module.exports = {
   createUser,
@@ -412,5 +426,5 @@ module.exports = {
   login,
   sendResetEmail,
   changePass,
-  changePassword,
+  changePassword,logout
 };

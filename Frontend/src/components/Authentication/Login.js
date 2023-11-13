@@ -28,27 +28,44 @@ function App() {
     borderBottom: "1px solid #0073e6",
   };
   useEffect(() => {
-    // This effect will run when the user variable changes
-    if (user.logged==true) {
-      snackbarMessage("You have successfully logged in", "success");
-      setIsSubmitted(true);
-      navigate("/Home");
-    } else if (user.error) {
-      snackbarMessage("Error: user not found", "error");
-
-    }
+    // Other side effects related to the user state, if any
+    console.log("User state changed:", user);
+  
+    // Cleanup logic, if needed
+    return () => {
+      console.log("Cleanup");
+    };
   }, [user]);
   
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const guest = {
       username: event.target.elements.username.value,
       password: event.target.elements.password.value,
     };
-    dispatch(loginGuest(guest));
-    console.log(user.logged);
+  
+    try {
+      // Dispatch the loginGuest action
+      await dispatch(loginGuest(guest));
+      
+      // Check the user state after the dispatch
+      if (user.logged) {
+        // If logged in, show success snackbar and navigate
+        snackbarMessage("You have successfully logged in", "success");
+        setIsSubmitted(true);
+        navigate("/Home");
+      } else {
+        // If not logged in, show an appropriate error snackbar
+        snackbarMessage("Error: user not found", "error");
+      }
+    } catch (error) {
+      // Handle any errors that might occur during the dispatch
+      console.error("Login error:", error);
+      // Show an error snackbar based on the error received from the server or other issues
+      snackbarMessage("An error occurred during login", "error");
+    }
   };
-
+  
 
   return (
     <div className="app">
