@@ -29,13 +29,14 @@ function App() {
   };
   useEffect(() => {
     // This effect will run when the user variable changes
-    // if (user.logged) {
-    //   snackbarMessage("You have successfully logged in", "success");
-    //   setIsSubmitted(true);
-    //   navigate("/Home");
-    // } else if (user.error) {
-    //   snackbarMessage("Error: user not found", "error");
-    // }
+    if (user.logged==true) {
+      snackbarMessage("You have successfully logged in", "success");
+      setIsSubmitted(true);
+      navigate("/Home");
+    } else if (user.error) {
+      snackbarMessage("Error: user not found", "error");
+
+    }
   }, [user]);
   
   const handleSubmit = (event) => {
@@ -44,14 +45,8 @@ function App() {
       username: event.target.elements.username.value,
       password: event.target.elements.password.value,
     };
-    const response=dispatch(loginGuest(guest));
-    if (response===undefined) {
-      snackbarMessage("error: username Not found", "error");
-    } else {
-
-      snackbarMessage("You have successfully added", "success");
-      navigate("/Home");
-    }
+    dispatch(loginGuest(guest));
+    console.log(user.logged);
   };
 
 

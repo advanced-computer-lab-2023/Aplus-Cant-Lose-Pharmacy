@@ -48,7 +48,7 @@ const JoinRequests = () => {
   const handleApprove = (id) => {
     const responseData = dispatch(acceptPh(id));
     if (responseData === undefined) {
-      snackbarMessage(`error: username already exist has occurred`, "error");
+      snackbarMessage(`error: error in sending an email`, "error");
     } else {
       snackbarMessage("Email sent to accepted Pahrmacist", "success");
     }
@@ -56,7 +56,7 @@ const JoinRequests = () => {
   const handleReject = (id) => {
     const responseData = dispatch(rejectPh(id));
     if (responseData === undefined) {
-      snackbarMessage(`error: username already exist has occurred`, "error");
+      snackbarMessage(`error: error in sending an email`, "error");
     } else {
       snackbarMessage("Email sent to rejected Pahrmacist", "success");
     }

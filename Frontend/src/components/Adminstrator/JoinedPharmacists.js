@@ -17,8 +17,11 @@ import { API_URL } from "../../Consts.js";
 
 const JoinedPharmacist = () => {
   const dispatch = useDispatch();
+  const {id} = useSelector((state) => state.user);
+
   useEffect(() => {
     dispatch(viewJoinedPh())
+    console.log(id)
   }, [dispatch]);
   const dummyData = useSelector((state) => state.admin.phJoined);
 

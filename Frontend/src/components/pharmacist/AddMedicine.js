@@ -108,6 +108,7 @@ const AddMedicine = (params) => {
           type="file"
           id="imgFile"
           name="imgFile"
+          
           accept="image/*"
           onChange={handleFileChange}
           style={fileInputStyle}
