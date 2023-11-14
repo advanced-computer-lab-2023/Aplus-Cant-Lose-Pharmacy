@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../Consts.js";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
+import {Link} from "react-router-dom";
+import { Typography } from "@mui/material";
 import { addMedicine } from "../../features/pharmacistSlice";
 import { SnackbarContext } from "../../App";
 import Error from "../../Error";
@@ -127,7 +129,23 @@ const AddMedicine = (params) => {
           Add
         </button>
       </div>
-    </form>):navigate("/Login")
+    </form>):      <>
+      <Link to="/Login" sx={{ left: "100%" }}>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          sx={{
+            flexGrow: 1,
+            display: { xs: "none", sm: "flex" },
+            fontSize: "20px",
+            maragin: "auto",
+          }}
+        >
+          Login
+        </Typography>
+      </Link>
+    </>
   );
 };
 

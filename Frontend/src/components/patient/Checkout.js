@@ -29,7 +29,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { NavLink,Link } from "react-router-dom";
 
 const CheckoutPage = () => {
   const snackbarMessage = useContext(SnackbarContext);
@@ -224,7 +224,23 @@ const navigate = useNavigate();
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>:navigate("/Login")
+    </Box>:<>
+      <Link to="/Login" sx={{ left: "100%" }}>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          sx={{
+            flexGrow: 1,
+            display: { xs: "none", sm: "flex" },
+            fontSize: "20px",
+            maragin: "auto",
+          }}
+        >
+          Login
+        </Typography>
+      </Link>
+    </>
   );
 };
 

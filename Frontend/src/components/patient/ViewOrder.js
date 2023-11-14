@@ -35,6 +35,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 const ViewOrder = () => {
   const snackbarMessage = useContext(SnackbarContext);
   const order = useSelector((state) => state.patient.orderDetails);
@@ -143,7 +144,23 @@ const ViewOrder = () => {
       </Table>
     </TableContainer>
       
-    </Box>:navigate("/Login")
+    </Box>:<>
+      <Link to="/Login" sx={{ left: "100%" }}>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          sx={{
+            flexGrow: 1,
+            display: { xs: "none", sm: "flex" },
+            fontSize: "20px",
+            maragin: "auto",
+          }}
+        >
+          Login
+        </Typography>
+      </Link>
+    </>
   );
 };
 

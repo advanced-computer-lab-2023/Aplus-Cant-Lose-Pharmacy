@@ -6,6 +6,8 @@ import PhHome from "./components/pharmacist/PhHome";
 import Error from "./Error";
 import { Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { Typography } from "@mui/material";
+import {Link} from "react-router-dom";
 import AccountAvatar from "./components/Authentication/AccountAvatar" // Import the AccountAvatar component
 const containerStyles = {
   display: "flex",
@@ -53,9 +55,24 @@ const HomeDirect = () => {
       // Handle unknown or invalid roles here
 
 
-        content = <Error />;
-        navigate("/Login")
-      
+        content = 
+        <>
+        <Link to="/Login" sx={{ left: "100%" }}>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", sm: "flex" },
+              fontSize: "20px",
+              maragin: "auto",
+            }}
+          >
+            Login
+          </Typography>
+        </Link>
+      </>
   }
 
   return <>{content}</>;
