@@ -36,6 +36,8 @@ const CheckoutPage = () => {
   const dispatch = useDispatch();
   const history = useNavigate();
   const pid = useSelector((state) => state.user.id);
+  const role = useSelector((state) => state.user.role);
+
   const url = useSelector((state) => state.patient.paymentURL);
   const { cart, addresses, wallet } = useSelector((state) => state.patient);
 
@@ -121,8 +123,9 @@ const CheckoutPage = () => {
     style: "currency",
     currency: "USD", // or your preferred currency code
   }).format(wallet);
-
+const navigate = useNavigate();
   return (
+    role==="patient" ?
     <Box>
       <div style={{ position: "absolute", top: 0, left: 0, padding: "10px" }}>
         <NavLink exact to="/Home">
@@ -221,7 +224,7 @@ const CheckoutPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box>:navigate("/Login")
   );
 };
 

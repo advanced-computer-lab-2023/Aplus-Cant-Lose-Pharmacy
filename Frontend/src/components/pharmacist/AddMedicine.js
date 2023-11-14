@@ -127,7 +127,7 @@ const AddMedicine = (params) => {
           Add
         </button>
       </div>
-    </form>):(<Error/ >)
+    </form>):navigate("/Login")
   );
 };
 

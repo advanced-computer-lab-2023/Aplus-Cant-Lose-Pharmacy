@@ -5,6 +5,7 @@ import PaHome from "./components/patient/PaHome";
 import PhHome from "./components/pharmacist/PhHome";
 import Error from "./Error";
 import { Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AccountAvatar from "./components/Authentication/AccountAvatar" // Import the AccountAvatar component
 const containerStyles = {
   display: "flex",
@@ -20,7 +21,7 @@ const containerStyles = {
 };
 const HomeDirect = () => {
   const { role ,loading} = useSelector((state) => state.user);
-  
+  const navigate = useNavigate();
   // Depending on the user's role, render the corresponding component
   let content = (<></>);
   switch (role) {
@@ -53,6 +54,7 @@ const HomeDirect = () => {
 
 
         content = <Error />;
+        navigate("/Login")
       
   }
 

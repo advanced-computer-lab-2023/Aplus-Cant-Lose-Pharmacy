@@ -35,10 +35,11 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-
 const ViewOrder = () => {
   const snackbarMessage = useContext(SnackbarContext);
   const order = useSelector((state) => state.patient.orderDetails);
+  const role = useSelector((state) => state.user.role);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   console.log(order);
@@ -65,6 +66,7 @@ const ViewOrder = () => {
   // You can dispatch actions, make API calls, etc.
 
   return (
+    role==="patient"?
     <Box>
       <div style={{ position: "absolute", top: 0, left: 0, padding: "10px" }}>
         <NavLink exact to="/Home">
@@ -141,7 +143,7 @@ const ViewOrder = () => {
       </Table>
     </TableContainer>
       
-    </Box>
+    </Box>:navigate("/Login")
   );
 };
 
