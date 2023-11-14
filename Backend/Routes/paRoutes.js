@@ -13,7 +13,8 @@ const {
   getPatientOrders,
   getOrderDetailsById,
   cancelOrder,
-  getWallet
+  getWallet,
+  createCartCheckoutSession
 } = require("../controllers/paController");
 router.post("/addPatient", addPatient);
 
@@ -37,5 +38,6 @@ router.post("/payForCart/:userId", payForCart);
 router.get("/getPatientOrders/:userId", getPatientOrders);
 router.get("/getOrderDetailsById/:orderId", getOrderDetailsById);
 router.delete("/cancelOrder/:orderId", cancelOrder);
+router.patch("/createCartCheckoutSession/:userId", createCartCheckoutSession);
 
 module.exports = router;

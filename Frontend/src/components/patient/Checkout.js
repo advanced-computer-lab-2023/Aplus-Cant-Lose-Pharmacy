@@ -8,6 +8,7 @@ import {
   addAddress,
   getWallet,
   payForCart,
+  createCartCheckoutSession,
 } from "../../features/patientSlice";
 import { SnackbarContext } from "../../App";
 import PaHome from "./PaHome";
@@ -35,6 +36,7 @@ const CheckoutPage = () => {
   const dispatch = useDispatch();
   const history = useNavigate();
   const pid = useSelector((state) => state.user.id);
+  const url = useSelector((state) => state.patient.paymentURL);
   const { cart, addresses, wallet } = useSelector((state) => state.patient);
 
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -47,6 +49,14 @@ const CheckoutPage = () => {
     dispatch(getAddresses({ userId: pid }));
     dispatch(getWallet({ userId: pid }));
   }, [dispatch, pid]);
+
+  useEffect(() => {
+    // Redirect when paymentURL is updated
+    if (url) {
+      console.log(url);
+      window.location.href = url;
+    }
+  }, [url]);
 
   const handleLocationChange = (event) => {
     setSelectedLocation(event.target.value);
@@ -70,6 +80,7 @@ const CheckoutPage = () => {
   };
 
   const handleConfirmPayment = async (selectedLocation, paymentType) => {
+    const cost = cart.grandTotal;
     if (!selectedLocation || !paymentType) {
       snackbarMessage(`Location and payment type required`, "error");
       return;
@@ -78,16 +89,20 @@ const CheckoutPage = () => {
       snackbarMessage(`Not enough money in wallet!`, "error");
       return;
     }
+    await dispatch(
+      payForCart({
+        userId: pid,
+        paymentType: paymentType,
+        address: selectedLocation,
+      })
+    );
     if (paymentType !== "Credit Card") {
-      await dispatch(
-        payForCart({
-          userId: pid,
-          paymentType: paymentType,
-          address: selectedLocation,
-        })
-      );
+      
       snackbarMessage("Ordered successfully!", "success");
       history("/Home");
+    }
+    else{
+      await dispatch(createCartCheckoutSession({ pid: pid, address: selectedLocation, amount: cost }));
     }
     // Add logic to handle payment confirmation
     // You can dispatch actions, make API calls, etc.

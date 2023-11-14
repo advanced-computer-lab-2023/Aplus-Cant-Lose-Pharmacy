@@ -34,13 +34,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import download from "downloadjs"; // Import download function
 import axios from "axios";
 import { API_URL } from "../../Consts.js";
-
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { viewMedicine } from "../../features/adminSlice";
 import {
   deleteMedicine,
   updateMedicineDetails,
   editMedicine,
 } from "../../features/pharmacistSlice";
+import{ addMedicineToCart } from "../../features/patientSlice";
 import { AutoFixNormal } from "@mui/icons-material";
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -159,6 +160,8 @@ function createData(name, price, use, activeelements, amount, imagelink) {
 function BasicTable({ nameFilter, useFilter }) {
   const dispatch = useDispatch();
 
+  const pid = useSelector((state) => state.user.id);
+
   useEffect(() => {
     dispatch(viewMedicine());
  }, [dispatch]);
@@ -211,6 +214,22 @@ function BasicTable({ nameFilter, useFilter }) {
     setIsOpen(false);
   };
 
+  const HandleAdd = async (id, pid) => {
+    try {
+      console.log(pid);
+      const response = await dispatch(
+        addMedicineToCart({ userId: pid, medicineId: id })
+      );
+      if (response.error) {
+        snackbarMessage(`Error: ${response.error.message}`, "error");
+      } else {
+        snackbarMessage("Added successfully", "success");
+      }
+    } catch (error) {
+      snackbarMessage(`Error: ${error.message}`, "error");
+    }
+  };
+
   const tableContainerStyle = {
     maxWidth: "80%", // Adjust the maximum width as needed
     margin: "0 auto", // Center-align the table horizontally
@@ -231,6 +250,7 @@ function BasicTable({ nameFilter, useFilter }) {
             <TableCell align="right" sx={{ paddingRight: "0px" }}>
               Image Link
             </TableCell>
+            <TableCell align="right">Add to cart</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -267,6 +287,24 @@ function BasicTable({ nameFilter, useFilter }) {
                   >
                     Download
                   </Button>
+                </TableCell>
+                <TableCell align="right" >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      marginLeft: "auto"
+                    }}
+                  >
+                    <IconButton
+                      color="primary"
+                      aria-label="add to shopping cart"
+                      onClick={() => HandleAdd(row._id, pid)}
+                    >
+                      <AddShoppingCartIcon />
+                    </IconButton>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

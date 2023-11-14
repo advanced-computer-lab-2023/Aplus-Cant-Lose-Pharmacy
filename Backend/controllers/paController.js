@@ -6,6 +6,8 @@ const Medicine = require("../Models/medicine");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const stripe=require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+
 
 function generateToken(data) {
   return jwt.sign(data, process.env.TOKEN_SECRET);
@@ -455,7 +457,6 @@ const getOrderDetailsById = async (req, res) => {
         name: medicineDetails.name,
         price: medicineDetails.price,
         use: medicineDetails.use,
-        amount: medicineDetails.amount,
         imgurl: medicineDetails.imgurl,
         activeElement: medicineDetails.activeElement,
         // Add other fields you need from the Medicine schema
@@ -545,6 +546,40 @@ const cancelOrder = async (req, res) => {
 
 
 
+const createCartCheckoutSession= async(req,res)=>
+{
+  try {
+ 
+    const { userId } = req.params;
+    const { address,amount } = req.body;
+    console.log(req.body);
+    console.log(req.params);
+    
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "cart",
+            },
+            unit_amount: amount * 100,
+          },
+          quantity: 1, // Since the quantity will always be 1
+        }
+      ],
+      success_url: `http://localhost:3000/Success/${userId}/${address}`,
+      cancel_url: `http://localhost:3000/Checkout`,
+    })
+    res.json({ url: session.url });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: e.message })
+  }
+}
+
 module.exports = {
   addPatient,
   addMedicineToCart,
@@ -557,5 +592,6 @@ module.exports = {
   getPatientOrders,
   getOrderDetailsById,
   cancelOrder,
-  getWallet
+  getWallet,
+  createCartCheckoutSession
 };

@@ -34,6 +34,7 @@ const patientInitial = {
   addresses: [], // Initialize
   orders: [], // Initialize
   orderDetails: [], // Initialize
+  paymentURL: "", // Initialize
 };
 
 // Create async thunk for viewing the cart
@@ -111,12 +112,22 @@ const patient = createSlice({
       })
       .addCase(getOrderDetailsById.fulfilled, (state, action) => {
         state.loading = false;
-        console.log(action.payload.data);
         if (action.payload.data && action.payload.data.orderDetails) {
           state.orderDetails = action.payload.data.orderDetails; // Adjust the property names based on your API response
         }
       })
       .addCase(getOrderDetailsById.rejected, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(createCartCheckoutSession.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createCartCheckoutSession.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(action.payload.data);
+        state.paymentURL = action.payload.data.url;
+      })
+      .addCase(createCartCheckoutSession.rejected, (state, action) => {
         state.loading = false;
       });
   },
@@ -251,6 +262,20 @@ export const cancelOrder = createAsyncThunk(
     return response;
   }
 );
+export const createCartCheckoutSession = createAsyncThunk(
+  "patient/createCartCheckoutSession",
+  async (data) => {
+    const response = await axios.patch(
+      `${API_URL}/patient/createCartCheckoutSession/${data.pid}`,
+      {
+        address: data.address,
+        amount: data.amount,
+      }
+    );
+    return response;
+  }
+);
+
 
 // Export the reducer and actions
 export default patient.reducer;

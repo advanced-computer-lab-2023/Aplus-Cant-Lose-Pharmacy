@@ -85,7 +85,7 @@ const ViewOrder = () => {
         Date: {order.orderDate}
       </Typography>
       <Typography variant="h6" gutterBottom>
-        Delivery location: {order.location}
+        Delivery location: {order.address}
       </Typography>
       <Typography variant="h6" gutterBottom>
         Status: {order.status}
@@ -119,8 +119,8 @@ const ViewOrder = () => {
               </TableCell>
               <TableCell align="right">{row.activeElement}</TableCell>
               <TableCell align="right">{row.price}</TableCell>
-              <TableCell align="right">{row.amount}</TableCell>
-              <TableCell align="right">{row.price * row.amount}</TableCell>
+              <TableCell align="right">{row.cartAmount}</TableCell>
+              <TableCell align="right">{row.price * row.cartAmount}</TableCell>
             </TableRow>
           ))}
 
