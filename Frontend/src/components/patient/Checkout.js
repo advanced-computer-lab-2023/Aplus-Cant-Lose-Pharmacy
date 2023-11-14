@@ -89,15 +89,15 @@ const CheckoutPage = () => {
       snackbarMessage(`Not enough money in wallet!`, "error");
       return;
     }
-    await dispatch(
-      payForCart({
-        userId: pid,
-        paymentType: paymentType,
-        address: selectedLocation,
-      })
-    );
+    
     if (paymentType !== "Credit Card") {
-      
+      await dispatch(
+        payForCart({
+          userId: pid,
+          paymentType: paymentType,
+          address: selectedLocation,
+        })
+      );
       snackbarMessage("Ordered successfully!", "success");
       history("/Home");
     }

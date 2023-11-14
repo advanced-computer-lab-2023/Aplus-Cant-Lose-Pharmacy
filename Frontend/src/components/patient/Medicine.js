@@ -199,12 +199,10 @@ function BasicTable({ nameFilter, useFilter }) {
       id: id,
     };
 
-    console.log(sampleData);
     dispatch(editMedicine({ idx: idx, newData: sampleData }));
     const response = dispatch(updateMedicineDetails(sampleData));
 
     response.then((responseData) => {
-      console.log(responseData);
       if (responseData.payload === undefined) {
         snackbarMessage(`error: ${responseData} has occurred`, "error");
       } else {
