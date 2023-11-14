@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   AddShoppingCart as AddShoppingCartIcon,
   Add as AddIcon,
@@ -37,6 +38,7 @@ import {
 import { SnackbarContext } from "../../App";
 import { viewCart } from "../../features/patientSlice";
 import { NavLink } from "react-router-dom";
+import ViewOrder from "./ViewOrder";
 
 import {
   deleteMedicine,
@@ -46,6 +48,7 @@ import {
 import {
   addMedicineToCart,
   decreaseMedicine,
+  getOrderDetailsById
 } from "../../features/patientSlice";
 import { AutoFixNormal } from "@mui/icons-material";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -77,9 +80,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function Cart({ cart }) {
-  if (!cart.cart || cart.cart.length === 0) {
-    return <div>No items in the cart</div>;
+export default function Orders({ orders }) {
+  if (!orders || orders.length === 0) {
+    return <div>No orders</div>;
   } else {
     return (
       <Box sx={{ flexGrow: 1 }}>
@@ -100,11 +103,11 @@ export default function Cart({ cart }) {
               component="div"
               sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
             >
-              Cart
+              Orders
             </Typography>
           </Toolbar>
         </AppBar>
-        <BasicTable rows={cart} />
+        <BasicTable rows={orders} />
       </Box>
     );
   }
@@ -113,51 +116,26 @@ function createData(name, price, use, activeelements, amount, imagelink) {
   return { name, price, use, activeelements, amount, imagelink };
 }
 
+
+
 function BasicTable({ rows }) {
   const snackbarMessage = useContext(SnackbarContext);
-  const [editRow, setEditRow] = useState({});
-  const [isOpen, setIsOpen] = useState(false);
-  const [idx, setIdx] = useState(-1);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
 
-    setIsOpen(false);
-  };
-  const HandleAdd = async (id, pid) => {
-    try {
-      console.log(pid);
-      const response = await dispatch(
-        addMedicineToCart({ userId: pid, medicineId: id })
-      );
-      if (response.error) {
-        snackbarMessage(`Error: ${response.error.message}`, "error");
-      } else {
-        snackbarMessage("Added successfully", "success");
-      }
-      await dispatch(viewCart({ userId: pid }));
-    } catch (error) {
-      snackbarMessage(`Error: ${error.message}`, "error");
-    }
-  };
-  const HandleSubtract = async (id, pid) => {
-    try {
-      console.log(pid);
-      const response = await dispatch(
-        decreaseMedicine({ userId: pid, medicineId: id })
-      );
-      if (response.error) {
-        snackbarMessage(`Error: ${response.error.message}`, "error");
-      } else {
-        snackbarMessage("Removed successfully", "success");
-      }
-      await dispatch(viewCart({ userId: pid }));
-    } catch (error) {
-      snackbarMessage(`Error: ${error.message}`, "error");
-    }
-  };
+  const dispatch = useDispatch();
+  const history = useNavigate();
 
-  const pid = useSelector((state) => state.user.id);
+
+
+
+  const handleViewOrder = async (oid) => {
+    await dispatch(getOrderDetailsById({ oid }));
+    history("/ViewOrder"); 
+  };
+  
+
+
+
 
   const tableContainerStyle = {
     maxWidth: "80%", // Adjust the maximum width as needed
@@ -166,12 +144,7 @@ function BasicTable({ rows }) {
     boxShadow: "5px 5px 5px 5px #8585854a",
   };
 
-  const dispatch = useDispatch();
-  const handleEditClick = (row, index) => {
-    setIsOpen(true);
-    setEditRow(row);
-    setIdx(index);
-  };
+
 
   return (
     <TableContainer component={Paper} style={tableContainerStyle}>
@@ -179,71 +152,38 @@ function BasicTable({ rows }) {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Active Elements</TableCell>
-            <TableCell align="right">Price</TableCell>
-            <TableCell align="right">Amount</TableCell>
-            <TableCell align="right">Total Price</TableCell>
-            <TableCell align="center">Change Amount</TableCell>
+            <TableCell>Order date</TableCell>
+            <TableCell align="right">Delivery location</TableCell>
+            <TableCell align="right">Total price</TableCell>
+            <TableCell align="right">View more details</TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
-          {rows.cart.map((row, index) => (
+          {rows.map((row, index) => (
             <TableRow
               key={index}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                {row.name}
+                {row.orderDate}
               </TableCell>
-              <TableCell align="right">{row.activeElement}</TableCell>
-              <TableCell align="right">{row.price}</TableCell>
-              <TableCell align="right">{row.amount}</TableCell>
+              <TableCell align="right">{row.address}</TableCell>
               <TableCell align="right">{row.totalPrice}</TableCell>
-
               <TableCell align="right">
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    marginLeft: "auto",
+                <Button
+                  sx={{
+                    backgroundColor: "#004E98",
+                    color: "white",
+                    marginLeft: "10px",
                   }}
+                  onClick={() => handleViewOrder(row._id)}
                 >
-                  <IconButton
-                    color="primary"
-                    aria-label="decrease amount"
-                    onClick={() => HandleSubtract(row.medicineID, pid)}
-                  >
-                    <RemoveIcon />
-                  </IconButton>
-                  <IconButton
-                    color="primary"
-                    aria-label="increase amount"
-                    onClick={() => HandleAdd(row.medicineID, pid)}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </div>
-              </TableCell>
+                  <Typography>View</Typography>
+                </Button>
+              </TableCell>      
             </TableRow>
           ))}
-
-          {/* Add the Grand Total row here */}
-          <TableRow>
-            <TableCell colSpan={4} align="right">
-              Grand Total:
-            </TableCell>
-            <TableCell align="right">{rows.grandTotal}</TableCell>
-            <TableCell align="center">
-              <NavLink exact to="/Checkout">
-                <Button variant="contained" color="primary">
-                  Checkout
-                </Button>
-              </NavLink>
-            </TableCell>
-          </TableRow>
         </TableBody>
       </Table>
     </TableContainer>

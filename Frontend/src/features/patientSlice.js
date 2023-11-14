@@ -32,6 +32,8 @@ const patientInitial = {
   response: "",
   cart: [], // Initialize cart as an empty array or with initial cart data
   addresses: [], // Initialize
+  orders: [], // Initialize
+  orderDetails: [], // Initialize
 };
 
 // Create async thunk for viewing the cart
@@ -85,12 +87,36 @@ const patient = createSlice({
       })
       .addCase(getWallet.fulfilled, (state, action) => {
         state.loading = false;
-        console.log(action.payload.data);
         if (action.payload.data && action.payload.data.wallet) {
           state.wallet = action.payload.data.wallet; // Adjust the property names based on your API response
         }
       })
       .addCase(getWallet.rejected, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(getPatientOrders.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getPatientOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload.data && action.payload.data.orders) {
+          state.orders = action.payload.data.orders; // Adjust the property names based on your API response
+        }
+      })
+      .addCase(getPatientOrders.rejected, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(getOrderDetailsById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getOrderDetailsById.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(action.payload.data);
+        if (action.payload.data && action.payload.data.orderDetails) {
+          state.orderDetails = action.payload.data.orderDetails; // Adjust the property names based on your API response
+        }
+      })
+      .addCase(getOrderDetailsById.rejected, (state, action) => {
         state.loading = false;
       });
   },
@@ -173,6 +199,54 @@ export const addAddress = createAsyncThunk(
     const response = await axios.post(
       `${API_URL}/patient/addAddress/${data.userId}`,
       { location: data.address }
+    );
+    return response;
+  }
+);
+
+export const payForCart = createAsyncThunk(
+  "patient/payForCart",
+  async (data) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/patient/payForCart/${data.userId}`,
+        {
+          paymentType: data.paymentType,
+          address: data.address,
+        }
+      );
+
+      return response; // Return the response data
+    } catch (error) {
+      throw error; // Throw the error so you can handle it in your components
+    }
+  }
+);
+
+export const getPatientOrders = createAsyncThunk(
+  "patient/getPatientOrders",
+  async (data) => {
+    const response = await axios.get(
+      `${API_URL}/patient/getPatientOrders/${data.userId}`
+    );
+    return response;
+  }
+);
+
+export const getOrderDetailsById = createAsyncThunk(
+  "patient/getOrderDetailsById",
+  async (data) => {
+    const response = await axios.get(
+      `${API_URL}/patient/getOrderDetailsById/${data.oid}`
+    );
+    return response;
+  }
+);
+export const cancelOrder = createAsyncThunk(
+  "patient/cancelOrder",
+  async (data) => {
+    const response = await axios.delete(
+      `${API_URL}/patient/cancelOrder/${data.oid}`
     );
     return response;
   }

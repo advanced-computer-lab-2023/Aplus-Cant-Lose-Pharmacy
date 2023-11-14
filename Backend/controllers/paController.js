@@ -427,7 +427,7 @@ const getPatientOrders = async (req, res) => {
     }
 
     // Fetch patient's orders and extract necessary details
-    const orders = await Order.find({ pID: userId }).select('_id orderDate location totalPrice');
+    const orders = await Order.find({ pID: userId }).select('_id orderDate address totalPrice');
 
     return res.status(200).json({ orders });
   } catch (error) {
@@ -441,22 +441,42 @@ const getOrderDetailsById = async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    // Find the order by orderId and populate the necessary fields
+    // Find the order by orderId
     const order = await Order.findById(orderId);
 
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    // Extract necessary order details along with patient details
+    // Create a function to fetch medicine details for a given medicine ID
+    const fetchMedicineDetails = async (medicineID) => {
+      const medicineDetails = await Medicine.findById(medicineID);
+      return {
+        name: medicineDetails.name,
+        price: medicineDetails.price,
+        use: medicineDetails.use,
+        amount: medicineDetails.amount,
+        imgurl: medicineDetails.imgurl,
+        activeElement: medicineDetails.activeElement,
+        // Add other fields you need from the Medicine schema
+      };
+    };
+
+    // Extract necessary order details along with medicine details in the cart
     const orderDetails = {
       orderId: order._id,
       orderDate: order.orderDate,
-      location: order.location, // Assuming 'location' is a property in the Order schema
+      address: order.address,
       status: order.status,
       payment: order.payment,
       totalPrice: order.totalPrice,
-      cart: order.cart
+      cart: await Promise.all(
+        order.cart.map(async (item) => ({
+          medicineID: item.medicineID,
+          cartAmount: item.amount,
+          ...(await fetchMedicineDetails(item.medicineID)),
+        }))
+      ),
     };
 
     return res.status(200).json({ orderDetails });
@@ -465,6 +485,10 @@ const getOrderDetailsById = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
+
+
 
 const cancelOrder = async (req, res) => {
   try {
@@ -475,6 +499,25 @@ const cancelOrder = async (req, res) => {
 
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Iterate through the items in the cart and update the amount and sales for each medicine
+    for (const item of order.cart) {
+      const medicine = await Medicine.findById(item.medicineID);
+      
+      if (medicine) {
+        // Increase the amount
+        medicine.amount += item.amount;
+
+        // Decrease the sales (assuming sales is a field in the Medicine schema)
+        if (medicine.sales >= item.amount) {
+          medicine.sales -= item.amount;
+        } else {
+          medicine.sales = 0;
+        }
+
+        await medicine.save();
+      }
     }
 
     // Check if the payment type is 'Cash On Delivery'
@@ -498,6 +541,7 @@ const cancelOrder = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 

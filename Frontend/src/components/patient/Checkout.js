@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { viewCart, getAddresses, addAddress, getWallet } from "../../features/patientSlice";
+import { useContext } from "react";
+
+import {
+  viewCart,
+  getAddresses,
+  addAddress,
+  getWallet,
+  payForCart,
+} from "../../features/patientSlice";
+import { SnackbarContext } from "../../App";
+import PaHome from "./PaHome";
+import { useNavigate } from "react-router-dom";
+
 
 import {
   Box,
@@ -19,13 +31,16 @@ import {
 import { NavLink } from "react-router-dom";
 
 const CheckoutPage = () => {
+  const snackbarMessage = useContext(SnackbarContext);
   const dispatch = useDispatch();
+  const history = useNavigate();
   const pid = useSelector((state) => state.user.id);
   const { cart, addresses, wallet } = useSelector((state) => state.patient);
 
   const [selectedLocation, setSelectedLocation] = useState("");
   const [isAddLocationOpen, setAddLocationOpen] = useState(false);
   const [newLocation, setNewLocation] = useState("");
+  const [paymentType, setPaymentType] = useState("");
 
   useEffect(() => {
     dispatch(viewCart({ userId: pid }));
@@ -47,14 +62,33 @@ const CheckoutPage = () => {
     // For example, dispatch an action to update patient's locations in Redux store
   };
   const handleAddNewLocation = async (location) => {
-    if(location){
-        setAddLocationOpen(false);
-        await dispatch(addAddress({ userId: pid, address: location}));
-        await dispatch(getAddresses({ userId: pid }));
+    if (location) {
+      setAddLocationOpen(false);
+      await dispatch(addAddress({ userId: pid, address: location }));
+      await dispatch(getAddresses({ userId: pid }));
     }
   };
 
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = async (selectedLocation, paymentType) => {
+    if (!selectedLocation || !paymentType) {
+      snackbarMessage(`Location and payment type required`, "error");
+      return;
+    }
+    if (paymentType === "Wallet" && wallet < cart.grandTotal) {
+      snackbarMessage(`Not enough money in wallet!`, "error");
+      return;
+    }
+    if (paymentType !== "Credit Card") {
+      await dispatch(
+        payForCart({
+          userId: pid,
+          paymentType: paymentType,
+          address: selectedLocation,
+        })
+      );
+      snackbarMessage("Ordered successfully!", "success");
+      history("/Home");
+    }
     // Add logic to handle payment confirmation
     // You can dispatch actions, make API calls, etc.
   };
@@ -62,29 +96,32 @@ const CheckoutPage = () => {
   let sum = 0;
 
   // iterate over each item in the array
-  for (let i = 0; i < cart.cart.length; i++) {
-    sum += cart.cart[i].amount;
+  if (cart.cart) {
+    for (let i = 0; i < cart.cart.length; i++) {
+      sum += cart.cart[i].amount;
+    }
   }
 
-  console.log(addresses);
-
-  const formattedWallet = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD', // or your preferred currency code
+  const formattedWallet = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD", // or your preferred currency code
   }).format(wallet);
 
   return (
     <Box>
-        <div style={{ position: 'absolute', top: 0, left: 0, padding: '10px' }}>
+      <div style={{ position: "absolute", top: 0, left: 0, padding: "10px" }}>
         <NavLink exact to="/Home">
-        <Button variant="outlined" color="primary">
-          Return
-        </Button>
+          <Button variant="outlined" color="primary">
+            Return
+          </Button>
         </NavLink>
       </div>
-      <Typography variant="h4" gutterBottom style={{ marginTop: '50px' }}>
+      
+      <Typography variant="h4" gutterBottom style={{ marginTop: "50px" }}>
         Checkout Summary
-        <div align="right" style={{ fontSize: '16px' }}>Wallet: {formattedWallet}</div>
+        <div align="right" style={{ fontSize: "16px" }}>
+          Wallet: {formattedWallet}
+        </div>
       </Typography>
       <Typography variant="h6" gutterBottom>
         {sum} items
@@ -125,10 +162,11 @@ const CheckoutPage = () => {
           labelId="payment-label"
           id="payment-select"
           label="Payment Method"
+          onChange={(e) => setPaymentType(e.target.value)}
         >
-          <MenuItem value="wallet">Wallet</MenuItem>
-          <MenuItem value="creditCard">Credit Card</MenuItem>
-          <MenuItem value="cashOnDelivery">Cash on Delivery</MenuItem>
+          <MenuItem value="Wallet">Wallet</MenuItem>
+          <MenuItem value="Credit Card">Credit Card</MenuItem>
+          <MenuItem value="Cash On Delivery">Cash on Delivery</MenuItem>
         </Select>
       </FormControl>
 
@@ -136,7 +174,7 @@ const CheckoutPage = () => {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleConfirmPayment}
+        onClick={() => handleConfirmPayment(selectedLocation, paymentType)}
       >
         Confirm Payment
       </Button>
@@ -160,7 +198,10 @@ const CheckoutPage = () => {
           <Button onClick={handleCloseAddLocation} color="primary">
             Cancel
           </Button>
-          <Button onClick={() => handleAddNewLocation(newLocation)} color="primary">
+          <Button
+            onClick={() => handleAddNewLocation(newLocation)}
+            color="primary"
+          >
             Add
           </Button>
         </DialogActions>

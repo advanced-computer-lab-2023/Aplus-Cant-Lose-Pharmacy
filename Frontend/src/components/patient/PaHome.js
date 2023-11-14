@@ -7,8 +7,9 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Medicine from "./Medicine";
 import Cart from "./Cart";
+import Orders from "./Orders";
 import { useDispatch, useSelector } from "react-redux";
-import { viewCart, viewMedicine } from "../../features/patientSlice";
+import { viewCart, viewMedicine, getPatientOrders } from "../../features/patientSlice";
 
 export default function PhHome() {
   const pid = useSelector((state) => state.user.id);
@@ -32,6 +33,7 @@ export default function PhHome() {
   }, [dispatch, value]);
   
   const { cart } = useSelector((state) => state.patient);
+  const { orders } = useSelector((state) => state.patient);
 
 
   useEffect(() => {
@@ -41,8 +43,11 @@ export default function PhHome() {
     }
   }, [dispatch, pid, value]);
 
-  console.log(cart);
-  // console.log(medicineList)
+  useEffect(() => {
+    if(value === "3") {
+      dispatch(getPatientOrders({userId: pid}))
+    }
+  }, [dispatch, pid, value]);
 
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
@@ -54,7 +59,7 @@ export default function PhHome() {
           >
             <Tab label="Medicine list" value="1" />
             <Tab label="View cart" value="2" />
-            <Tab label="Item Three" value="3" />
+            <Tab label="View orders" value="3" />
           </TabList>
         </Box>
         <TabPanel value="1">
@@ -62,6 +67,9 @@ export default function PhHome() {
         </TabPanel>
         <TabPanel value="2">
           <Cart cart={cart} />
+        </TabPanel>
+        <TabPanel value="3">
+          <Orders orders={orders} />
         </TabPanel>
       </TabContext>
     </Box>
