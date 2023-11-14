@@ -96,13 +96,15 @@ const addPharmacist = async (req, res) => {
     };
     
     const token= generateToken(data)
-    res.status(201).json({ message: "Pharmacist created successfully", username, token });
+    res.status(201).json({ message: "Pharmacist created successfully", username, token,id:pharmacist._id });
 
   } catch (error) {
     console.error("Error creating pharmacist:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
 
 const addMedicine = async (req, res) => {
   try {

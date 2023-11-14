@@ -4,7 +4,8 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
 import Box from "@mui/material/Box";
-
+import { useDispatch, useSelector } from "react-redux";
+import { viewMedicine } from "../../features/pharmacistSlice";
 
 import AddAdmin from "./AddAdmin";
 import MedicinesShow from "./MedicinesShow";
@@ -12,6 +13,7 @@ import PendingPharmacists from "./PendingPharmacists";
 import JoinedPharmacists from "./JoinedPharmacists";
 import Patients from "./Patients";
 
+import { useContext, useEffect, useState } from "react";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -24,11 +26,7 @@ function CustomTabPanel(props) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
@@ -49,33 +47,54 @@ function a11yProps(index) {
 export default function BasicTabs() {
   const [value, setValue] = React.useState(0);
 
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+
 
   return (
     <div>
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
           borderBottom: 1,
           borderColor: "divider",
           padding: "10px",
         }}
       >
         <div>
-          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-            <Tab label="Add administrator" {...a11yProps(0)} sx={{ width: "150px" }} />
-            <Tab label="View Pharmacists Join Requests" {...a11yProps(1)} sx={{ width: "150px" }} />
-            <Tab label="Joined Pharmacists" {...a11yProps(2)} sx={{ width: "150px" }} />
-            <Tab label="Patients List" {...a11yProps(3)} sx={{ width: "150px" }} />
-            <Tab label="View All Medicines" {...a11yProps(4)} sx={{ width: "150px" }} />
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+          >
+            <Tab
+              label="Add administrator"
+              {...a11yProps(0)}
+              sx={{ width: "30%" }}
+            />
+            <Tab
+              label="View Pharmacists Join Requests"
+              {...a11yProps(1)}
+              sx={{ width: "30%" }}
+            />
+            <Tab
+              label="Joined Pharmacists"
+              {...a11yProps(2)}
+              sx={{ width: "30%" }}
+            />
+            <Tab
+              label="Patients List"
+              {...a11yProps(3)}
+              sx={{ width: "30%" }}
+            />
+            <Tab
+              label="View All Medicines"
+              {...a11yProps(4)}
+              sx={{ width: "30%" }}
+            />
           </Tabs>
         </div>
-      
       </Box>
       <CustomTabPanel value={value} index={0}>
         <AddAdmin />
@@ -92,8 +111,6 @@ export default function BasicTabs() {
       <CustomTabPanel value={value} index={4}>
         <MedicinesShow />
       </CustomTabPanel>
-
-
     </div>
   );
 }

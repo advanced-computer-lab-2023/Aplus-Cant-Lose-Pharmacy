@@ -20,6 +20,7 @@
     "date-fns": "^2.30.0",
     "day": "^0.0.2",
     "dayjs": "^1.11.10",
+    "downloadjs": "^1.4.7",
     "luxon": "^3.4.3",
     "moment": "^2.29.4",
     "moment-hijri": "^2.1.2",

@@ -10,6 +10,7 @@ const pharmacistInitial = {
   error: "",
   response: "",
   medicineList: [],
+  newPhId:0
 };
 
 export const addPharmacist = createAsyncThunk(
@@ -63,7 +64,7 @@ export const viewMedicine = createAsyncThunk(
   "pharmacist/viewMedicine",
   async () => {
     const response = await axios.get(
-      "http://localhost:8000/api/pharmacist/viewMedicine"
+      `${API_URL}/pharmacist/viewMedicine`
     );
     return response;
   }
@@ -108,6 +109,7 @@ export const pharmacist = createSlice({
       })
       .addCase(addPharmacist.fulfilled, (state, action) => {
         state.loading = false;
+        state.newPhId=action.payload.data.id;
       })
       .addCase(addPharmacist.rejected, (state, action) => {
         state.loading = false;

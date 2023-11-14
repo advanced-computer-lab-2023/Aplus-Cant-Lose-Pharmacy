@@ -9,10 +9,12 @@ import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 const ChangePass = () => {
   const [email, setEmail] = useState("");
   const { id, token } = useParams();
+  console.log(id, token);
   const snackbarMessage = useContext(SnackbarContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -47,57 +49,72 @@ const ChangePass = () => {
 
   return (
     <div style={styles.pageCenter}>
-      <div style={styles.container}>
-        <h1 style={styles.heading}>Change Password</h1>
-        <div style={styles.formContainer}>
-          <form onSubmit={handleSubmit} style={styles.form}>
-            <label htmlFor="password" style={styles.label}>
-              Password:
-            </label>
-            <div style={styles.passwordInputContainer}>
-              <OutlinedInput
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                required
-                style={styles.input}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton onClick={toggleShowPassword}>
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            </div>
-            <label htmlFor="password2" style={styles.label}>
-              Repeat Password:
-            </label>
-            <div style={styles.passwordInputContainer}>
-              <OutlinedInput
-                type={showPassword2 ? "text" : "password"}
-                required
-                id="password2"
-                name="password2"
-                style={styles.input}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton onClick={toggleShowPassword2}>
-                      {showPassword2 ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            </div>
-            <button type="submit" style={styles.button}>
-              Change Password
-            </button>
-          </form>
-        </div>
+    <div style={styles.container}>
+      <h1 style={styles.heading}>Change Password</h1>
+      <div style={styles.formContainer}>
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <label htmlFor="password" style={styles.label}>
+            Password:
+          </label>
+          <div style={styles.passwordInputContainer}>
+            <OutlinedInput
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              required
+              style={styles.input}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={toggleShowPassword}
+                    edge="end"
+                  >
+                    {showPassword ? (
+                      <VisibilityIcon />
+                    ) : (
+                      <VisibilityOffIcon />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </div>
+          <label htmlFor="password2" style={styles.label}>
+            Repeat Password:
+          </label>
+          <div style={styles.passwordInputContainer}>
+            <OutlinedInput
+              type={showPassword2 ? "text" : "password"}
+              required
+              id="password2"
+              name="password2"
+              style={styles.input}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={toggleShowPassword2}
+                    edge="end"
+                  >
+                    {showPassword2 ? (
+                      <VisibilityIcon />
+                    ) : (
+                      <VisibilityOffIcon />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </div>
+          <button type="submit" style={styles.button}>
+            Change Password
+          </button>
+        </form>
       </div>
     </div>
-  );
+  </div>
+);
 };
+
 
 const styles = {
   pageCenter: {

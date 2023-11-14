@@ -21,7 +21,7 @@ import RegisterAs from "./components/Authentication/RegisterAs";
 
 import RegisterAsPatient from "./components/Authentication/RegisterAsPatient";
 import RegisterAsPharmacist from "./components/Authentication/RegisterAsPharmacist";
-import UploadDocs from "./components/Authentication/Upload_docs";
+import Upload from "./components/pharmacist/Upload";
 
 import ResetPassword from "./components/Authentication/ResetPassword";
 import ChangePass from "./components/Authentication/ChangePass";
@@ -46,7 +46,8 @@ const router = createBrowserRouter(
       <Route path="/RegisterAs" element={<RegisterAs />} />
       <Route path="/RegisterAsPatient" element={<RegisterAsPatient />} />
       <Route path="/RegisterAsPharmacist" element={<RegisterAsPharmacist />} />
-      <Route path="/Upload_docs_Register" element={<UploadDocs />} />
+      
+      <Route path="/Upload" element={<Upload />} />
       <Route path="/Checkout" element={<Checkout />} />
       <Route path="/ViewOrder" element={<ViewOrder />} />
       <Route path="/Home" element={<HomeDirect />} />

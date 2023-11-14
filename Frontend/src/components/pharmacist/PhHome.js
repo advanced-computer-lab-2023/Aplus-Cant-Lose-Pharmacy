@@ -14,16 +14,16 @@ export default function PhHome() {
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(viewMedicine());
+  }, [dispatch]);
+
   const { medicineList } = useSelector((state) => state.pharmacist);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-
-  useEffect(() => {
-    dispatch(viewMedicine());
-  }, [dispatch]);
 
   console.log(medicineList)
 

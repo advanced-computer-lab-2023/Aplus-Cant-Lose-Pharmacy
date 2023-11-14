@@ -16,7 +16,7 @@ const ResetPassword = () => {
 
   const response=  dispatch(sendResetEmail(email));
   
-      if (response) {
+      if (response!==undefined ) {
         snackbarMessage("Check your email", "success");
         navigate("/Login");
       } else {

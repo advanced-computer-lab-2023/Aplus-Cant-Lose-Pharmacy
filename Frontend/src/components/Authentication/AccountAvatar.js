@@ -1,4 +1,5 @@
-import React, { useState,useEffect,useContext} from "react";
+// Import necessary libraries and constants
+import React, { useState, useEffect, useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import Popover from "@mui/material/Popover";
@@ -11,11 +12,15 @@ import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useDispatch, useSelector } from "react-redux";
-import {changePass} from "../../features/userSlice"
+import { changePass } from "../../features/userSlice";
 import { SnackbarContext } from "../../App";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../features/userSlice";
-
+import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import axios from "axios";
+import { API_URL } from "../../Consts";
 
 const myAccountStyles = {
   cursor: "pointer",
@@ -33,32 +38,44 @@ const myAccountStyles = {
 
 const containerStyles = {
   display: "flex",
-  justifyContent: "flex-end",
   alignItems: "center",
   height: "fit-content",
+  width: "fit-content",
   backgroundColor: "whitesmoke",
   borderRadius: "7px",
-  paddingRight: "15px",
-  paddingBottom: "2px",
-  paddingTop: "2px",
+  padding: "10px",
 };
 
-const avatarStyles = {
-  marginRight: "8px",
+const avatarStyles = {};
+
+const logoutButtonStyles = {
+  marginRight: "10px",
+
+  textDecoration: "underline",
+  position: "absolute", // Corrected typo in 'position'
+  right: "0px",
+fontSize  : "20px",
+  padding: "0px",
+  width:"fit-content",
+  color: "#ff0000", // Red color
 };
 
 const AccountAvatar = () => {
   const snackbarMessage = useContext(SnackbarContext);
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleLogout = () => {
-    // Dispatch the logout action and handle any other logout logic
-    dispatch(logout());
-    // Use navigate to redirect to the login page or wherever you want after logout
-    navigate('/login');
+    dispatch(logout())
+      .then(() => {
+        navigate("/Login");
+      })
+      .catch((error) => {
+        console.error("Logout error:", error);
+      });
   };
+
   const { username } = useSelector((state) => state.user);
-  console.log(username);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -66,11 +83,11 @@ const AccountAvatar = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [emptyFieldError, setEmptyFieldError] = useState(false);
-  useEffect(() => {
-    
-  }, [dispatch]);
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {}, [dispatch]);
+
   const isPasswordValid = (password) => {
-    // Check if the password meets the criteria
     const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$/;
     return passwordRegex.test(password);
   };
@@ -87,15 +104,19 @@ const AccountAvatar = () => {
     setOpenDialog(true);
     handleAvatarClose();
   };
-  
+
   const closeChangePasswordDialog = () => {
     setOpenDialog(false);
     setPasswordError("");
     setEmptyFieldError(false);
   };
-  
-  const savePassword = () => {
-    if (currentPassword === "" || newPassword === "" || confirmNewPassword === "") {
+
+  const savePassword = async () => {
+    if (
+      currentPassword === "" ||
+      newPassword === "" ||
+      confirmNewPassword === ""
+    ) {
       setEmptyFieldError(true);
       setPasswordError("");
       return;
@@ -115,31 +136,57 @@ const AccountAvatar = () => {
 
     if (!isPasswordValid(newPassword)) {
       setEmptyFieldError(false);
-      setPasswordError("Password must be at least 8 characters, contain an uppercase letter, and a special character (@#$%^&+=)");
+      setPasswordError(
+        "Password must be at least 8 characters, contain an uppercase letter, and a special character (@#$%^&+=)"
+      );
       return;
     }
 
-    // If all checks pass, you can proceed with the password change logic here
-    console.log("Password changed");
-    const response =dispatch(changePass({oldPassword:currentPassword , newPassword ,username }));
-    if (response===undefined) {
-      snackbarMessage("incorrect old Password", "error");
-    } else {
+    try {
+      const response = await axios.post(
+        `${API_URL}/changePass/${username}`,
+        { oldPassword: currentPassword, newPassword, username }
+      );
 
-      snackbarMessage("You have successfully added", "success");
+      console.log("Response:", response);
+
+      if (response.data.message) {
+        snackbarMessage("Password has been changed", "success");
+        closeChangePasswordDialog();
+        dispatch(logout()).then(()=>{        navigate("/Login");
+      })
+      } else {
+        snackbarMessage(
+          `An error occurred: ${response.data.error || "Unknown error"}`,
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error.response.data);
+      snackbarMessage(
+        `An error occurred: ${error.response.data.error || "Unknown error"}`,
+        "error"
+      );
     }
-    closeChangePasswordDialog();
   };
 
   return (
     <div sx={containerStyles}>
-      <Avatar src="/path-to-your-avatar-image.jpg" sx={avatarStyles} onClick={handleAvatarClick} />
-      <Typography component="span" onClick={handleAvatarClick} sx={myAccountStyles}>
+      <Avatar
+        src="/path-to-your-avatar-image.jpg"
+        sx={avatarStyles}
+        onClick={handleAvatarClick}
+      />
+      <Typography
+        component="span"
+        onClick={handleAvatarClick}
+        sx={myAccountStyles}
+      >
         Account
       </Typography>
-      <Link to="/logout" style={{ marginLeft: "10px", textDecoration: "none", color: "#007bff" }} onClick={handleLogout}>
+      <Button style={logoutButtonStyles} onClick={handleLogout}>
         Logout
-      </Link>
+      </Button>
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
@@ -164,31 +211,49 @@ const AccountAvatar = () => {
         <DialogContent>
           <TextField
             label="Current Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             fullWidth
             margin="normal"
-            value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
           />
           <TextField
             label="New Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             fullWidth
             margin="normal"
-            value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
           />
           <TextField
             label="Confirm New Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             fullWidth
             margin="normal"
-            value={confirmNewPassword}
             onChange={(e) => setConfirmNewPassword(e.target.value)}
             required
             error={emptyFieldError || passwordError !== ""}
             helperText={emptyFieldError ? "Must enter a value" : passwordError}
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
           />
         </DialogContent>
         <DialogActions>

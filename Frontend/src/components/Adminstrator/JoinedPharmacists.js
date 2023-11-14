@@ -11,11 +11,17 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { viewJoinedPh, deleteJPharmacist } from '../../features/adminSlice';
+import download from "downloadjs"; // Import download function
+import axios from "axios";
+import { API_URL } from "../../Consts.js";
 
 const JoinedPharmacist = () => {
   const dispatch = useDispatch();
+  const {id} = useSelector((state) => state.user);
+
   useEffect(() => {
     dispatch(viewJoinedPh())
+    console.log(id)
   }, [dispatch]);
   const dummyData = useSelector((state) => state.admin.phJoined);
 
@@ -24,6 +30,27 @@ const JoinedPharmacist = () => {
     ///dispatch delete from db> then the fullfilled delete from the current status 
     dispatch(deleteJPharmacist(id));
 
+  };
+  const handleDownload = async (drId) => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/pharmacist/downloadf/${drId}`,
+        {
+          responseType: "blob",
+        }
+      );
+  
+      // Extract filename from the Content-Disposition header
+      const contentDisposition = response.headers["content-disposition"];
+      const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+      const filename = filenameMatch ? filenameMatch[1] : "files.zip";
+  
+      // Download the file using the downloadjs library
+      download(response.data, filename, response.headers["content-type"]);
+    } catch (error) {
+      console.error("Error downloading files:", error);
+      // Handle error, e.g., show an error message to the user
+    }
   };
 
   return (
@@ -41,6 +68,8 @@ const JoinedPharmacist = () => {
               <TableCell>Rate</TableCell>
               <TableCell>affilation</TableCell>
               <TableCell>Background</TableCell>
+              <TableCell>documents</TableCell>
+
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
@@ -55,6 +84,15 @@ const JoinedPharmacist = () => {
                 <TableCell>{request.rate}</TableCell>
                 <TableCell>{request.affilation}</TableCell>
                 <TableCell>{request.background}</TableCell>
+                <TableCell><Button
+                    onClick={() => handleDownload(request._id)}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Download
+                  </Button>
+                </TableCell>
+
                 <TableCell>
                   <Button
                     onClick={() => handleDelete(request._id)}
@@ -63,6 +101,7 @@ const JoinedPharmacist = () => {
                   >
                     Delete
                   </Button>
+                
                 </TableCell>
               </TableRow>
             ))}
