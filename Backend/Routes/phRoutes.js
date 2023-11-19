@@ -130,7 +130,7 @@ router.post("/upload2", (req, res) => {
 const {
   addPharmacist,
   addMedicine,
-  updateMedicineDetails,
+  updateMedicineDetails,getAllPharmacistNames,getAllDoctorsNames
 } = require("../controllers/phController");
 
 router.post("/addPharmacist", addPharmacist);
@@ -140,10 +140,15 @@ router.put("/updateMedicineDetails/:id", updateMedicineDetails);
 const {
   viewMedicine,
   searchMedicineByName,
-  filterMedicineByUse,
+  filterMedicineByUse
 } = require("../controllers/userController");
+
 const { title } = require("process");
 router.get("/viewMedicine", viewMedicine);
+router.get("/getAllPharmacistNames", getAllPharmacistNames);
+router.get("/getAllDoctorsNames", getAllDoctorsNames);
+
+
 router.get("/searchMedicineByName", searchMedicineByName);
 router.get("/filterMedicineByUse", filterMedicineByUse);
 
@@ -206,4 +211,5 @@ function getMimeType(fileExtension) {
       return "application/octet-stream";
   }
 }
+
 module.exports = router;

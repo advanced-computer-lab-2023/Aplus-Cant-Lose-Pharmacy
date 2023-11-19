@@ -82,6 +82,8 @@ const addPatient = async (req, res) => {
       username,
       password: hashedPassword,
       role: "patient",
+      name:username,
+      email
     });
     const data = {
       _id: patient._id,

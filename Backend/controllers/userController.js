@@ -3,7 +3,8 @@ const Pharmacist = require("../Models/pharmacist.js");
 const Patient = require("../Models/patient.js");
 const Medicine = require("../Models/medicine.js");
 const Admin = require("../Models/admin.js");
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
+const asyncHandler = require("express-async-handler");
 
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -14,7 +15,6 @@ function generateToken(data) {
 }
 
 const sendResetEmail = async (req, res) => {
-
   const { username } = req.body;
   console.log(username);
 
@@ -31,7 +31,7 @@ const sendResetEmail = async (req, res) => {
   if (!user) {
     return res.send({ Status: "User not found" });
   }
-  
+
   const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET, {
     expiresIn: "1d",
   });
@@ -42,7 +42,7 @@ const sendResetEmail = async (req, res) => {
       pass: "xphjykxmoqljnpen",
     },
   });
-console.log(user.email);
+  console.log(user.email);
   var mailOptions = {
     from: "apluscantlose@gmail.com",
     to: user.email,
@@ -64,9 +64,9 @@ console.log(user.email);
 const changePass = async (req, res) => {
   const { username } = req.params;
   const { oldPassword, newPassword } = req.body;
-  console.log(username)
-  console.log(oldPassword)
-  console.log(newPassword)
+  console.log(username);
+  console.log(oldPassword);
+  console.log(newPassword);
 
   try {
     // Find the user by username
@@ -231,7 +231,7 @@ const login = async (req, res) => {
     const user = await User.findOne({ username });
     console.log(user);
     // Compare the provided password with the hashed password in the database
-    
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     console.log(isPasswordValid);
 
@@ -246,7 +246,7 @@ const login = async (req, res) => {
     const token = generateToken(data);
 
     // Fetch additional user data based on the user's role
-    let userData = { fUser: user }; // Initialize with the user data
+    let userData = { fUser: user,logId:user._id }; // Initialize with the user data
 
     switch (user.role) {
       case "admin":
@@ -271,10 +271,9 @@ const login = async (req, res) => {
 
       case "pharmacist":
         try {
-          const ph = await Pharmacist.findOne({ username :username});
+          const ph = await Pharmacist.findOne({ username: username });
           if (ph.status === "pending") throw error;
           userData.fUser = ph;
-
         } catch (error) {
           console.error("Error handling Pharmacist:", error);
           return res.status(500).json({ error: "Internal Server Error" });
@@ -306,7 +305,7 @@ const login = async (req, res) => {
 const updateUser = async (req, res) => {
   // Assuming you have a "userModel" defined somewhere, but it's not clear in your code
   // Also, the parameters for findOneAndUpdate need to be corrected
-  userModel.findOneAndUpdate(
+  User.findOneAndUpdate(
     { _id: req.params.donationID },
     req.body, // Update data
     { new: true }, // Return updated document
@@ -321,7 +320,7 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   // Assuming you have a "userModel" defined somewhere, but it's not clear in your code
-  userModel.deleteOne({ _id: req.params.donationID }, (err, donation) => {
+  User.deleteOne({ _id: req.params.donationID }, (err, donation) => {
     if (err) {
       res.status(500).json({ error: "Internal Server Error" });
     }
@@ -405,7 +404,7 @@ const logout = async (req, res) => {
     // Blacklist the token associated with the logged-out user
 
     // Clear the token cookie
- res.clearCookie("jwt");
+    res.clearCookie("jwt");
 
     res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
@@ -413,6 +412,25 @@ const logout = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const allUsers = asyncHandler(async (req, res) => {
+  try {
+    const keyword = req.query.search
+      ? {
+          $or: [
+            { name: { $regex: req.query.search, $options: "i" } },
+            { email: { $regex: req.query.search, $options: "i" } },
+            { username: { $regex: req.query.search, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const users = await User.find(keyword);
+    res.send(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 module.exports = {
   createUser,
@@ -426,5 +444,7 @@ module.exports = {
   login,
   sendResetEmail,
   changePass,
-  changePassword,logout
+  changePassword,
+  logout,
+  allUsers,
 };

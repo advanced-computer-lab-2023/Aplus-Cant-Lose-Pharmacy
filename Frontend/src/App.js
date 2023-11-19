@@ -2,6 +2,7 @@ import React, { useState, createContext, useContext } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import store from "./store";
+import "./App.css";
 
 import HomeDirect from "./HomeDirect";
 import AdminDirect from "./AdminDirect";
@@ -16,6 +17,7 @@ import "dayjs/plugin/weekOfYear";
 import "dayjs/plugin/customParseFormat";
 import "dayjs/plugin/localizedFormat";
 import "dayjs/plugin/isBetween";
+import { BrowserRouter as Router,  Routes } from "react-router-dom";
 
 import Login from "./components/Authentication/Login";
 import RegisterAs from "./components/Authentication/RegisterAs";
@@ -37,6 +39,7 @@ import {
 import Error from "./Error";
 import { Snackbar, Alert } from "@mui/material";
 import AddMedicine from "./components/pharmacist/AddMedicine";
+import Chatpage from "./Pages/Chatpage";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
@@ -54,6 +57,7 @@ const router = createBrowserRouter(
       <Route path="/Home" element={<HomeDirect />} />
       <Route path="/Medicine/add" element={<AddMedicine />} />
       <Route path="/Success/:userId/:address" element={<Success />} />
+      <Route path="/chats" element={<Chatpage/>} />
 
       <Route path="*" element={<Error />} />
     </Route>

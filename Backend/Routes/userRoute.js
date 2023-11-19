@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router(); // Create an instance of the Express router
-require("dotenv").config();
-const {login }= require("../controllers/userController");
+const {login,allUsers }= require("../controllers/userController");
+router.route("/users").get(allUsers);
 
 
 router.post("/login",login);

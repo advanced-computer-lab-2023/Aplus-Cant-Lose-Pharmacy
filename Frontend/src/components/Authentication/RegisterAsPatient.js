@@ -35,7 +35,7 @@ function RegisterAsPatient() {
     const response = dispatch(addPatient(sampleData));
     response.then((responseData) => {
       console.log(responseData);
-      if (responseData.payload.status < 300) {
+      if (responseData.payload!==undefined) {
         snackbarMessage("You have successfully registered", "success");
         navigate("/login");
       } else {

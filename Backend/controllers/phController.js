@@ -2,6 +2,8 @@ const Pharmacist = require("../Models/pharmacist");
 const User = require("../Models/user");
 const Medicine = require("../Models/medicine");
 const Patient = require("../Models/patient");
+const Doctor = require("../Models/doctor");
+
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
@@ -87,7 +89,7 @@ const addPharmacist = async (req, res) => {
 
     // Create the new user
     const newUser = await User.create({
-      username,
+      username,name,email,
       password: hashedPassword,
       role: "pharmacist",
     });
@@ -131,6 +133,31 @@ const addMedicine = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const getAllPharmacistNames = async (req,res) => {
+  try {
+    const allPharmacists = await Pharmacist.find({}, 'name'); // Retrieve only the 'name' field for all pharmacist documents
+    const pharmacistNames = allPharmacists.map(pharmacist => pharmacist.name); // Extract only the names
+
+    res.status(200).json(pharmacistNames);
+  } catch (error) {
+    // Handle errors here
+    console.error('Error fetching pharmacist names:', error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getAllDoctorsNames = async (req,res) => {
+  try {
+    const allPharmacists = await Doctor.find({}, 'name'); // Retrieve only the 'name' field for all pharmacist documents
+    const pharmacistNames = allPharmacists.map(pharmacist => pharmacist.name); // Extract only the names
+
+    res.status(200).json(pharmacistNames);
+  } catch (error) {
+    // Handle errors here
+    console.error('Error fetching pharmacist names:', error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 const updateMedicineDetails = async (req, res) => {
   try {
     const id = req.params.id; // Get the ID from request parameters
@@ -159,4 +186,4 @@ const updateMedicineDetails = async (req, res) => {
   }
 };
 
-module.exports = { addPharmacist, addMedicine, updateMedicineDetails };
+module.exports = { addPharmacist, addMedicine, updateMedicineDetails,getAllPharmacistNames ,getAllDoctorsNames};

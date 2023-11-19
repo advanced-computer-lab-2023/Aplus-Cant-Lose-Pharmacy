@@ -41,7 +41,7 @@ function RegisterAsPharmacist() {
     const response = dispatch(addPharmacist(sampleData));
     response.then((responseData) => {
       console.log(responseData);
-      if (responseData.payload.status < 300) {
+      if (responseData.payload !==undefined) {
         snackbarMessage(
           "You have successfully applied but please continue other documents uploads",
           "success"

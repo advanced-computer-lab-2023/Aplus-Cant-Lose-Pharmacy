@@ -5,7 +5,6 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import { NavLink } from "react-router-dom";
 
 export default function Start() {
@@ -20,7 +19,6 @@ export default function Start() {
             aria-label="menu"
             sx={{ mr: 'auto' }}
           >
-            <MenuIcon />
           </IconButton>
 
           <NavLink exact to="/Login">

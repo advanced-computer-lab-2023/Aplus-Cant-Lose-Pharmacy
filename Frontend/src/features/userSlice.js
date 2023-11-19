@@ -8,10 +8,12 @@ const userInitial = {
   username: "",
   password: "",
   role: "",
-  token:"",
+  token: "",
   error: false,
   response: "",
   id: 0,
+  name:"",
+  logId: 0,
 };
 export const sendResetEmail = createAsyncThunk(
   "user/sendResetEmail",
@@ -47,7 +49,6 @@ export const changePassword = createAsyncThunk(
           password: data.password,
         }
       );
-
 
       return response;
     } catch (error) {
@@ -114,23 +115,27 @@ const user = createSlice({
       .addCase(loginGuest.pending, (state) => {
         state.loading = true;
         state.error = false;
-
       })
       .addCase(loginGuest.fulfilled, (state, action) => {
         state.loading = false;
         state.logged = true;
         state.role = action.payload.data.role;
         state.username = action.payload.data.userData.fUser.username;
+        state.name = action.payload.data.userData.fUser.name;
         state.id = action.payload.data.userData.fUser._id;
         state.error = false;
         state.token = action.payload.data.token;
-
-        localStorage.setItem("user", JSON.stringify({
-          username: state.username,
-          role: state.role,
-          id: state.id,
-          token: state.token,
-        }));
+        state.logId = action.payload.data.userData.logId;
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: state.username,
+            role: state.role,
+            id: state.id,
+            logId: state.logId,
+            token: state.token,
+          })
+        );
         console.log(action.payload);
       })
       .addCase(loginGuest.rejected, (state, action) => {
@@ -165,7 +170,6 @@ const user = createSlice({
       console.log(action.payload);
       console.log(state);
     });
-  
   },
 });
 

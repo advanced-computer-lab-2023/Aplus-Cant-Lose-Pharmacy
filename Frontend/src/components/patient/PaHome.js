@@ -9,6 +9,8 @@ import Medicine from "./Medicine";
 import Cart from "./Cart";
 import Orders from "./Orders";
 import { useDispatch, useSelector } from "react-redux";
+import Chatpage from "../../Pages/Chatpage";
+
 import { viewCart, viewMedicine, getPatientOrders } from "../../features/patientSlice";
 
 export default function PhHome() {
@@ -34,6 +36,7 @@ export default function PhHome() {
   
   const { cart } = useSelector((state) => state.patient);
   const { orders } = useSelector((state) => state.patient);
+  
 
 
   useEffect(() => {
@@ -60,6 +63,8 @@ export default function PhHome() {
             <Tab label="Medicine list" value="1" />
             <Tab label="View cart" value="2" />
             <Tab label="View orders" value="3" />
+            <Tab label="View chats" value="4" />
+
           </TabList>
         </Box>
         <TabPanel value="1">
@@ -70,6 +75,9 @@ export default function PhHome() {
         </TabPanel>
         <TabPanel value="3">
           <Orders orders={orders} />
+        </TabPanel>
+        <TabPanel value="4">
+          <Chatpage  />
         </TabPanel>
       </TabContext>
     </Box>
