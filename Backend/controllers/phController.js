@@ -5,6 +5,7 @@ const Patient = require("../Models/patient");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
+const Order = require('../Models/orders');
 
 function generateToken(data) {
     return jwt.sign(data, process.env.TOKEN_SECRET);
@@ -159,4 +160,54 @@ const updateMedicineDetails = async (req, res) => {
   }
 };
 
-module.exports = { addPharmacist, addMedicine, updateMedicineDetails };
+const getOrdersInMonth = async (req, res) => {
+  try {
+    const { month, year } = req.body;
+
+    // Calculate the start and end dates of the specified month
+    const startDate = new Date(`${year}-${month}-01`);
+    var nextmonth = month + 1;
+    var nextyear = year;
+    if(month == 12){
+      nextmonth = 1;
+      nextyear += 1;
+    }
+    const endDate = new Date(`${nextyear}-${nextmonth}-01`);
+
+    // Find orders within the specified date range
+    const orders = await Order.find({
+      orderDate: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+    }).populate({
+      path: 'cart.medicineID',
+      model: 'Medicine',
+    });
+
+    if (!orders) {
+      return res.status(404).json({ error: 'No orders found for the specified month' });
+    }
+
+    // Extract order details with medicine information
+    const ordersWithMedicine = orders.map((order) => ({
+      orderDate: order.orderDate,
+      cart: order.cart.map((item) => {
+        const medicine = item.medicineID;
+
+        return {
+          name: medicine.name,
+          price: medicine.price,
+          amount: item.amount,
+        };
+      }),
+    }));
+
+    return res.status(200).json(ordersWithMedicine);
+  } catch (error) {
+    console.error('Error fetching orders:', error.message);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+module.exports = { addPharmacist, addMedicine, updateMedicineDetails, getOrdersInMonth };
