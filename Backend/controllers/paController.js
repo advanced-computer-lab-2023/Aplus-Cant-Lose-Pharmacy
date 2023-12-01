@@ -3,6 +3,7 @@ const User = require("../Models/user");
 const Pharmacist = require("../Models/pharmacist");
 const Order = require("../Models/orders");
 const Medicine = require("../Models/medicine");
+const Prescription = require("../Models/prescription");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -580,6 +581,54 @@ const createCartCheckoutSession= async(req,res)=>
   }
 }
 
+const viewMedicineOTC = async (req, res) => {
+  try {
+    // Filter medicines by type "Over the counter"
+    const medicines = await Medicine.find({ type: "Over the counter" });
+
+    if (!medicines || medicines.length === 0) {
+      return res.status(404).json({ message: "No Over the counter medicines found" });
+    }
+
+    console.log(medicines);
+    res.status(200).json({ message: "Over the counter medicines retrieved successfully", medicines });
+  } catch (error) {
+    console.error("Error fetching Over the counter medicines:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const viewPrescriptionMedicines = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+
+    // Find prescriptions for the given patientId
+    const prescriptions = await Prescription.find({ patientID: patientId, status: "unfilled" });
+
+    if (!prescriptions || prescriptions.length === 0) {
+      return res.status(404).json({ message: "No unfilled prescriptions found for the patient" });
+    }
+
+    // Extract medicine IDs from prescriptions
+    const medicineIds = prescriptions.map(prescription => prescription.medID);
+
+    // Find medicines with type "Prescription" and matching IDs
+    const prescriptionMedicines = await Medicine.find({ type: "Prescription", _id: { $in: medicineIds } });
+
+    if (!prescriptionMedicines || prescriptionMedicines.length === 0) {
+      return res.status(404).json({ message: "No prescription medicines found for the patient" });
+    }
+
+    res.status(200).json({ message: "Prescription medicines retrieved successfully", prescriptionMedicines });
+  } catch (error) {
+    console.error("Error fetching prescription medicines:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
+
 module.exports = {
   addPatient,
   addMedicineToCart,
@@ -593,5 +642,7 @@ module.exports = {
   getOrderDetailsById,
   cancelOrder,
   getWallet,
-  createCartCheckoutSession
+  createCartCheckoutSession,
+  viewMedicineOTC,
+  viewPrescriptionMedicines
 };
