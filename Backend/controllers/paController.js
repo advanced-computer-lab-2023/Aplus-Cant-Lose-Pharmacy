@@ -8,6 +8,8 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const stripe=require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+const nodemailer = require("nodemailer");
+
 
 
 function generateToken(data) {
@@ -372,12 +374,62 @@ const payForCart = async (req, res) => {
       if (!medicine) {
         throw new Error(`Medicine with ID ${medicineID} not found`);
       }
+
+      // Check if the medicine is running out
+      if (medicine.amount - amount <= 0) {
+        // Notify each pharmacist that the medicine ran out
+        const pharmacists = await Pharmacist.find(); // Assuming there is a 'Pharmacist' model
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_FROM,
+            pass: process.env.Password,
+          },
+        });
+
+        pharmacists.forEach((pharmacist) => {
+          const mailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: pharmacist.email, // Assuming the pharmacist has an 'email' field
+            subject: "Medicine Ran Out Notification",
+            text: `Dear Pharmacist,
+
+            The medicine "${medicine.name}" has run out of stock.
+
+            Sincerely,
+            El7a2ni Pharmacy`,
+          };
+
+          // Send the email
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log(`Email sent to ${pharmacist.email}: ${info.response}`);
+            }
+          });
+        });
+      }
+
       const itemPrice = medicine.price * amount;
 
       // Update the medicine's amount and sales
       medicine.amount -= amount;
       medicine.sales += amount;
       await medicine.save();
+
+      // Check if the medicine was prescribed to the patient
+      const prescription = await Prescription.findOne({
+        medID: medicineID,
+        patientID: userId,
+        status: "unfilled",
+      });
+
+      if (prescription) {
+        // Update the prescription status to "filled"
+        prescription.status = "filled";
+        await prescription.save();
+      }
 
       return itemPrice;
     })).then((prices) => prices.reduce((acc, price) => acc + price, 0));
@@ -416,6 +468,7 @@ const payForCart = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 const getPatientOrders = async (req, res) => {
