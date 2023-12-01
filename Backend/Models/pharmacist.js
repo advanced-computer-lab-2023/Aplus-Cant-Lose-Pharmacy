@@ -51,6 +51,10 @@ const phSchema = new mongoose.Schema(
       enum: ["pending", "accepted", "rejected"], // Define allowed values for the 'role' field
       default: "pending",
     },
+    wallet:{
+      type: Number,
+      default: 0, 
+    }
   }
 );
 

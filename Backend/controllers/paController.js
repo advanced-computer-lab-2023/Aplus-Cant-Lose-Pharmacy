@@ -647,6 +647,33 @@ const viewPrescriptionMedicines = async (req, res) => {
   }
 };
 
+const getMedicinesByActiveElement = async (req, res) => {
+  try {
+    const { medicineId } = req.params;
+
+    // Find the medicine by medicineId
+    const selectedMedicine = await Medicine.findById(medicineId);
+
+    if (!selectedMedicine) {
+      return res.status(404).json({ error: "Medicine not found" });
+    }
+
+    const activeElement = selectedMedicine.activeElement;
+
+    // Find other medicines with the same activeElement
+    const similarMedicines = await Medicine.find({
+      activeElement: activeElement,
+      _id: { $ne: medicineId }, // Exclude the selected medicine
+    });
+
+    return res.status(200).json({ similarMedicines });
+  } catch (error) {
+    console.error("Error fetching similar medicines:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 
 
 
@@ -666,5 +693,6 @@ module.exports = {
   createCartCheckoutSession,
   viewMedicineOTC,
   viewPrescriptionMedicines,
-  getPastPatientOrders
+  getPastPatientOrders,
+  getMedicinesByActiveElement
 };

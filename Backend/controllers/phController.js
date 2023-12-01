@@ -212,4 +212,25 @@ const getOrdersInMonth = async (req, res) => {
   }
 };
 
-module.exports = { addPharmacist, addMedicine, updateMedicineDetails, getOrdersInMonth };
+const pharmacistGetWallet = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find the pharmacist by userId
+    const pharmacist = await Pharmacist.findById(userId);
+
+    if (!pharmacist) {
+      return res.status(404).json({ error: "Pharmacist not found" });
+    }
+
+    // Extract wallet from the pharmacist object
+    const wallet = pharmacist.wallet;
+
+    res.status(200).json({ wallet });
+  } catch (error) {
+    console.error("Error getting wallet:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+module.exports = { addPharmacist, addMedicine, updateMedicineDetails, getOrdersInMonth, pharmacistGetWallet };
