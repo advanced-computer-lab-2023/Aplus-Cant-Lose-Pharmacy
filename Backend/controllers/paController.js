@@ -430,7 +430,28 @@ const getPatientOrders = async (req, res) => {
     }
 
     // Fetch patient's orders and extract necessary details
-    const orders = await Order.find({ pID: userId }).select('_id orderDate address totalPrice');
+    const orders = await Order.find({ pID: userId, status: "undelivered" }).select('_id orderDate address totalPrice');
+
+    return res.status(200).json({ orders });
+  } catch (error) {
+    console.error("Error fetching patient orders:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getPastPatientOrders = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find the patient by userId
+    const patient = await Patient.findById(userId);
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    // Fetch patient's orders and extract necessary details
+    const orders = await Order.find({ pID: userId, status: "delivered" }).select('_id orderDate address totalPrice');
 
     return res.status(200).json({ orders });
   } catch (error) {
@@ -644,5 +665,6 @@ module.exports = {
   getWallet,
   createCartCheckoutSession,
   viewMedicineOTC,
-  viewPrescriptionMedicines
+  viewPrescriptionMedicines,
+  getPastPatientOrders
 };
