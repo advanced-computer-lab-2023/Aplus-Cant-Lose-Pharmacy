@@ -42,6 +42,7 @@ export const addMedicine = createAsyncThunk(
       name: data.name,
       amount: data.amount,
       imgurl: data.imgurl,
+      type: data.type,
     });
 
     return response;

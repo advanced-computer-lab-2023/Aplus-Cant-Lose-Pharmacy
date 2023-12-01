@@ -38,11 +38,7 @@ import { SnackbarContext } from "../../App";
 import { viewCart } from "../../features/patientSlice";
 import { NavLink } from "react-router-dom";
 
-import {
-  deleteMedicine,
-  updateMedicineDetails,
-  editMedicine,
-} from "../../features/pharmacistSlice";
+
 import {
   addMedicineToCart,
   decreaseMedicine,

@@ -4,52 +4,53 @@ import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../Consts.js";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Typography } from "@mui/material";
 import { addMedicine } from "../../features/pharmacistSlice";
 import { SnackbarContext } from "../../App";
 import Error from "../../Error";
 const uploadButtonStyle = {
-  backgroundColor: '#4CAF50',
-  color: 'white',
-  padding: '10px 15px',
-  borderRadius: '5px',
-  cursor: 'pointer',
-  marginTop: '10px', 
-  width:"20%"// Add margin-top for spacing
+  backgroundColor: "#4CAF50",
+  color: "white",
+  padding: "10px 15px",
+  borderRadius: "5px",
+  cursor: "pointer",
+  marginTop: "10px",
+  width: "20%", // Add margin-top for spacing
 };
 const AddMedicine = (params) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const snackbarMessage = useContext(SnackbarContext);
-  const {role} = useSelector(state => state.user);
+  const { role } = useSelector((state) => state.user);
 
   const [imgUrl, setImgUrl] = useState(""); // Add this line
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
-  
+
     reader.onloadend = () => {
       const base64data = reader.result;
-      console.log('Base64 Image Data:', base64data);
+      console.log("Base64 Image Data:", base64data);
       setImgUrl(base64data);
     };
-  
+
     if (file) {
       reader.readAsDataURL(file);
     }
   };
-  
+
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+
     const formData = new FormData();
     formData.append("file", event.target.elements.imgFile.files[0]);
-  
+
     axios
       .post(`${API_URL}/pharmacist/upload2`, formData)
-      .then((uploadResponse) => { // Renamed to uploadResponse
+      .then((uploadResponse) => {
+        // Renamed to uploadResponse
         const imgText = uploadResponse.data;
         const sampleData = {
           activeElement: event.target.elements.activeElement.value,
@@ -58,8 +59,9 @@ const AddMedicine = (params) => {
           name: event.target.elements.name.value,
           amount: event.target.elements.amount.value,
           imgurl: imgText, // Use the text received from the backend
+          type: event.target.elements.type.value,
         };
-  
+
         const addMedicineResponse = dispatch(addMedicine(sampleData)); // Renamed to addMedicineResponse
         addMedicineResponse.then((responseData) => {
           if (responseData.payload.status < 300) {
@@ -75,13 +77,12 @@ const AddMedicine = (params) => {
       });
   };
   const fileInputStyle = {
-    display: 'none',
+    display: "none",
   };
-  return (
-    role === "pharmacist" ? (
+  return role === "pharmacist" ? (
     <form className="form" onSubmit={handleSubmit}>
       <div className="form-body">
-      <label className="form__label" for="name">
+        <label className="form__label" for="name">
           name
         </label>
         <input style={{ width: "92%" }} type="text" id="name" required />
@@ -90,20 +91,37 @@ const AddMedicine = (params) => {
         <label for="use">Medicinal use</label>
         <input style={{ width: "92%" }} type="text" id="use" required />
 
-    
-
         <label className="form__label" for="price">
           Price
         </label>
-        <input type="number" id="price" required  style={{width:"94%",borderRadius:"3px"}} />
-
-      
+        <input
+          type="number"
+          id="price"
+          required
+          style={{ width: "94%", borderRadius: "3px" }}
+        />
 
         <label className="form__label" for="amount">
           Available Quantity{" "}
         </label>
-        <input type="number" id="amount" required style={{width:"94%",borderRadius:"3px"}} />
+        <input
+          type="number"
+          id="amount"
+          required
+          style={{ width: "94%", borderRadius: "3px" }}
+        />
 
+        <label className="form__label" for="type">
+          Type{" "}
+        </label>
+        <select
+          id="type"
+          required
+          style={{ width: "94%", borderRadius: "3px" }}
+        >
+          <option value="Prescription">Prescription</option>
+          <option value="Over the counter">Over the counter</option>
+        </select>
         <label className="form__label" htmlFor="imgFile">
           Image File
         </label>
@@ -112,13 +130,16 @@ const AddMedicine = (params) => {
           type="file"
           id="imgFile"
           name="imgFile"
-          
           accept="image/*"
           onChange={handleFileChange}
           style={fileInputStyle}
         />
-    
-    <img src={imgUrl} alt="Uploaded Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+
+        <img
+          src={imgUrl}
+          alt="Uploaded Preview"
+          style={{ maxWidth: "100%", maxHeight: "200px" }}
+        />
 
         <label htmlFor="imgFile" style={uploadButtonStyle}>
           Upload Image
@@ -129,7 +150,9 @@ const AddMedicine = (params) => {
           Add
         </button>
       </div>
-    </form>):      <>
+    </form>
+  ) : (
+    <>
       <Link to="/Login" sx={{ left: "100%" }}>
         <Typography
           variant="h6"
@@ -148,6 +171,5 @@ const AddMedicine = (params) => {
     </>
   );
 };
-
 
 export default AddMedicine;

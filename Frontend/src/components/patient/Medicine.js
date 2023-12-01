@@ -36,11 +36,7 @@ import axios from "axios";
 import { API_URL } from "../../Consts.js";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { viewMedicine } from "../../features/adminSlice";
-import {
-  deleteMedicine,
-  updateMedicineDetails,
-  editMedicine,
-} from "../../features/pharmacistSlice";
+
 import{ addMedicineToCart } from "../../features/patientSlice";
 import { AutoFixNormal } from "@mui/icons-material";
 const SearchIconWrapper = styled("div")(({ theme }) => ({
@@ -185,32 +181,7 @@ function BasicTable({ nameFilter, useFilter }) {
     // This will log the updated id value
   }, [medicineList]);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const sampleData = {
-      activeElement: event.target.elements.activeElement.value,
-      price: event.target.elements.price.value,
-      use: event.target.elements.use.value,
-      name: event.target.elements.name.value,
-      amount: event.target.elements.amount.value,
-      imgurl: event.target.elements.imgurl.value,
-
-      id: id,
-    };
-
-    dispatch(editMedicine({ idx: idx, newData: sampleData }));
-    const response = dispatch(updateMedicineDetails(sampleData));
-
-    response.then((responseData) => {
-      if (responseData.payload === undefined) {
-        snackbarMessage(`error: ${responseData} has occurred`, "error");
-      } else {
-        snackbarMessage("You have successfully edited", "success");
-      }
-    });
-    setIsOpen(false);
-  };
+ 
 
   const HandleAdd = async (id, pid) => {
     try {

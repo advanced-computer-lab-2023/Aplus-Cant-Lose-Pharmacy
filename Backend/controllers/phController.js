@@ -109,7 +109,7 @@ const addPharmacist = async (req, res) => {
 
 const addMedicine = async (req, res) => {
   try {
-    const { activeElement, price, use, name, amount, imgurl } = req.body;
+    const { activeElement, price, use, name, amount, imgurl, type } = req.body;
     const nameFound = await Medicine.findOne({ name: name });
     if (nameFound) {
       res.status(400).json({ error: "Medicine already exists" });
@@ -122,6 +122,7 @@ const addMedicine = async (req, res) => {
       name,
       amount,
       imgurl,
+      type
     });
     console.log(medicine);
     res
@@ -135,7 +136,7 @@ const addMedicine = async (req, res) => {
 const updateMedicineDetails = async (req, res) => {
   try {
     const id = req.params.id; // Get the ID from request parameters
-    const { name, activeElement, price, use, amount, imgurl } = req.body;
+    const { name, activeElement, price, use, amount, imgurl, type } = req.body;
 
     // Use findByIdAndUpdate to find and update the medicine
     const updatedMedicine = await Medicine.findByIdAndUpdate(id, {
@@ -146,6 +147,7 @@ const updateMedicineDetails = async (req, res) => {
         use: use,
         amount: amount,
         imgurl: imgurl,
+        type: type
       },
     }, { new: true }); // { new: true } returns the updated document
 

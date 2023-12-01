@@ -40,11 +40,7 @@ import { viewCart } from "../../features/patientSlice";
 import { NavLink } from "react-router-dom";
 import ViewOrder from "./ViewOrder";
 
-import {
-  deleteMedicine,
-  updateMedicineDetails,
-  editMedicine,
-} from "../../features/pharmacistSlice";
+
 import {
   addMedicineToCart,
   decreaseMedicine,
