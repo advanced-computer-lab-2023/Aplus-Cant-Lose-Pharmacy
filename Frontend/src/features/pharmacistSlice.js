@@ -6,7 +6,7 @@ const pharmacistInitial = {
   loading: false,
   username: "none",
   password: "none",
-  role: "none",
+  role: "pharmacist",
   error: "",
   response: "",
   medicineList: [],
@@ -59,12 +59,20 @@ export const updateMedicineDetails = createAsyncThunk(
     return response;
   }
 );
+export const archiveMedicine = createAsyncThunk(
+  "pharmacist/archiveMedicine",
+  async ({id,endpoint}) => {
+ await axios.put(`${API_URL}/pharmacist/${endpoint}/${id}`);
+const response= await axios.get(`${API_URL}/pharmacist/viewMedicineAll`);
+    return response;
+  }
+);
 
 export const viewMedicine = createAsyncThunk(
   "pharmacist/viewMedicine",
   async () => {
     const response = await axios.get(
-      `${API_URL}/pharmacist/viewMedicine`
+      `${API_URL}/pharmacist/viewMedicineAll`
     );
     return response;
   }
@@ -101,6 +109,16 @@ export const pharmacist = createSlice({
         ...action.payload.newData,
       };
     },
+
+    archive: (state, action) => {
+      const index = action.payload;
+      const currentStatus = state.medicineList[index].status;
+    
+      // Toggle the status between 'archived' and 'unarchived'
+      state.medicineList[index].status =
+        currentStatus === 'archived' ? 'unarchived' : 'archived';
+    }
+    
   },
   extraReducers: (builder) => {
     builder
@@ -153,8 +171,17 @@ export const pharmacist = createSlice({
         state.loading = false;
         console.log(action.message);
       });
+      builder
+    
+      .addCase(archiveMedicine.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload.data && action.payload.data.medicines) {
+          state.medicineList = action.payload.data.medicines;
+          console.log(state.medicineList);
+        }
+      })
   },
 });
 
 export default pharmacist.reducer;
-export const { login, deleteMedicine, editMedicine } = pharmacist.actions;
+export const { login, deleteMedicine, editMedicine,archive } = pharmacist.actions;

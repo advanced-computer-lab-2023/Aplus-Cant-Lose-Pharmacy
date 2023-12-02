@@ -332,6 +332,19 @@ module.exports = { createUser, getUser, updateUser, deleteUser };
 
 const viewMedicine = async (req, res) => {
   try {
+    const medicines = await Medicine.find({status:"unarchived"});
+    console.log(medicines);
+    res
+      .status(200)
+      .json({ message: "Medicines retrieved successfully", medicines });
+  } catch (error) {
+    console.error("Error fetching medicines:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const viewMedicineAll = async (req, res) => {
+  try {
     const medicines = await Medicine.find();
     console.log(medicines);
     res
@@ -342,6 +355,7 @@ const viewMedicine = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 const searchMedicineByName = async (req, res) => {
   try {
@@ -446,5 +460,5 @@ module.exports = {
   changePass,
   changePassword,
   logout,
-  allUsers,
+  allUsers,viewMedicineAll
 };

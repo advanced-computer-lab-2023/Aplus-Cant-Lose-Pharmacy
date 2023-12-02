@@ -35,8 +35,7 @@ export default function PhHome() {
           <TabList onChange={handleChange} aria-label="lab API tabs example">
             <Tab label="Medicine list" value="1" />
             <Tab label="chat Page" value="2" />
-            <Tab label="Item Three" value="3" />
-            <Tab label="Item four" value="4" />
+    
 
           </TabList>
         </Box>

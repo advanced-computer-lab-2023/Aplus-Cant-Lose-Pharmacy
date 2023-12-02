@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require('dotenv').config(); // This loads the variables from .env into process.env
+const Medicine = require("./Models/medicine");
 
 const messageRoutes = require("./Routes/messageRoutes");
 const path = require("path");
@@ -9,6 +10,7 @@ mongoose.set("strictQuery", false);
 
 const connectDB = require("./config/db");
 const MongoURI = process.env.MONGO_URI;
+
 
 // App variables
 const app = express();
@@ -28,7 +30,7 @@ connectDB()
 const server=  app.listen(port, () => {
   console.log(`Listening to requests on http://localhost:${port}`);
 });
-
+app.use('/public', express.static(path.join(__dirname, 'public')));
 // Routes
 const { login, sendResetEmail, changePassword, changePass, logout } = require("./controllers/userController");
 app.post('/api/login', login);
@@ -46,6 +48,7 @@ app.use("/api/admin", adRouter);
 
 const paRouter = require("./Routes/paRoutes");
 app.use("/api/patient", paRouter);
+
 
 const phRouter = require("./Routes/phRoutes");
 app.use("/api/pharmacist", phRouter);

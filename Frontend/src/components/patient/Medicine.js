@@ -240,15 +240,15 @@ function BasicTable({ nameFilter, useFilter }) {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Price</TableCell>
-            <TableCell align="right">Use</TableCell>
-            <TableCell align="right">Active Elements</TableCell>
-            <TableCell align="right">Amount</TableCell>
-            <TableCell align="right" sx={{ paddingRight: "0px" }}>
-              Image Link
+            <TableCell sx={{fontWeight:"bold",fontSize:"20px"}}>Name</TableCell>
+            <TableCell align="right" sx={{fontWeight:"bold",fontSize:"20px"}}>Price</TableCell>
+            <TableCell align="right" sx={{fontWeight:"bold",fontSize:"20px"}}>Use</TableCell>
+            <TableCell align="right" sx={{fontWeight:"bold",fontSize:"20px"}}>Active Elements</TableCell>
+            <TableCell align="right" sx={{fontWeight:"bold",fontSize:"20px"}}>Amount</TableCell>
+            <TableCell align="right" sx={{width:'20%',fontWeight:"bold",fontSize:"20px" }}>
+              Image 
             </TableCell>
-            <TableCell align="right">Add to cart</TableCell>
+            <TableCell align="right"  sx={{fontWeight:"bold",fontSize:"20px"}}>Add to cart</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -273,26 +273,28 @@ function BasicTable({ nameFilter, useFilter }) {
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>
-                <TableCell align="right">{row.price}</TableCell>
-                <TableCell align="right">{row.use}</TableCell>
-                <TableCell align="right">{row.activeElement}</TableCell>
-                <TableCell align="right">{row.amount}</TableCell>
-                <TableCell align="right" sx={{ paddingRight: "4px" }}>
-                  <Button
-                    onClick={() => handleDownload(row._id)}
-                    variant="contained"
-                    color="primary"
-                  >
-                    Download
-                  </Button>
-                </TableCell>
+                <TableCell align="right" sx={{fontSize:"18px"}}>{row.price}</TableCell>
+                <TableCell align="right" sx={{fontSize:"18px"}}>{row.use}</TableCell>
+                <TableCell align="right" sx={{fontSize:"18px"}}>{row.activeElement}</TableCell>
+                <TableCell align="right" sx={{fontSize:"18px"}}>{row.amount}</TableCell>
+                <TableCell align="right" sx={{  }}>
+                    {/* Display the image directly */}
+                    <img
+                      src={`/public/${row.imgurl}`}
+                      alt="medicine"
+                      style={{
+                        width: "70%",
+                        height: "70%",
+                      }}
+                
+                    />
+                  </TableCell>
                 <TableCell align="right" >
                   <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      flexWrap: "wrap",
-                      marginLeft: "auto"
+              
+                  
+                      maraginLeft:"0px"
                     }}
                   >
                     <IconButton

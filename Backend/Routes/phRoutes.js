@@ -112,9 +112,18 @@ const storage = multer.diskStorage({
     );
   },
 });
+const storage2 = multer.diskStorage({
+  destination: "./public",
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
 
 const upload2 = multer({
-  storage: storage,
+  storage: storage2,
 }).single("file");
 
 router.post("/upload2", (req, res) => {
@@ -140,11 +149,11 @@ router.put("/updateMedicineDetails/:id", updateMedicineDetails);
 const {
   viewMedicine,
   searchMedicineByName,
-  filterMedicineByUse
+  filterMedicineByUse,viewMedicineAll
 } = require("../controllers/userController");
 
 const { title } = require("process");
-router.get("/viewMedicine", viewMedicine);
+router.get("/viewMedicineAll", viewMedicineAll);
 router.get("/getAllPharmacistNames", getAllPharmacistNames);
 router.get("/getAllDoctorsNames", getAllDoctorsNames);
 
@@ -211,5 +220,44 @@ function getMimeType(fileExtension) {
       return "application/octet-stream";
   }
 }
+router.put('/archive/:id', async (req, res) => {
+  const medicineId = req.params.id;
 
+  try {
+    const medicine = await Medicine.findByIdAndUpdate(
+      medicineId,
+      { $set: { status: 'archived' } },
+      { new: true }
+    );
+
+    if (!medicine) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
+
+    return res.json({ message: 'Medicine archived successfully', medicine });
+  } catch (error) {
+    console.error('Error archiving medicine:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+router.put('/unarchive/:id', async (req, res) => {
+  const medicineId = req.params.id;
+
+  try {
+    const medicine = await Medicine.findByIdAndUpdate(
+      medicineId,
+      { $set: { status: 'unarchived' } },
+      { new: true }
+    );
+
+    if (!medicine) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
+
+    return res.json({ message: 'Medicine archived successfully', medicine });
+  } catch (error) {
+    console.error('Error archiving medicine:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 module.exports = router;

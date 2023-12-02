@@ -1,22 +1,33 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
-import ScrollableFeed from 'react-scrollable-feed';
-import { useSelector } from 'react-redux';
 import {
   isLastMessage,
   isSameSender,
   isSameSenderMargin,
   isSameUser,
 } from '../config/ChatLogics';
-import { ChatState } from '../Context/ChatProvider';
+import { useSelector } from 'react-redux';
 
 const ScrollableChat = ({ messages }) => {
+  const chatRef = useRef(null);
   const user = useSelector((state) => state.user);
   const logId = useSelector((state) => state.user.logId);
 
+  useEffect(() => {
+    // Scroll to the bottom of the chat when messages change
+    chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  }, [messages]);
+
   return (
-    <ScrollableFeed  >
+    <div
+      ref={chatRef}
+      style={{
+        overflowY: 'auto',
+        maxHeight: '300px', // Set the maximum height as needed
+        padding: '10px', // Add padding for better appearance
+      }}
+    >
       {messages &&
         messages.map((m, i) => (
           <div style={{ display: 'flex' }} key={m._id}>
@@ -46,7 +57,7 @@ const ScrollableChat = ({ messages }) => {
             </span>
           </div>
         ))}
-    </ScrollableFeed>
+    </div>
   );
 };
 

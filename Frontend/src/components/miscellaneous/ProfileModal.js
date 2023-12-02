@@ -29,7 +29,7 @@ const ProfileModal = ({ user, children }) => {
       ) : (
         <IconButton
           onClick={handleOpen}
-          style={{ position: "fixed", top: "230px", right: "10px" }}
+          style={{ position: "fixed", top: "250px", right: "10px" }}
         >
           <ViewIcon />
         </IconButton>

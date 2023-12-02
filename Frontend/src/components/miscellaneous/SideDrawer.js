@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Button,
   Typography,
@@ -122,12 +123,18 @@ function SideDrawer() {
           borderWidth: "5px",
         }}
       >
-        <Tooltip label="Search Users to chat" arrow placement="bottom-end">
+        <Tooltip label="Search Users to chat" arrow placement="bottom-end" sx={{ display: 'flex'}}>
           <Button variant="text" onClick={() => setIsOpen(true)}>
-            <i className="fas fa-search"></i>
-            <Typography sx={{ display: { xs: "none", md: "flex" }, pl: 1 }}>
-              Search User
+          <Typography >
+              Search Doctor
             </Typography>
+            <IconButton
+          
+                      color="primary"
+                    >
+                      <SearchIcon />
+                    </IconButton>
+  
           </Button>
         </Tooltip>
         <Typography variant="h4" fontFamily="Work sans">
@@ -194,6 +201,7 @@ function SideDrawer() {
           <ChatLoading />
         ) : (
           searchResult?.map((user) => (
+            console.log(user),
             <UserListItem
               key={user._id}
               user={user}

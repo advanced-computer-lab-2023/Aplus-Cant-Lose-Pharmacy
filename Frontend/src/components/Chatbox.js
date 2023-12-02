@@ -11,7 +11,7 @@ console.log(selectedChat);
     <Box
       sx={{
      position: "fixed",
-            top: "200px",
+            top: "250px",
             right: "0px",
             width: "60%",
         display: { xs: selectedChat ? 'flex' : 'none', md: 'flex' },
