@@ -3,10 +3,13 @@ const User = require("../Models/user");
 const Pharmacist = require("../Models/pharmacist");
 const Order = require("../Models/orders");
 const Medicine = require("../Models/medicine");
+const Prescription = require("../Models/prescription");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const stripe=require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+const nodemailer = require("nodemailer");
+
 
 
 function generateToken(data) {
@@ -373,12 +376,62 @@ const payForCart = async (req, res) => {
       if (!medicine) {
         throw new Error(`Medicine with ID ${medicineID} not found`);
       }
+
+      // Check if the medicine is running out
+      if (medicine.amount - amount <= 0) {
+        // Notify each pharmacist that the medicine ran out
+        const pharmacists = await Pharmacist.find(); // Assuming there is a 'Pharmacist' model
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_FROM,
+            pass: process.env.Password,
+          },
+        });
+
+        pharmacists.forEach((pharmacist) => {
+          const mailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: pharmacist.email, // Assuming the pharmacist has an 'email' field
+            subject: "Medicine Ran Out Notification",
+            text: `Dear Pharmacist,
+
+            The medicine "${medicine.name}" has run out of stock.
+
+            Sincerely,
+            El7a2ni Pharmacy`,
+          };
+
+          // Send the email
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log(`Email sent to ${pharmacist.email}: ${info.response}`);
+            }
+          });
+        });
+      }
+
       const itemPrice = medicine.price * amount;
 
       // Update the medicine's amount and sales
       medicine.amount -= amount;
       medicine.sales += amount;
       await medicine.save();
+
+      // Check if the medicine was prescribed to the patient
+      const prescription = await Prescription.findOne({
+        medID: medicineID,
+        patientID: userId,
+        status: "unfilled",
+      });
+
+      if (prescription) {
+        // Update the prescription status to "filled"
+        prescription.status = "filled";
+        await prescription.save();
+      }
 
       return itemPrice;
     })).then((prices) => prices.reduce((acc, price) => acc + price, 0));
@@ -419,6 +472,7 @@ const payForCart = async (req, res) => {
 };
 
 
+
 const getPatientOrders = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -431,7 +485,28 @@ const getPatientOrders = async (req, res) => {
     }
 
     // Fetch patient's orders and extract necessary details
-    const orders = await Order.find({ pID: userId }).select('_id orderDate address totalPrice');
+    const orders = await Order.find({ pID: userId, status: "undelivered" }).select('_id orderDate address totalPrice');
+
+    return res.status(200).json({ orders });
+  } catch (error) {
+    console.error("Error fetching patient orders:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getPastPatientOrders = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find the patient by userId
+    const patient = await Patient.findById(userId);
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    // Fetch patient's orders and extract necessary details
+    const orders = await Order.find({ pID: userId, status: "delivered" }).select('_id orderDate address totalPrice');
 
     return res.status(200).json({ orders });
   } catch (error) {
@@ -582,6 +657,81 @@ const createCartCheckoutSession= async(req,res)=>
   }
 }
 
+const viewMedicineOTC = async (req, res) => {
+  try {
+    // Filter medicines by type "Over the counter"
+    const medicines = await Medicine.find({ type: "Over the counter" });
+
+    if (!medicines || medicines.length === 0) {
+      return res.status(404).json({ message: "No Over the counter medicines found" });
+    }
+
+    console.log(medicines);
+    res.status(200).json({ message: "Over the counter medicines retrieved successfully", medicines });
+  } catch (error) {
+    console.error("Error fetching Over the counter medicines:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const viewPrescriptionMedicines = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+
+    // Find prescriptions for the given patientId
+    const prescriptions = await Prescription.find({ patientID: patientId, status: "unfilled" });
+
+    if (!prescriptions || prescriptions.length === 0) {
+      return res.status(404).json({ message: "No unfilled prescriptions found for the patient" });
+    }
+
+    // Extract medicine IDs from prescriptions
+    const medicineIds = prescriptions.map(prescription => prescription.medID);
+
+    // Find medicines with type "Prescription" and matching IDs
+    const prescriptionMedicines = await Medicine.find({ type: "Prescription", _id: { $in: medicineIds } });
+
+    if (!prescriptionMedicines || prescriptionMedicines.length === 0) {
+      return res.status(404).json({ message: "No prescription medicines found for the patient" });
+    }
+
+    res.status(200).json({ message: "Prescription medicines retrieved successfully", prescriptionMedicines });
+  } catch (error) {
+    console.error("Error fetching prescription medicines:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getMedicinesByActiveElement = async (req, res) => {
+  try {
+    const { medicineId } = req.params;
+
+    // Find the medicine by medicineId
+    const selectedMedicine = await Medicine.findById(medicineId);
+
+    if (!selectedMedicine) {
+      return res.status(404).json({ error: "Medicine not found" });
+    }
+
+    const activeElement = selectedMedicine.activeElement;
+
+    // Find other medicines with the same activeElement
+    const similarMedicines = await Medicine.find({
+      activeElement: activeElement,
+      _id: { $ne: medicineId }, // Exclude the selected medicine
+    });
+
+    return res.status(200).json({ similarMedicines });
+  } catch (error) {
+    console.error("Error fetching similar medicines:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
+
+
 module.exports = {
   addPatient,
   addMedicineToCart,
@@ -595,5 +745,9 @@ module.exports = {
   getOrderDetailsById,
   cancelOrder,
   getWallet,
-  createCartCheckoutSession
+  createCartCheckoutSession,
+  viewMedicineOTC,
+  viewPrescriptionMedicines,
+  getPastPatientOrders,
+  getMedicinesByActiveElement
 };

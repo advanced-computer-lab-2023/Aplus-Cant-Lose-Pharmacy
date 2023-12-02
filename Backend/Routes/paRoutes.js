@@ -14,7 +14,11 @@ const {
   getOrderDetailsById,
   cancelOrder,
   getWallet,
-  createCartCheckoutSession
+  createCartCheckoutSession,
+  viewMedicineOTC,
+  viewPrescriptionMedicines,
+  getPastPatientOrders,
+  getMedicinesByActiveElement
 } = require("../controllers/paController");
 router.post("/addPatient", addPatient);
 
@@ -39,5 +43,9 @@ router.get("/getPatientOrders/:userId", getPatientOrders);
 router.get("/getOrderDetailsById/:orderId", getOrderDetailsById);
 router.delete("/cancelOrder/:orderId", cancelOrder);
 router.patch("/createCartCheckoutSession/:userId", createCartCheckoutSession);
+router.get("/viewMedicineOTC", viewMedicineOTC);
+router.get("/viewPrescriptionMedicines/:userId", viewPrescriptionMedicines);
+router.get("/getPastPatientOrders/:userId", getPastPatientOrders);
+router.get("/getMedicinesByActiveElement/:medicineId", getMedicinesByActiveElement);
 
 module.exports = router;

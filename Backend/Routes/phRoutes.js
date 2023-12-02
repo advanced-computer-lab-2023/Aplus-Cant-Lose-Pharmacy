@@ -140,11 +140,16 @@ const {
   addPharmacist,
   addMedicine,
   updateMedicineDetails,getAllPharmacistNames,getAllDoctorsNames
+  getOrdersInMonth,
+  pharmacistGetWallet,
 } = require("../controllers/phController");
 
 router.post("/addPharmacist", addPharmacist);
 router.post("/addMedicine", addMedicine);
 router.put("/updateMedicineDetails/:id", updateMedicineDetails);
+router.get("/getOrdersInMonth", getOrdersInMonth);
+router.get("/pharmacistGetWallet/:phId", pharmacistGetWallet);
+
 
 const {
   viewMedicine,
