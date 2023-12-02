@@ -6,7 +6,7 @@ const Patient = require("../Models/patient");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 function generateToken(data) {
   return jwt.sign(data, process.env.TOKEN_SECRET);
@@ -26,7 +26,7 @@ const getAdmins = async (req, res) => {
 };
 
 const createAdmin = async (req, res) => {
-  const { username, password,email } = req.body;
+  const { username, password, email } = req.body;
 
   try {
     // Validate input fields
@@ -49,7 +49,6 @@ const createAdmin = async (req, res) => {
       return res.status(400).json({ error: "Email already exists" });
     }
 
-
     // Password strength validation
     if (!validator.isStrongPassword(password)) {
       return res.status(400).json({ error: "Password not strong enough" });
@@ -62,25 +61,25 @@ const createAdmin = async (req, res) => {
     // Create the new user
     const newAdmin2 = await User.create({
       username,
+      email,
+      name: username,
       password: hashedPassword,
       role: "admin",
     });
     const newAdmin = await Admin.create({
       username,
       password: hashedPassword,
-      email
+      email,
     });
     const data = {
       _id: newAdmin._id,
     };
     const token = generateToken(data);
-    res
-      .status(201)
-      .json({
-        message: "Admin user created successfully",
-        userAdmin: newAdmin,
-        token,
-      });
+    res.status(201).json({
+      message: "Admin user created successfully",
+      userAdmin: newAdmin,
+      token,
+    });
   } catch (error) {
     console.error("Error creating admin user:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -197,7 +196,6 @@ const sendAcceptEmail = async (req, res) => {
 
     // Define email options
     const mailOptions = {
-      
       from: process.env.EMAIL_FROM,
       to: user.email, // Assuming the user has an 'email' field, adjust as needed
       subject: "Acceptance Confirmation",
@@ -246,7 +244,7 @@ const sendRejectEmail = async (req, res) => {
 
     // Define email options
     const mailOptions = {
-      from:process.env.EMAIL_FROM,
+      from: process.env.EMAIL_FROM,
       to: user.email, // Assuming the user has an 'email' field, adjust as needed
       subject: "Rejection Confirmation",
       text: `Unfortunately! You did not get accepted  to join El7a2ni Pharmacy as a Pharmacist.
@@ -300,5 +298,5 @@ module.exports = {
   deleteAdmin,
   getAdmins,
   sendAcceptEmail,
-  sendRejectEmail
+  sendRejectEmail,
 };
