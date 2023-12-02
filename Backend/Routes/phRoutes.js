@@ -139,7 +139,7 @@ router.post("/upload2", (req, res) => {
 const {
   addPharmacist,
   addMedicine,
-  updateMedicineDetails,getAllPharmacistNames,getAllDoctorsNames
+  updateMedicineDetails,getAllPharmacistNames,getAllDoctorsNames,
   getOrdersInMonth,
   pharmacistGetWallet,
 } = require("../controllers/phController");

@@ -260,4 +260,4 @@ const pharmacistGetWallet = async (req, res) => {
   }
 };
 
-module.exports = { addPharmacist, addMedicine, updateMedicineDetails, getOrdersInMonth, pharmacistGetWallet };
+module.exports = { addPharmacist, addMedicine, updateMedicineDetails, getOrdersInMonth, pharmacistGetWallet,getAllPharmacistNames,getAllDoctorsNames };

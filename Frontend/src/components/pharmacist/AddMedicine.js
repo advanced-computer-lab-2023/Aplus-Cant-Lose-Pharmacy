@@ -8,6 +8,9 @@ import { Link } from "react-router-dom";
 import { Typography } from "@mui/material";
 import { addMedicine } from "../../features/pharmacistSlice";
 import { SnackbarContext } from "../../App";
+import HomeIcon from "@mui/icons-material/Home";
+import IconButton from "@mui/material/IconButton";
+
 import Error from "../../Error";
 const uploadButtonStyle = {
   backgroundColor: "#4CAF50",
@@ -79,7 +82,7 @@ const AddMedicine = (params) => {
   const fileInputStyle = {
     display: "none",
   };
-  return role === "pharmacist" ? (
+  return role === "pharmacist" ? (<>
     <form className="form" onSubmit={handleSubmit}>
       <div className="form-body">
         <label className="form__label" for="name">
@@ -151,6 +154,19 @@ const AddMedicine = (params) => {
         </button>
       </div>
     </form>
+          <Link to="/Home">
+          <IconButton
+                  size="large"
+                  fontSize="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="open drawer"
+                  sx={{ mr: 2 }}
+                >
+                  <HomeIcon />
+              
+                </IconButton>
+          </Link></>
   ) : (
     <>
       <Link to="/Login" sx={{ left: "100%" }}>
@@ -168,6 +184,8 @@ const AddMedicine = (params) => {
           Login
         </Typography>
       </Link>
+
+
     </>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Button,
   Typography,
@@ -123,18 +123,21 @@ function SideDrawer() {
           borderWidth: "5px",
         }}
       >
-        <Tooltip label="Search Users to chat" arrow placement="bottom-end" sx={{ display: 'flex'}}>
+        <Tooltip
+          label="Search Users to chat"
+          arrow
+          placement="bottom-end"
+          sx={{ display: "flex" }}
+        >
           <Button variant="text" onClick={() => setIsOpen(true)}>
-          <Typography >
-              Search Doctor
-            </Typography>
-            <IconButton
-          
-                      color="primary"
-                    >
-                      <SearchIcon />
-                    </IconButton>
-  
+            {user.role === "patient" ? (
+              <Typography>Search Pharmacists</Typography>
+            ) : (
+              <Typography>Search doctors</Typography>
+            )}
+            <IconButton color="primary">
+              <SearchIcon />
+            </IconButton>
           </Button>
         </Tooltip>
         <Typography variant="h4" fontFamily="Work sans">
@@ -200,14 +203,18 @@ function SideDrawer() {
         {loading ? (
           <ChatLoading />
         ) : (
-          searchResult?.map((user) => (
-            console.log(user),
-            <UserListItem
-              key={user._id}
-              user={user}
-              handleFunction={() => accessChat(user._id)}
-            />
-          ))
+          searchResult?.map(
+            (user) => (
+              console.log(user),
+              (
+                <UserListItem
+                  key={user._id}
+                  user={user}
+                  handleFunction={() => accessChat(user._id)}
+                />
+              )
+            )
+          )
         )}
         {loadingChat && (
           <CircularProgress sx={{ marginLeft: "auto", display: "flex" }} />

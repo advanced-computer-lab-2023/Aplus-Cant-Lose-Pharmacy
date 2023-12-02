@@ -329,7 +329,7 @@ function BasicTable({ nameFilter, useFilter }) {
           </div>
           <div className="footer">
             <button type="submit" class="btn">
-              Add
+              Edit
             </button>
           </div>
         </form>
@@ -471,13 +471,12 @@ function BasicTable({ nameFilter, useFilter }) {
                       <TableCell align="right" sx={{ fontSize: "18px" }}>
                         {" "}
                         <Button
-                          style={{ width: "80%", marginLeft: "20%" }}
-                          variant="contained"
-                          color={"secondary"}
-                          onClick={() => handleEditClick(row, index)}
-                        >
-                          Edit
-                        </Button>
+  style={{ width: "80%", marginLeft: "20%", backgroundColor: "#355E3B", color: "white" }}
+  variant="contained"
+  onClick={() => handleEditClick(row, index)}
+>
+  Edit
+</Button>
                       </TableCell>
                     </TableRow>
                   )
