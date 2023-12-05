@@ -2,8 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import store from "./store";
-import { ThemeProvider, CSSReset } from "@chakra-ui/react";
-import { extendTheme } from "@chakra-ui/react";
+
 
 
 
