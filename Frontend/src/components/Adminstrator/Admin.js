@@ -12,6 +12,7 @@ import MedicinesShow from "./MedicinesShow";
 import PendingPharmacists from "./PendingPharmacists";
 import JoinedPharmacists from "./JoinedPharmacists";
 import Patients from "./Patients";
+import MonthlyReport from "../pharmacist/MonthlyReport";
 
 import { useContext, useEffect, useState } from "react";
 
@@ -93,6 +94,11 @@ export default function BasicTabs() {
               {...a11yProps(4)}
               sx={{ width: "30%" }}
             />
+            <Tab
+              label="View Sales Report"
+              {...a11yProps(5)}
+              sx={{ width: "30%" }}
+            />
           </Tabs>
         </div>
       </Box>
@@ -110,6 +116,9 @@ export default function BasicTabs() {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={4}>
         <MedicinesShow />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={5}>
+        <MonthlyReport />
       </CustomTabPanel>
     </div>
   );

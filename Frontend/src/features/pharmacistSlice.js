@@ -10,7 +10,8 @@ const pharmacistInitial = {
   error: "",
   response: "",
   medicineList: [],
-  newPhId:0
+  newPhId: 0,
+  report: [],
 };
 
 export const addPharmacist = createAsyncThunk(
@@ -62,9 +63,9 @@ export const updateMedicineDetails = createAsyncThunk(
 );
 export const archiveMedicine = createAsyncThunk(
   "pharmacist/archiveMedicine",
-  async ({id,endpoint}) => {
- await axios.put(`${API_URL}/pharmacist/${endpoint}/${id}`);
-const response= await axios.get(`${API_URL}/pharmacist/viewMedicineAll`);
+  async ({ id, endpoint }) => {
+    await axios.put(`${API_URL}/pharmacist/${endpoint}/${id}`);
+    const response = await axios.get(`${API_URL}/pharmacist/viewMedicineAll`);
     return response;
   }
 );
@@ -72,12 +73,19 @@ const response= await axios.get(`${API_URL}/pharmacist/viewMedicineAll`);
 export const viewMedicine = createAsyncThunk(
   "pharmacist/viewMedicine",
   async () => {
-    const response = await axios.get(
-      `${API_URL}/pharmacist/viewMedicineAll`
-    );
+    const response = await axios.get(`${API_URL}/pharmacist/viewMedicineAll`);
     return response;
   }
 );
+export const getOrdersInMonth = createAsyncThunk(
+  "pharmacist/getOrdersInMonth",
+  async (data) => {
+    const response = await axios.get(`${API_URL}/pharmacist/getOrdersInMonth?month=${data.month}&year=${data.year}`);
+    console.log(response);
+    return response;
+  }
+);
+
 export const pharmacist = createSlice({
   name: "pharmacist",
   initialState: pharmacistInitial,
@@ -114,12 +122,11 @@ export const pharmacist = createSlice({
     archive: (state, action) => {
       const index = action.payload;
       const currentStatus = state.medicineList[index].status;
-    
+
       // Toggle the status between 'archived' and 'unarchived'
       state.medicineList[index].status =
-        currentStatus === 'archived' ? 'unarchived' : 'archived';
-    }
-    
+        currentStatus === "archived" ? "unarchived" : "archived";
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -128,7 +135,7 @@ export const pharmacist = createSlice({
       })
       .addCase(addPharmacist.fulfilled, (state, action) => {
         state.loading = false;
-        state.newPhId=action.payload.data.id;
+        state.newPhId = action.payload.data.id;
       })
       .addCase(addPharmacist.rejected, (state, action) => {
         state.loading = false;
@@ -161,7 +168,7 @@ export const pharmacist = createSlice({
         state.loading = false;
       });
 
-    builder
+      builder
       .addCase(updateMedicineDetails.pending, (state) => {
         state.loading = true;
       })
@@ -173,16 +180,30 @@ export const pharmacist = createSlice({
         console.log(action.message);
       });
       builder
-    
-      .addCase(archiveMedicine.fulfilled, (state, action) => {
+      .addCase(getOrdersInMonth.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getOrdersInMonth.fulfilled, (state, action) => {
         state.loading = false;
-        if (action.payload.data && action.payload.data.medicines) {
-          state.medicineList = action.payload.data.medicines;
-          console.log(state.medicineList);
+        if (action.payload.data) {
+          state.report = action.payload.data;
+          console.log(state.report);
         }
       })
+      .addCase(getOrdersInMonth.rejected, (state, action) => {
+        state.loading = false;
+        
+      });
+    builder.addCase(archiveMedicine.fulfilled, (state, action) => {
+      state.loading = false;
+      if (action.payload.data && action.payload.data.medicines) {
+        state.medicineList = action.payload.data.medicines;
+        console.log(state.medicineList);
+      }
+    });
   },
 });
 
 export default pharmacist.reducer;
-export const { login, deleteMedicine, editMedicine,archive } = pharmacist.actions;
+export const { login, deleteMedicine, editMedicine, archive } =
+  pharmacist.actions;

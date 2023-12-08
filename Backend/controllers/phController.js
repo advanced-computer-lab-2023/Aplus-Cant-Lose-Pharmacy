@@ -191,17 +191,17 @@ const updateMedicineDetails = async (req, res) => {
 
 const getOrdersInMonth = async (req, res) => {
   try {
-    const { month, year } = req.body;
+    const { month, year } = req.query;
 
     // Calculate the start and end dates of the specified month
     const startDate = new Date(`${year}-${month}-01`);
-    var nextmonth = month + 1;
+    var nextmonth = Number(month) + 1;
     var nextyear = year;
-    if(month == 12){
+    if(Number(month) == 12){
       nextmonth = 1;
-      nextyear += 1;
+      nextyear = Number(year) + 1;
     }
-    const endDate = new Date(`${nextyear}-${nextmonth}-01`);
+    const endDate = new Date(new Date(`${nextyear}-${nextmonth}-01`).getTime() - 1);
 
     // Find orders within the specified date range
     const orders = await Order.find({
@@ -209,28 +209,37 @@ const getOrdersInMonth = async (req, res) => {
         $gte: startDate,
         $lt: endDate,
       },
-    }).populate({
-      path: 'cart.medicineID',
-      model: 'Medicine',
     });
 
     if (!orders) {
       return res.status(404).json({ error: 'No orders found for the specified month' });
     }
 
-    // Extract order details with medicine information
-    const ordersWithMedicine = orders.map((order) => ({
-      orderDate: order.orderDate,
-      cart: order.cart.map((item) => {
-        const medicine = item.medicineID;
+    console.log(orders);
 
-        return {
-          name: medicine.name,
-          price: medicine.price,
-          amount: item.amount,
-        };
-      }),
-    }));
+    // Extract order details with medicine information using additional queries
+    const ordersWithMedicine = [];
+    for (const order of orders) {
+      const orderDetails = {
+        orderDate: order.orderDate,
+        cart: [],
+      };
+
+      for (const item of order.cart) {
+        // Perform a separate query to get the medicine information
+        const medicine = await Medicine.findOne({ _id: item.medicineID });
+
+        if (medicine) {
+          orderDetails.cart.push({
+            name: medicine.name,
+            price: medicine.price,
+            amount: item.amount,
+          });
+        }
+      }
+
+      ordersWithMedicine.push(orderDetails);
+    }
 
     return res.status(200).json(ordersWithMedicine);
   } catch (error) {
@@ -238,6 +247,7 @@ const getOrdersInMonth = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 const pharmacistGetWallet = async (req, res) => {
   try {

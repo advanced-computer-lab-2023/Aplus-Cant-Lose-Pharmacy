@@ -6,6 +6,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Medicine from "./Medicine";
+import MonthlyReport from "./MonthlyReport";
 import { useDispatch, useSelector } from "react-redux";
 import { viewMedicine } from "../../features/pharmacistSlice";
 import Chatpage from "../../Pages/Chatpage";
@@ -34,8 +35,8 @@ export default function PhHome() {
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
             <Tab label="Medicine list" value="1" />
-            <Tab label="chat Page" value="2" />
-    
+            <Tab label="Chat Page" value="2" />
+            <Tab label="Sales report" value="3" />
 
           </TabList>
         </Box>
@@ -44,6 +45,9 @@ export default function PhHome() {
         </TabPanel>
         <TabPanel value="2">
           <Chatpage />
+        </TabPanel>
+        <TabPanel value="3">
+          <MonthlyReport />
         </TabPanel>
       </TabContext>
     </Box>
