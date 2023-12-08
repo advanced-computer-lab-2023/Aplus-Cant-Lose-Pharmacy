@@ -36,11 +36,18 @@ import axios from "axios";
 import { API_URL } from "../../Consts.js";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { viewMedicine } from "../../features/adminSlice";
+import Popover from "@mui/material/Popover";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import InfoIcon from "@mui/icons-material/Info";
+import _debounce from "lodash.debounce";
 
 import {
   addMedicineToCart,
   viewMedicineOTC,
   viewPrescriptionMedicines,
+  getMedicinesByActiveElement,
 } from "../../features/patientSlice";
 import { AutoFixNormal } from "@mui/icons-material";
 const SearchIconWrapper = styled("div")(({ theme }) => ({
@@ -91,7 +98,7 @@ export default function Medicine() {
 
   useEffect(() => {
     dispatch(viewMedicineOTC());
-    dispatch(viewPrescriptionMedicines({pid: pid}));
+    dispatch(viewPrescriptionMedicines({ pid: pid }));
   }, [dispatch, pid]);
 
   return (
@@ -160,9 +167,29 @@ function BasicTable({ nameFilter, useFilter }) {
 
   const pid = useSelector((state) => state.user.id);
 
+  const [popoverAnchor, setPopoverAnchor] = useState(null);
+const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [popoverAnchors, setPopoverAnchors] = useState({});
+
+
+  const handleButtonClick = (event, row) => {
+    setPopoverAnchor(event.currentTarget);
+    setIsPopoverOpen(true);
+    // Dispatch the action to get medicines by active element
+    dispatch(getMedicinesByActiveElement({ medId: row._id }));
+  };
+
+  const handlePopoverClose = () => {
+    setPopoverAnchor(null);
+    setIsPopoverOpen(false);
+  };
+
+  const { alternatives } = useSelector((state) => state.patient);
+
   useEffect(() => {
     dispatch(viewMedicineOTC());
-    dispatch(viewPrescriptionMedicines({pid: pid}));
+    dispatch(viewPrescriptionMedicines({ pid: pid }));
+    
   }, [dispatch, pid]);
   const medicineList = useSelector((state) => state.patient.otcMeds);
 
@@ -280,7 +307,49 @@ function BasicTable({ nameFilter, useFilter }) {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {row.name}
+                  <div
+                    sx={{ height: "50%" }}
+                    
+                  >
+                    {row.name}
+                    <IconButton
+        color="primary"
+        aria-label="find alternatives"
+        sx={{ fontSize: 30 }}
+        onClick={(e) => handleButtonClick(e, row)}
+      >
+                      <InfoIcon />
+                    </IconButton>
+                    {/* Display alternatives in a Popover */}
+                    <Popover
+                      open={Boolean(popoverAnchor)}
+                      anchorEl={popoverAnchor}
+                      onClose={handlePopoverClose}
+                      anchorOrigin={{
+                        vertical: "center",
+                        horizontal: "right", // Adjust the horizontal position
+                      }}
+                      transformOrigin={{
+                        vertical: "center",
+                        horizontal: "left",
+                      }}
+                    >
+                      {alternatives && alternatives.length > 0 ? (
+                        <List>
+                          <ListItem>Alternatives:</ListItem>
+                          {alternatives.map((alternative, index) => (
+                            <ListItem key={index}>
+                              <ListItemText primary={alternative.name} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      ) : (
+                        <Typography sx={{ p: 2 }}>
+                          There are no alternatives
+                        </Typography>
+                      )}
+                    </Popover>
+                  </div>
                 </TableCell>
                 <TableCell align="right" sx={{ fontSize: "18px" }}>
                   {row.price}

@@ -11,7 +11,7 @@ import Orders from "./Orders";
 import { useDispatch, useSelector } from "react-redux";
 import Chatpage from "../../Pages/Chatpage";
 
-import { viewCart, viewMedicine, getPatientOrders, viewPrescriptionMedicines, viewMedicineOTC } from "../../features/patientSlice";
+import { viewCart, viewMedicine, getPatientOrders, getPastPatientOrders, viewPrescriptionMedicines, viewMedicineOTC } from "../../features/patientSlice";
 
 export default function PhHome() {
   const pid = useSelector((state) => state.user.id);
@@ -36,7 +36,8 @@ export default function PhHome() {
   }, [dispatch, value, pid]);
   
   const { cart } = useSelector((state) => state.patient);
-  const { orders } = useSelector((state) => state.patient);
+  const { orders, pastOrders } = useSelector((state) => state.patient);
+
   
 
 
@@ -49,7 +50,9 @@ export default function PhHome() {
 
   useEffect(() => {
     if(value === "3") {
-      dispatch(getPatientOrders({userId: pid}))
+      dispatch(getPatientOrders({userId: pid}));
+      dispatch(getPastPatientOrders({userId: pid}));
+
     }
   }, [dispatch, pid, value]);
 
@@ -75,7 +78,7 @@ export default function PhHome() {
           <Cart cart={cart} />
         </TabPanel>
         <TabPanel value="3">
-          <Orders orders={orders} />
+          <Orders orders={orders} pastOrders={pastOrders} />
         </TabPanel>
         <TabPanel value="4">
           <Chatpage  />

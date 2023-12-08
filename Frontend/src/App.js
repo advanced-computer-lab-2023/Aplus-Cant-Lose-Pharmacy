@@ -10,6 +10,7 @@ import PharmacistDirect from "./PharmacistDirect";
 import Start from "./components/Start";
 import Checkout from "./components/patient/Checkout";
 import ViewOrder from "./components/patient/ViewOrder";
+import ViewOrder2 from "./components/patient/ViewOrder2";
 import Success from "./components/patient/Success";
 
 
@@ -54,6 +55,7 @@ const router = createBrowserRouter(
 
       <Route path="/Checkout" element={<Checkout />} />
       <Route path="/ViewOrder" element={<ViewOrder />} />
+      <Route path="/ViewOrder2" element={<ViewOrder2 />} />
       <Route path="/Home" element={<HomeDirect />} />
       <Route path="/Medicine/add" element={<AddMedicine />} />
       <Route path="/Success/:userId/:address" element={<Success />} />

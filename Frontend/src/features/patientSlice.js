@@ -37,6 +37,8 @@ const patientInitial = {
   paymentURL: "", // Initialize
   prescriptionMeds: [], // Initialize
   otcMeds: [], // Initial initialize
+  pastOrders: [], // Initialize
+  alternatives: null,
 };
 
 // Create async thunk for viewing the cart
@@ -109,6 +111,18 @@ const patient = createSlice({
       .addCase(getPatientOrders.rejected, (state, action) => {
         state.loading = false;
       })
+      .addCase(getPastPatientOrders.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getPastPatientOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload.data && action.payload.data.orders) {
+          state.pastOrders = action.payload.data.orders; // Adjust the property names based on your API response
+        }
+      })
+      .addCase(getPastPatientOrders.rejected, (state, action) => {
+        state.loading = false;
+      })
       .addCase(getOrderDetailsById.pending, (state) => {
         state.loading = true;
       })
@@ -154,6 +168,18 @@ const patient = createSlice({
       })
       .addCase(viewMedicineOTC.rejected, (state, action) => {
         state.loading = false;
+      })
+      .addCase(getMedicinesByActiveElement.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getMedicinesByActiveElement.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(action.payload.data);
+        state.alternatives = action.payload.data.similarMedicines;
+      })
+      .addCase(getMedicinesByActiveElement.rejected, (state, action) => {
+        state.loading = false;
+        state.alternatives = null;
       });
   },
 });
@@ -320,6 +346,27 @@ export const viewMedicineOTC = createAsyncThunk(
     return response;
   }
 );
+
+export const getPastPatientOrders = createAsyncThunk(
+  "patient/getPastPatientOrders",
+  async (data) => {
+    const response = await axios.get(
+      `${API_URL}/patient/getPastPatientOrders/${data.userId}`
+    );
+    return response;
+  }
+);
+
+export const getMedicinesByActiveElement = createAsyncThunk(
+  "patient/getMedicinesByActiveElement",
+  async (data) => {
+    const response = await axios.get(
+      `${API_URL}/patient/getMedicinesByActiveElement/${data.medId}`
+    );
+    return response;
+  }
+);
+
 
 
 // Export the reducer and actions

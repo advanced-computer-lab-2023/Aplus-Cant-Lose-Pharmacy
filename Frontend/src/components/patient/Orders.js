@@ -76,8 +76,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function Orders({ orders }) {
-  if (!orders || orders.length === 0) {
+export default function Orders({ orders, pastOrders }) {
+  if ((!orders || orders.length === 0) && (!pastOrders || pastOrders.length === 0)) {
     return <div>No orders</div>;
   } else {
     return (
@@ -104,6 +104,7 @@ export default function Orders({ orders }) {
           </Toolbar>
         </AppBar>
         <BasicTable rows={orders} />
+        <BasicTable2 rows={pastOrders}/>
       </Box>
     );
   }
@@ -128,7 +129,7 @@ function BasicTable({ rows }) {
     await dispatch(getOrderDetailsById({ oid }));
     history("/ViewOrder"); 
   };
-  
+ 
 
 
 
@@ -141,12 +142,17 @@ function BasicTable({ rows }) {
   };
 
 
-
+if(rows && rows.length > 0) { 
   return (
     <TableContainer component={Paper} style={tableContainerStyle}>
       {/* Dialog component and form go here */}
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
+          <TableRow>
+            <TableCell>
+              Upcoming orders
+            </TableCell>
+          </TableRow>
           <TableRow>
             <TableCell>Order date</TableCell>
             <TableCell align="right">Delivery location</TableCell>
@@ -184,4 +190,82 @@ function BasicTable({ rows }) {
       </Table>
     </TableContainer>
   );
+}
+}
+function BasicTable2({ rows }) {
+  const snackbarMessage = useContext(SnackbarContext);
+
+
+  const dispatch = useDispatch();
+  const history = useNavigate();
+
+
+
+
+  const handleViewOrder = async (oid) => {
+    await dispatch(getOrderDetailsById({ oid }));
+    history("/ViewOrder2"); 
+  };
+  
+
+
+
+
+  const tableContainerStyle = {
+    maxWidth: "80%", // Adjust the maximum width as needed
+    margin: "0 auto", // Center-align the table horizontally
+    marginTop: "40px",
+    boxShadow: "5px 5px 5px 5px #8585854a",
+  };
+
+
+if(rows && rows.length > 0) {
+  return (
+    <TableContainer component={Paper} style={tableContainerStyle}>
+      {/* Dialog component and form go here */}
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+        <TableRow>
+            <TableCell>
+              Past orders
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Order date</TableCell>
+            <TableCell align="right">Delivery location</TableCell>
+            <TableCell align="right">Total price</TableCell>
+            <TableCell align="right">View more details</TableCell>
+          </TableRow>
+        </TableHead>
+
+        <TableBody>
+          {rows.map((row, index) => (
+            <TableRow
+              key={index}
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+                {row.orderDate}
+              </TableCell>
+              <TableCell align="right">{row.address}</TableCell>
+              <TableCell align="right">{row.totalPrice}</TableCell>
+              <TableCell align="right">
+                <Button
+                  sx={{
+                    backgroundColor: "#004E98",
+                    color: "white",
+                    marginLeft: "10px",
+                  }}
+                  onClick={() => handleViewOrder(row._id)}
+                >
+                  <Typography>View</Typography>
+                </Button>
+              </TableCell>      
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
 }

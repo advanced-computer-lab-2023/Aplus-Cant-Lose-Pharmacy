@@ -716,10 +716,12 @@ const getMedicinesByActiveElement = async (req, res) => {
 
     const activeElement = selectedMedicine.activeElement;
 
-    // Find other medicines with the same activeElement
+    // Find other unarchived Over the Counter medicines with the same activeElement
     const similarMedicines = await Medicine.find({
       activeElement: activeElement,
       _id: { $ne: medicineId }, // Exclude the selected medicine
+      status: "unarchived",
+      type: "Over the counter",
     });
 
     return res.status(200).json({ similarMedicines });
@@ -728,6 +730,7 @@ const getMedicinesByActiveElement = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 
