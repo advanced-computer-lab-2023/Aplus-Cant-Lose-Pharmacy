@@ -37,7 +37,11 @@ import { API_URL } from "../../Consts.js";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { viewMedicine } from "../../features/adminSlice";
 
-import{ addMedicineToCart } from "../../features/patientSlice";
+import {
+  addMedicineToCart,
+  viewMedicineOTC,
+  viewPrescriptionMedicines,
+} from "../../features/patientSlice";
 import { AutoFixNormal } from "@mui/icons-material";
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -78,16 +82,17 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-
 export default function Medicine() {
   const [nameFilter, setNameFilter] = useState("");
   const [useFilter, setUseFilter] = useState("");
   const dispatch = useDispatch();
   const snackbarMessage = useContext(SnackbarContext);
+  const pid = useSelector((state) => state.user.id);
 
   useEffect(() => {
-    dispatch(viewMedicine());
-  }, [dispatch]);
+    dispatch(viewMedicineOTC());
+    dispatch(viewPrescriptionMedicines({pid: pid}));
+  }, [dispatch, pid]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -141,11 +146,8 @@ export default function Medicine() {
         </Toolbar>
       </AppBar>
 
-      <BasicTable
-        nameFilter={nameFilter}
-        useFilter={useFilter}
-  
-      />
+      <BasicTable nameFilter={nameFilter} useFilter={useFilter} />
+      <BasicTable2 nameFilter={nameFilter} useFilter={useFilter} />
     </Box>
   );
 }
@@ -159,9 +161,10 @@ function BasicTable({ nameFilter, useFilter }) {
   const pid = useSelector((state) => state.user.id);
 
   useEffect(() => {
-    dispatch(viewMedicine());
- }, [dispatch]);
-  const medicineList  = useSelector((state) => state.admin.medicine);
+    dispatch(viewMedicineOTC());
+    dispatch(viewPrescriptionMedicines({pid: pid}));
+  }, [dispatch, pid]);
+  const medicineList = useSelector((state) => state.patient.otcMeds);
 
   const snackbarMessage = useContext(SnackbarContext);
   const [editRow, setEditRow] = useState({});
@@ -176,12 +179,10 @@ function BasicTable({ nameFilter, useFilter }) {
     console.log(id);
     setIdx(index);
   };
-  
+
   useEffect(() => {
     // This will log the updated id value
   }, [medicineList]);
-
- 
 
   const HandleAdd = async (id, pid) => {
     try {
@@ -211,15 +212,52 @@ function BasicTable({ nameFilter, useFilter }) {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell sx={{fontWeight:"bold",fontSize:"20px"}}>Name</TableCell>
-            <TableCell align="right" sx={{fontWeight:"bold",fontSize:"20px"}}>Price</TableCell>
-            <TableCell align="right" sx={{fontWeight:"bold",fontSize:"20px"}}>Use</TableCell>
-            <TableCell align="right" sx={{fontWeight:"bold",fontSize:"20px"}}>Active Elements</TableCell>
-            <TableCell align="right" sx={{fontWeight:"bold",fontSize:"20px"}}>Amount</TableCell>
-            <TableCell align="right" sx={{width:'20%',fontWeight:"bold",fontSize:"20px" }}>
-              Image 
+            <TableCell>
+              <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>
+                Over the counter medicines
+              </TableCell>
             </TableCell>
-            <TableCell align="right"  sx={{fontWeight:"bold",fontSize:"20px"}}>Add to cart</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>
+              Name
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{ fontWeight: "bold", fontSize: "20px" }}
+            >
+              Price
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{ fontWeight: "bold", fontSize: "20px" }}
+            >
+              Use
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{ fontWeight: "bold", fontSize: "20px" }}
+            >
+              Active Elements
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{ fontWeight: "bold", fontSize: "20px" }}
+            >
+              Amount
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{ width: "20%", fontWeight: "bold", fontSize: "20px" }}
+            >
+              Image
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{ fontWeight: "bold", fontSize: "20px" }}
+            >
+              Add to cart
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -244,28 +282,33 @@ function BasicTable({ nameFilter, useFilter }) {
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>
-                <TableCell align="right" sx={{fontSize:"18px"}}>{row.price}</TableCell>
-                <TableCell align="right" sx={{fontSize:"18px"}}>{row.use}</TableCell>
-                <TableCell align="right" sx={{fontSize:"18px"}}>{row.activeElement}</TableCell>
-                <TableCell align="right" sx={{fontSize:"18px"}}>{row.amount}</TableCell>
-                <TableCell align="right" sx={{  }}>
-                    {/* Display the image directly */}
-                    <img
-                      src={`/public/${row.imgurl}`}
-                      alt="medicine"
-                      style={{
-                        width: "70%",
-                        height: "70%",
-                      }}
-                
-                    />
-                  </TableCell>
-                <TableCell align="right" >
+                <TableCell align="right" sx={{ fontSize: "18px" }}>
+                  {row.price}
+                </TableCell>
+                <TableCell align="right" sx={{ fontSize: "18px" }}>
+                  {row.use}
+                </TableCell>
+                <TableCell align="right" sx={{ fontSize: "18px" }}>
+                  {row.activeElement}
+                </TableCell>
+                <TableCell align="right" sx={{ fontSize: "18px" }}>
+                  {row.amount}
+                </TableCell>
+                <TableCell align="right" sx={{}}>
+                  {/* Display the image directly */}
+                  <img
+                    src={`/public/${row.imgurl}`}
+                    alt="medicine"
+                    style={{
+                      width: "70%",
+                      height: "70%",
+                    }}
+                  />
+                </TableCell>
+                <TableCell align="right">
                   <div
                     style={{
-              
-                  
-                      maraginLeft:"0px"
+                      maraginLeft: "0px",
                     }}
                   >
                     <IconButton
@@ -283,4 +326,177 @@ function BasicTable({ nameFilter, useFilter }) {
       </Table>
     </TableContainer>
   );
+}
+function BasicTable2({ nameFilter, useFilter }) {
+  const dispatch = useDispatch();
+
+  const pid = useSelector((state) => state.user.id);
+
+  useEffect(() => {
+    dispatch(viewMedicine());
+  }, [dispatch]);
+  const medicineList = useSelector((state) => state.patient.prescriptionMeds);
+
+  const snackbarMessage = useContext(SnackbarContext);
+  const [editRow, setEditRow] = useState({});
+  const [isOpen, setIsOpen] = useState(false);
+  const [idx, setIdx] = useState(-1);
+  const [id, setId] = useState("1");
+
+  const handleEditClick = (row, index) => {
+    setIsOpen(true);
+    setEditRow(row);
+    setId(row._id);
+    console.log(id);
+    setIdx(index);
+  };
+
+  useEffect(() => {
+    // This will log the updated id value
+  }, [medicineList]);
+
+  const HandleAdd = async (id, pid) => {
+    try {
+      console.log(pid);
+      const response = await dispatch(
+        addMedicineToCart({ userId: pid, medicineId: id })
+      );
+      if (response.error) {
+        snackbarMessage(`Error: ${response.error.message}`, "error");
+      } else {
+        snackbarMessage("Added successfully", "success");
+      }
+    } catch (error) {
+      snackbarMessage(`Error: ${error.message}`, "error");
+    }
+  };
+
+  const tableContainerStyle = {
+    maxWidth: "80%", // Adjust the maximum width as needed
+    margin: "0 auto", // Center-align the table horizontally
+    marginTop: "40px",
+    boxShadow: "5px 5px 5px 5px #8585854a",
+  };
+
+  if (medicineList.length > 0) {
+    return (
+      <TableContainer component={Paper} style={tableContainerStyle}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>
+                  Prescription medicines
+                </TableCell>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>
+                Name
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{ fontWeight: "bold", fontSize: "20px" }}
+              >
+                Price
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{ fontWeight: "bold", fontSize: "20px" }}
+              >
+                Use
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{ fontWeight: "bold", fontSize: "20px" }}
+              >
+                Active Elements
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{ fontWeight: "bold", fontSize: "20px" }}
+              >
+                Amount
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{ width: "20%", fontWeight: "bold", fontSize: "20px" }}
+              >
+                Image
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{ fontWeight: "bold", fontSize: "20px" }}
+              >
+                Add to cart
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {medicineList
+              .filter((row) => {
+                return (
+                  nameFilter === "" ||
+                  row.name.toLowerCase().includes(nameFilter.toLowerCase())
+                );
+              })
+              .filter((row) => {
+                return (
+                  useFilter === "" ||
+                  row.use.toLowerCase().includes(useFilter.toLowerCase())
+                );
+              })
+              .map((row, index) => (
+                <TableRow
+                  key={index}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.name}
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontSize: "18px" }}>
+                    {row.price}
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontSize: "18px" }}>
+                    {row.use}
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontSize: "18px" }}>
+                    {row.activeElement}
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontSize: "18px" }}>
+                    {row.amount}
+                  </TableCell>
+                  <TableCell align="right" sx={{}}>
+                    {/* Display the image directly */}
+                    <img
+                      src={`/public/${row.imgurl}`}
+                      alt="medicine"
+                      style={{
+                        width: "70%",
+                        height: "70%",
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <div
+                      style={{
+                        maraginLeft: "0px",
+                      }}
+                    >
+                      <IconButton
+                        color="primary"
+                        aria-label="add to shopping cart"
+                        onClick={() => HandleAdd(row._id, pid)}
+                      >
+                        <AddShoppingCartIcon />
+                      </IconButton>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  }
 }

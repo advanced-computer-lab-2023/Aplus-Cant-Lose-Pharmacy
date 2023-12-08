@@ -11,7 +11,7 @@ import Orders from "./Orders";
 import { useDispatch, useSelector } from "react-redux";
 import Chatpage from "../../Pages/Chatpage";
 
-import { viewCart, viewMedicine, getPatientOrders } from "../../features/patientSlice";
+import { viewCart, viewMedicine, getPatientOrders, viewPrescriptionMedicines, viewMedicineOTC } from "../../features/patientSlice";
 
 export default function PhHome() {
   const pid = useSelector((state) => state.user.id);
@@ -30,9 +30,10 @@ export default function PhHome() {
   useEffect(() => {
     // Call viewMedicine when value is "1"
     if (value === "1") {
-      dispatch(viewMedicine());
+      dispatch(viewMedicineOTC());
+      dispatch(viewPrescriptionMedicines({pid: pid}));
     }
-  }, [dispatch, value]);
+  }, [dispatch, value, pid]);
   
   const { cart } = useSelector((state) => state.patient);
   const { orders } = useSelector((state) => state.patient);

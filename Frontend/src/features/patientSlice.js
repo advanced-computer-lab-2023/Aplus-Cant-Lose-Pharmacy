@@ -35,12 +35,14 @@ const patientInitial = {
   orders: [], // Initialize
   orderDetails: [], // Initialize
   paymentURL: "", // Initialize
+  prescriptionMeds: [], // Initialize
+  otcMeds: [], // Initial initialize
 };
 
 // Create async thunk for viewing the cart
 export const viewCart = createAsyncThunk("patient/viewCart", async (data) => {
   const response = await axios.get(
-    `http://localhost:8000/api/patient/viewCart/${data.userId}`
+    `${API_URL}/patient/viewCart/${data.userId}`
   );
   console.log(response.data);
   return response;
@@ -129,6 +131,29 @@ const patient = createSlice({
       })
       .addCase(createCartCheckoutSession.rejected, (state, action) => {
         state.loading = false;
+      })
+      .addCase(viewPrescriptionMedicines.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(viewPrescriptionMedicines.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(action.payload.data);
+        state.prescriptionMeds = action.payload.data.prescriptionMedicines;
+      })
+      .addCase(viewPrescriptionMedicines.rejected, (state, action) => {
+        state.loading = false;
+        state.prescriptionMeds = [];
+      })
+      .addCase(viewMedicineOTC.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(viewMedicineOTC.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(action.payload.data);
+        state.otcMeds = action.payload.data.medicines;
+      })
+      .addCase(viewMedicineOTC.rejected, (state, action) => {
+        state.loading = false;
       });
   },
 });
@@ -177,7 +202,7 @@ export const viewMedicine = createAsyncThunk(
   "pharmacist/viewMedicine",
   async () => {
     const response = await axios.get(
-      "http://localhost:8000/api/pharmacist/viewMedicine"
+      `${API_URL}/api/pharmacist/viewMedicine`
     );
     return response;
   }
@@ -271,6 +296,26 @@ export const createCartCheckoutSession = createAsyncThunk(
         address: data.address,
         amount: data.amount,
       }
+    );
+    return response;
+  }
+);
+
+export const viewPrescriptionMedicines = createAsyncThunk(
+  "patient/viewPrescriptionMedicines",
+  async (data) => {
+    const response = await axios.get(
+      `${API_URL}/patient/viewPrescriptionMedicines/${data.pid}`
+    );
+    return response;
+  }
+);
+
+export const viewMedicineOTC = createAsyncThunk(
+  "patient/viewMedicineOTC",
+  async () => {
+    const response = await axios.get(
+      `${API_URL}/patient/viewMedicineOTC`
     );
     return response;
   }

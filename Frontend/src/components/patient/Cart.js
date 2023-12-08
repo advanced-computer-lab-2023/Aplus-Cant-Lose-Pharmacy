@@ -74,6 +74,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Cart({ cart }) {
+  console.log(cart);
   if (!cart.cart || cart.cart.length === 0) {
     return <div>No items in the cart</div>;
   } else {
