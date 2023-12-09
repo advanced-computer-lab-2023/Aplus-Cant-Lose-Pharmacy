@@ -666,7 +666,6 @@ const viewMedicineOTC = async (req, res) => {
       return res.status(404).json({ message: "No unarchived Over the counter medicines found" });
     }
 
-    console.log(medicines);
     res.status(200).json({ message: "Unarchived Over the counter medicines retrieved successfully", medicines });
   } catch (error) {
     console.error("Error fetching Over the counter medicines:", error);

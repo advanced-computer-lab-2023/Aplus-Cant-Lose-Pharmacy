@@ -21,6 +21,12 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import axios from "axios";
 import { API_URL } from "../../Consts";
+import {
+  pharmacistGetWallet,
+  getMedicinesWithZeroAmount,
+} from "../../features/pharmacistSlice";
+import AddAlertIcon from "@mui/icons-material/AddAlert";
+import Badge from "@mui/material/Badge";
 
 const myAccountStyles = {
   cursor: "pointer",
@@ -54,9 +60,9 @@ const logoutButtonStyles = {
   textDecoration: "underline",
   position: "absolute", // Corrected typo in 'position'
   right: "0px",
-fontSize  : "20px",
+  fontSize: "20px",
   padding: "0px",
-  width:"fit-content",
+  width: "fit-content",
   color: "#ff0000", // Red color
 };
 
@@ -84,6 +90,15 @@ const AccountAvatar = () => {
   const [passwordError, setPasswordError] = useState("");
   const [emptyFieldError, setEmptyFieldError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [popoverAnchor, setPopoverAnchor] = useState(null);
+
+  const handlePopoverOpen = (event) => {
+    setPopoverAnchor(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setPopoverAnchor(null);
+  };
 
   useEffect(() => {}, [dispatch]);
 
@@ -143,18 +158,20 @@ const AccountAvatar = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${API_URL}/changePass/${username}`,
-        { oldPassword: currentPassword, newPassword, username }
-      );
+      const response = await axios.post(`${API_URL}/changePass/${username}`, {
+        oldPassword: currentPassword,
+        newPassword,
+        username,
+      });
 
       console.log("Response:", response);
 
       if (response.data.message) {
         snackbarMessage("Password has been changed", "success");
         closeChangePasswordDialog();
-        dispatch(logout()).then(()=>{        navigate("/Login");
-      })
+        dispatch(logout()).then(() => {
+          navigate("/Login");
+        });
       } else {
         snackbarMessage(
           `An error occurred: ${response.data.error || "Unknown error"}`,
@@ -169,7 +186,14 @@ const AccountAvatar = () => {
       );
     }
   };
-
+  const { id, role } = useSelector((state) => state.user);
+  useEffect(() => {
+    if (role === "pharmacist") {
+      dispatch(pharmacistGetWallet({ id: id }));
+      dispatch(getMedicinesWithZeroAmount());
+    }
+  }, [dispatch, role, id]);
+  const { wallet, alerts } = useSelector((state) => state.pharmacist);
   return (
     <div sx={containerStyles}>
       <Avatar
@@ -184,6 +208,42 @@ const AccountAvatar = () => {
       >
         Account
       </Typography>
+      {role === "pharmacist" && (
+        <IconButton aria-label="cart" onClick={handlePopoverOpen}>
+          <Badge badgeContent={alerts.length} color="secondary">
+            <AddAlertIcon />
+          </Badge>
+        </IconButton>
+      )}
+      <Popover
+        open={Boolean(popoverAnchor)}
+        anchorEl={popoverAnchor}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <List>
+          {role === "pharmacist" && (
+            <>
+              <ListItem>
+                {alerts.length === 0
+                  ? "No medicines need restocking"
+                  : "The following medicine(s) need restocking:"}
+              </ListItem>
+              {alerts.map((alert, index) => (
+                <ListItem key={index}>{alert.name}</ListItem>
+              ))}
+            </>
+          )}
+        </List>
+      </Popover>
+
       <Button style={logoutButtonStyles} onClick={handleLogout}>
         Logout
       </Button>
@@ -201,6 +261,7 @@ const AccountAvatar = () => {
         }}
       >
         <List>
+          {role === "pharmacist" && <ListItem>Wallet: {wallet}</ListItem>}
           <ListItem button onClick={openChangePasswordDialog}>
             Change Password
           </ListItem>

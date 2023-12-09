@@ -251,10 +251,10 @@ const getOrdersInMonth = async (req, res) => {
 
 const pharmacistGetWallet = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { phId } = req.params;
 
     // Find the pharmacist by userId
-    const pharmacist = await Pharmacist.findById(userId);
+    const pharmacist = await Pharmacist.findById(phId);
 
     if (!pharmacist) {
       return res.status(404).json({ error: "Pharmacist not found" });
@@ -269,5 +269,19 @@ const pharmacistGetWallet = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const getMedicinesWithZeroAmount = async (req, res) => {
+  try {
+    // Find all medicines with amount equal to 0
+    const zeroAmountMedicines = await Medicine.find({
+      amount: 0,
+    });
 
-module.exports = { addPharmacist, addMedicine, updateMedicineDetails, getOrdersInMonth, pharmacistGetWallet,getAllPharmacistNames,getAllDoctorsNames };
+    return res.status(200).json({ zeroAmountMedicines });
+  } catch (error) {
+    console.error("Error fetching medicines with zero amount:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+module.exports = { addPharmacist, addMedicine, updateMedicineDetails, getOrdersInMonth, pharmacistGetWallet,getAllPharmacistNames,getAllDoctorsNames,getMedicinesWithZeroAmount };

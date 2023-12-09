@@ -12,6 +12,8 @@ const pharmacistInitial = {
   medicineList: [],
   newPhId: 0,
   report: [],
+  wallet: 0,
+  alerts: [],
 };
 
 export const addPharmacist = createAsyncThunk(
@@ -80,7 +82,29 @@ export const viewMedicine = createAsyncThunk(
 export const getOrdersInMonth = createAsyncThunk(
   "pharmacist/getOrdersInMonth",
   async (data) => {
-    const response = await axios.get(`${API_URL}/pharmacist/getOrdersInMonth?month=${data.month}&year=${data.year}`);
+    const response = await axios.get(
+      `${API_URL}/pharmacist/getOrdersInMonth?month=${data.month}&year=${data.year}`
+    );
+    console.log(response);
+    return response;
+  }
+);
+export const pharmacistGetWallet = createAsyncThunk(
+  "pharmacist/pharmacistGetWallet",
+  async (data) => {
+    const response = await axios.get(
+      `${API_URL}/pharmacist/pharmacistGetWallet/${data.id}`
+    );
+    console.log(response);
+    return response;
+  }
+);
+export const getMedicinesWithZeroAmount = createAsyncThunk(
+  "pharmacist/getMedicinesWithZeroAmount",
+  async (data) => {
+    const response = await axios.get(
+      `${API_URL}/pharmacist/getMedicinesWithZeroAmount`
+    );
     console.log(response);
     return response;
   }
@@ -154,7 +178,20 @@ export const pharmacist = createSlice({
       .addCase(viewMedicine.rejected, (state, action) => {
         state.loading = false;
       });
-
+    builder
+      .addCase(pharmacistGetWallet.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(pharmacistGetWallet.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload.data && action.payload.data.wallet) {
+          state.wallet = action.payload.data.wallet;
+          console.log(action.payload.data.wallet);
+        }
+      })
+      .addCase(pharmacistGetWallet.rejected, (state, action) => {
+        state.loading = false;
+      });
     builder
       .addCase(addMedicine.pending, (state) => {
         state.loading = true;
@@ -168,7 +205,20 @@ export const pharmacist = createSlice({
         state.loading = false;
       });
 
-      builder
+    builder
+      .addCase(getMedicinesWithZeroAmount.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getMedicinesWithZeroAmount.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload.data) {
+          state.alerts = action.payload.data.zeroAmountMedicines;
+        }
+      })
+      .addCase(getMedicinesWithZeroAmount.rejected, (state, action) => {
+        state.loading = false;
+      });
+    builder
       .addCase(updateMedicineDetails.pending, (state) => {
         state.loading = true;
       })
@@ -179,7 +229,7 @@ export const pharmacist = createSlice({
         state.loading = false;
         console.log(action.message);
       });
-      builder
+    builder
       .addCase(getOrdersInMonth.pending, (state) => {
         state.loading = true;
       })
@@ -192,7 +242,6 @@ export const pharmacist = createSlice({
       })
       .addCase(getOrdersInMonth.rejected, (state, action) => {
         state.loading = false;
-        
       });
     builder.addCase(archiveMedicine.fulfilled, (state, action) => {
       state.loading = false;
