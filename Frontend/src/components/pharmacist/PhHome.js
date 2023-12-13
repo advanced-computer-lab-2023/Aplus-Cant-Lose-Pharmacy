@@ -35,19 +35,21 @@ export default function PhHome() {
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
             <Tab label="Medicine list" value="1" />
-            <Tab label="Chat Page" value="2" />
-            <Tab label="Sales report" value="3" />
+            <Tab label="Sales report" value="2" />
+
+            <Tab label="Chat Page" value="3" />
 
           </TabList>
         </Box>
         <TabPanel value="1">
           <Medicine medicines={medicineList} />
         </TabPanel>
+      
         <TabPanel value="2">
-          <Chatpage />
+          <MonthlyReport />
         </TabPanel>
         <TabPanel value="3">
-          <MonthlyReport />
+          <Chatpage />
         </TabPanel>
       </TabContext>
     </Box>

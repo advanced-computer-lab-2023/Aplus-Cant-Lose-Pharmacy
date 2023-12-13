@@ -14,6 +14,7 @@ import Button from "@mui/material/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { changePass } from "../../features/userSlice";
 import { SnackbarContext } from "../../App";
+import WalletIcon from "@mui/icons-material/Wallet";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../features/userSlice";
 import IconButton from "@mui/material/IconButton";
@@ -27,6 +28,11 @@ import {
 } from "../../features/pharmacistSlice";
 import AddAlertIcon from "@mui/icons-material/AddAlert";
 import Badge from "@mui/material/Badge";
+
+const popoverContentStyles = {
+  fontWeight: "bold",
+  color: "#0000A3", // Blue color
+};
 
 const myAccountStyles = {
   cursor: "pointer",
@@ -50,6 +56,8 @@ const containerStyles = {
   backgroundColor: "whitesmoke",
   borderRadius: "7px",
   padding: "10px",
+borderRadius: "7px",
+  
 };
 
 const avatarStyles = {};
@@ -83,6 +91,8 @@ const AccountAvatar = () => {
 
   const { username } = useSelector((state) => state.user);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorel, setAnchorel] = useState(null);
+
   const [openDialog, setOpenDialog] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -99,6 +109,9 @@ const AccountAvatar = () => {
   const handlePopoverClose = () => {
     setPopoverAnchor(null);
   };
+  const handlePopoverwClose = () => {
+    setAnchorel(null);
+  };
 
   useEffect(() => {}, [dispatch]);
 
@@ -109,6 +122,9 @@ const AccountAvatar = () => {
 
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+  const handlewallet = (event) => {
+    setAnchorel(event.currentTarget);
   };
 
   const handleAvatarClose = () => {
@@ -193,6 +209,15 @@ const AccountAvatar = () => {
       dispatch(getMedicinesWithZeroAmount());
     }
   }, [dispatch, role, id]);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+
+  const handleIconClick = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
   const { wallet, alerts } = useSelector((state) => state.pharmacist);
   return (
     <div sx={containerStyles}>
@@ -201,6 +226,11 @@ const AccountAvatar = () => {
         sx={avatarStyles}
         onClick={handleAvatarClick}
       />
+
+
+      <Dialog open={isDialogOpen} onClose={handleDialogClose}>
+        <DialogContent>Wallet details: {wallet}</DialogContent>
+      </Dialog>
       <Typography
         component="span"
         onClick={handleAvatarClick}
@@ -208,8 +238,14 @@ const AccountAvatar = () => {
       >
         Account
       </Typography>
+
       {role === "pharmacist" && (
-        <IconButton aria-label="cart" onClick={handlePopoverOpen}>
+        <IconButton aria-label="cart" onClick={handlePopoverOpen} sx={{
+          fontSize: '1rem', // Initial size
+          '&:hover': {
+            fontSize: '0.8rem', // Size on hover
+          },
+        }}>
           <Badge badgeContent={alerts.length} color="secondary">
             <AddAlertIcon />
           </Badge>
@@ -228,7 +264,7 @@ const AccountAvatar = () => {
           horizontal: "right",
         }}
       >
-        <List>
+        <List sx={popoverContentStyles}>
           {role === "pharmacist" && (
             <>
               <ListItem>
@@ -243,10 +279,38 @@ const AccountAvatar = () => {
           )}
         </List>
       </Popover>
+      <IconButton>
+      <WalletIcon sx={{ color: " #808080"}} onClick={handlewallet} /></IconButton>
 
       <Button style={logoutButtonStyles} onClick={handleLogout}>
         Logout
       </Button>
+      <Popover
+        open={Boolean(anchorel)}
+        anchorEl={anchorel}
+        onClose={handlePopoverwClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        
+        <List sx={popoverContentStyles}>
+          {role === "pharmacist" && (
+            <>
+              <ListItem>
+                   Wallet details: {wallet}
+      
+              </ListItem>
+            
+            </>
+          )}
+        </List>
+      </Popover>
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
@@ -261,7 +325,10 @@ const AccountAvatar = () => {
         }}
       >
         <List>
-          {role === "pharmacist" && <ListItem>Wallet: {wallet}</ListItem>}
+        <ListItem>
+
+<Typography sx={{fontSize:"15px"}}>username:</Typography> <Typography sx={{color:"blue",paddingLeft:"4px"}}>{username}</Typography>
+          </ListItem>
           <ListItem button onClick={openChangePasswordDialog}>
             Change Password
           </ListItem>

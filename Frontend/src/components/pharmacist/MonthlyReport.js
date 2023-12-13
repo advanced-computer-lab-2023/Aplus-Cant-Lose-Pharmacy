@@ -123,7 +123,6 @@ export default function MonthlyReport() {
               width: "25%", // Set the width to 25%
             }}
           >
-            <HomeIcon />
           </IconButton>
           <Typography
             variant="h6"
@@ -155,7 +154,7 @@ export default function MonthlyReport() {
             value={startDate || ""}
             onChange={handleStartDateChange}
             variant="outlined"
-            sx={{ width: "10%" }} // Adjust the width as needed
+            sx={{ width: "10%",color:"white" }} // Adjust the width as needed
           >
             {generateDaysArray(defaultStartDate, defaultEndDate).map((day) => (
               <MenuItem key={day} value={day}>
