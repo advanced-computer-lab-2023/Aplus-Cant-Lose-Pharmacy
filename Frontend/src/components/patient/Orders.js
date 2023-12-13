@@ -91,7 +91,6 @@ export default function Orders({ orders, pastOrders }) {
               aria-label="open drawer"
               sx={{ mr: 2 }}
             >
-              <HomeIcon />
             </IconButton>
             <Typography
               variant="h6"
