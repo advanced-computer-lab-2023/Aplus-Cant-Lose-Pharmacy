@@ -6,6 +6,9 @@ import Popover from "@mui/material/Popover";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Dialog from "@mui/material/Dialog";
+import LockResetIcon from "@mui/icons-material/LockReset";
+import LogoutIcon from "@mui/icons-material/Logout";
+
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
@@ -17,6 +20,7 @@ import { SnackbarContext } from "../../App";
 import WalletIcon from "@mui/icons-material/Wallet";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../features/userSlice";
+
 import IconButton from "@mui/material/IconButton";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -282,7 +286,8 @@ const AccountAvatar = () => {
       <IconButton>
       <WalletIcon sx={{ color: " #808080"}} onClick={handlewallet} /></IconButton>
 
-      <Button style={logoutButtonStyles} onClick={handleLogout}>
+      <Button style={logoutButtonStyles} onClick={handleLogout}           startIcon={<LogoutIcon />}
+>
         Logout
       </Button>
       <Popover
@@ -329,7 +334,9 @@ const AccountAvatar = () => {
 
 <Typography sx={{fontSize:"15px"}}>username:</Typography> <Typography sx={{color:"blue",paddingLeft:"4px"}}>{username}</Typography>
           </ListItem>
-          <ListItem button onClick={openChangePasswordDialog}>
+          <ListItem button onClick={openChangePasswordDialog}             startIcon={<LockResetIcon />}
+>
+            
             Change Password
           </ListItem>
         </List>
