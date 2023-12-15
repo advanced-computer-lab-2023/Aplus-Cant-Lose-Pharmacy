@@ -8,6 +8,7 @@ import { addPharmacist } from "../../features/pharmacistSlice";
 import { SnackbarContext } from "../../App";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { NavLink } from "react-router-dom";
 
 function RegisterAsPharmacist() {
   const dispatch = useDispatch();
@@ -100,7 +101,7 @@ function RegisterAsPharmacist() {
         </div>
 
         <label for="gender">Gender</label>
-        <select style={{ width: "92%" }} id="gender" name="Gender">
+        <select style={{ width: "93%" }} id="gender" name="Gender">
           <option value="male">Male</option>
           <option value="female">Female</option>
           <option value="none">None</option>
@@ -109,13 +110,7 @@ function RegisterAsPharmacist() {
         <label className="form__label" for="dBirth">
           Date of Birth
         </label>
-        <input
-          className="dob-input"
-          type="date"
-          id="dBirth"
-          required
-          max="2001-12-31" // set the maximum date to 2001-12-31
-        />
+        <input class="dob-input" type="date" id="dBirth" required max="2001-12-31" style={{ width: "92%" }} />
 
         <label for="rate">Hourly Rate</label>
         <input
@@ -149,6 +144,9 @@ function RegisterAsPharmacist() {
           Register
         </button>
       </div>
+      <span style={{marginLeft:"35%"}}>
+      <NavLink to="/login">Already a user? Login</NavLink></span>
+
     </form>
   );
 }

@@ -87,7 +87,7 @@ function App() {
                 <div>
                   <span>Don't have an account? </span>
                   <NavLink
-                    to="/RegisterAs"
+                    to="/"
                     style={linkStyle}
                     activeStyle={hoverStyle}
                   >
