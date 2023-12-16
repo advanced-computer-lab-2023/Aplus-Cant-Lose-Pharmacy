@@ -2527,6 +2527,605 @@ Gets all messages for a specific chat.
 
 Creates a new message in a chat.
 
+## Tests
+
+```http
+  GET /api/patient/getPatientOrders/652abfb5bbd323bbbc0a4364
+```
+
+
+| Parameter     | Type     | Description                             |
+| :------------ | :------- | :-------------------------------------- |
+| `patientId`       | `ObjectId` | **Required**. Id of patient       |
+
+
+
+
+<details>
+<summary>
+Response
+</summary>
+
+
+```json
+{
+    "orders": [
+        {
+            "_id": "6553bd4b19799f4076ed06da",
+            "orderDate": "2023-11-14T18:32:43.847Z",
+            "address": "Beety",
+            "totalPrice": 23
+        },
+        {
+            "_id": "6553d332670233a6b5f13852",
+            "orderDate": "2023-11-14T20:06:10.375Z",
+            "address": "Beety",
+            "totalPrice": 34
+        },
+        {
+            "_id": "6553df7d16c5eb7e9da6d95c",
+            "orderDate": "2023-11-14T20:58:37.570Z",
+            "address": "heliopolis",
+            "totalPrice": 23
+        },
+        {
+            "_id": "6553e6301c1e135f352d46c0",
+            "orderDate": "2023-11-14T21:27:12.499Z",
+            "address": "Henaho",
+            "totalPrice": 150
+        }
+    ]
+}
+
+```
+
+```http
+  POST addMedicineToCart/652abfb5bbd323bbbc0a4364
+```
+
+Body:
+```json
+{
+    "medicineId": "65514be645d7b1d96259f6db"
+}
+
+```
+
+
+
+| Parameter     | Type     | Description                             |
+| :------------ | :------- | :-------------------------------------- |
+| `patientId`       | `ObjectId` | **Required**. Id of patient       |
+| `medicineId`       | `ObjectId` | **Required**. Id of med to be added       |
+
+
+
+
+<details>
+<summary>
+Response
+</summary>
+
+
+```json
+{
+    "message": "Medicine added to cart successfully",
+    "patient": {
+        "emergencyContact": {
+            "fullName": "Emergency Contact Name",
+            "mobile": 9876543210,
+            "relation": "spouse"
+        },
+        "_id": "652abfb5bbd323bbbc0a4364",
+        "name": "John kaas",
+        "email": "sohailahakeem20@gmail.com",
+        "username": "johndoe1234",
+        "dBirth": "1990-01-15T00:00:00.000Z",
+        "gender": "male",
+        "mobile": 1234567890,
+        "family": [
+            {
+                "fullName": "John Doe",
+                "NID": 1234567890,
+                "age": 30,
+                "gender": "male",
+                "relation": "spouse",
+                "_id": "652ade520528b0fd04805feb"
+            },
+            {
+                "fullName": "Jolia Doe",
+                "NID": 1234567890,
+                "age": 30,
+                "gender": "female",
+                "relation": "child",
+                "_id": "652ade7d0528b0fd04805ff1"
+            },
+            {
+                "fullName": "John Doe",
+                "NID": 1234567890,
+                "age": 30,
+                "gender": "male",
+                "relation": "child",
+                "_id": "652afdb51f86662ac38cebd9"
+            },
+            {
+                "fullName": "nardy",
+                "NID": 132245678909867,
+                "age": 33,
+                "gender": "male",
+                "relation": "child",
+                "_id": "652afdc51f86662ac38cebe2"
+            },
+            {
+                "fullName": "mona",
+                "NID": 234,
+                "age": 4567,
+                "gender": "male",
+                "relation": "spouse",
+                "_id": "652b54c76a7924f9f0f77698"
+            },
+            {
+                "fullName": "mona",
+                "NID": 234,
+                "age": 4567,
+                "gender": "male",
+                "relation": "spouse",
+                "_id": "652b54c96a7924f9f0f776a3"
+            },
+            {
+                "fullName": "mona",
+                "NID": 234,
+                "age": 4567,
+                "gender": "male",
+                "relation": "child",
+                "_id": "652b54cc6a7924f9f0f776af"
+            },
+            {
+                "fullName": "mona",
+                "NID": 234,
+                "age": 4567,
+                "gender": "male",
+                "relation": "child",
+                "_id": "652b54cd6a7924f9f0f776bc"
+            },
+            {
+                "fullName": "dfvberfsbv",
+                "NID": 4567890,
+                "age": 20,
+                "gender": "male",
+                "relation": "child",
+                "_id": "652b5592d7e59982899b0677"
+            },
+            {
+                "fullName": "gdgrd",
+                "NID": 32423,
+                "age": 54,
+                "gender": "male",
+                "relation": "child",
+                "_id": "652b580cd7e59982899b0691"
+            },
+            {
+                "fullName": "gddergdg",
+                "NID": 3424235,
+                "age": 33,
+                "gender": "male",
+                "relation": "spouse",
+                "_id": "652b5f5bd7e59982899b077b"
+            },
+            {
+                "fullName": "gddergdg",
+                "NID": 3424235,
+                "age": 33,
+                "gender": "male",
+                "relation": "spouse",
+                "_id": "652b5f66d7e59982899b078c"
+            },
+            {
+                "fullName": "ahanyw",
+                "NID": 1234567,
+                "age": 20,
+                "gender": "female",
+                "relation": "child",
+                "_id": "652b5fc8d7e59982899b0852"
+            },
+            {
+                "fullName": "ahanyw",
+                "NID": 1234567,
+                "age": 20,
+                "gender": "female",
+                "relation": "child",
+                "_id": "652b6135d7e59982899b0865"
+            },
+            {
+                "fullName": "mona",
+                "NID": 1234567,
+                "age": 40,
+                "gender": "female",
+                "relation": "child",
+                "_id": "652b6223d7e59982899b08b0"
+            },
+            {
+                "fullName": "sokara",
+                "NID": 234567890,
+                "age": 1234,
+                "gender": "female",
+                "relation": "spouse",
+                "_id": "652b62f3d7e59982899b08ff"
+            },
+            {
+                "fullName": "sokara",
+                "NID": 234567890,
+                "age": 1234,
+                "gender": "female",
+                "relation": "spouse",
+                "_id": "652b62f6d7e59982899b0915"
+            },
+            {
+                "fullName": "dcfvgbh",
+                "NID": 123456,
+                "age": 20,
+                "gender": "male",
+                "relation": "spouse",
+                "_id": "652b669bd7e59982899b09de"
+            },
+            {
+                "fullName": "mona",
+                "NID": 12345678904352,
+                "age": 13,
+                "gender": "none",
+                "relation": "child",
+                "_id": "652d918d147b6dedfc5d5816"
+            },
+            {
+                "fullName": "grgrgr",
+                "NID": 12345678904352,
+                "age": 13,
+                "gender": "none",
+                "relation": "child",
+                "_id": "652d91d9147b6dedfc5d582f"
+            },
+            {
+                "fullName": "dfgfhgjkh",
+                "NID": 124152564616,
+                "age": 46,
+                "gender": "female",
+                "relation": "spouse",
+                "_id": "652d929c147b6dedfc5d5879"
+            },
+            {
+                "fullName": "sokar",
+                "NID": 3.5647890098765234e+23,
+                "age": 242,
+                "gender": "none",
+                "relation": "spouse",
+                "_id": "652d92bb147b6dedfc5d58c6"
+            },
+            {
+                "fullName": "hala",
+                "NID": 2145,
+                "age": 44,
+                "gender": "female",
+                "relation": "spouse",
+                "_id": "652e41053fdfdd12a1ba9bde"
+            },
+            {
+                "fullName": "hamosa",
+                "NID": 12345678912,
+                "age": 33,
+                "gender": "male",
+                "relation": "child",
+                "pid": "6547c7d29393a7db1188bc13",
+                "_id": "6553cd8e070c40358a9a9e83"
+            },
+            {
+                "fullName": "remote",
+                "NID": 12345678912,
+                "age": 22,
+                "gender": "male",
+                "relation": "child",
+                "pid": "652d9e3bf9638ca5e2694dbd",
+                "_id": "65549b349cac1e09eae3f679"
+            },
+            {
+                "fullName": "remote",
+                "NID": 12345678912,
+                "age": 22,
+                "gender": "male",
+                "relation": "child",
+                "pid": "652d9e3bf9638ca5e2694dbd",
+                "_id": "65549b349cac1e09eae3f69c"
+            },
+            {
+                "fullName": "remote",
+                "NID": 12345678912,
+                "age": 22,
+                "gender": "male",
+                "relation": "child",
+                "pid": "652d9e3bf9638ca5e2694dbd",
+                "_id": "65549b459cac1e09eae3f717"
+            },
+            {
+                "fullName": "one",
+                "NID": 12345678912,
+                "age": 33,
+                "gender": "male",
+                "relation": "spouse",
+                "pid": "655a2170d0a24345699c7690",
+                "_id": "657b5a4795551fc518ff5fcf"
+            },
+            {
+                "fullName": "hmar",
+                "NID": 123546,
+                "age": 13,
+                "gender": "male",
+                "relation": "spouse",
+                "_id": "657b5a7c95551fc518ff6046"
+            },
+            {
+                "fullName": "fr",
+                "NID": 12345678,
+                "age": 12,
+                "gender": "male",
+                "relation": "spouse",
+                "_id": "657b5aab95551fc518ff6160"
+            }
+        ],
+        "doctors": [
+            {
+                "doctorID": "65591f061fd85ba47a9e48f9",
+                "_id": "652af9fc4cdab3677d1e7573"
+            }
+        ],
+        "records": [
+            {
+                "_id": "6529cda4a1da2872d3dcd4f0",
+                "url": "bhjgkdj",
+                "desc": "ghfvshfj"
+            },
+            {
+                "_id": "6529cda4a1aa2872d3dcd4f0",
+                "url": "ejsfvfyesfvyesfjvyef",
+                "desc": "yufvhjdvfhs"
+            }
+        ],
+        "__v": 216,
+        "cart": [
+            {
+                "medicineID": "65514be645d7b1d96259f6db",
+                "amount": 2,
+                "_id": "6554a47f12f6e6c1c49d69bf"
+            }
+        ],
+        "addresses": [
+            {
+                "location": "Beety",
+                "_id": "654e85b20ac91ee12d737200"
+            },
+            {
+                "location": "Henaho",
+                "_id": "654f9925cad42bbe447a320a"
+            },
+            {
+                "location": "heliopolis",
+                "_id": "6553df5e16c5eb7e9da6d916"
+            },
+            {
+                "location": "guceh",
+                "_id": "6554a42812f6e6c1c49d6763"
+            }
+        ],
+        "wallet": 999988567.99,
+        "healthRecords": [
+            {
+                "date": "2023-11-15T12:30:00.000Z",
+                "description": "Routine checkup",
+                "labResults": "Normal",
+                "medicalInformation": "No allergies",
+                "primaryDiagnosis": "Healthy",
+                "treatment": "None",
+                "_id": "654fe0a3fe5ab7e7ed4dc3e9"
+            },
+            {
+                "date": "2023-12-05T14:45:00.000Z",
+                "description": "Follow-up appointment",
+                "labResults": "Within normal range",
+                "medicalInformation": "No known allergies",
+                "primaryDiagnosis": "Stable condition",
+                "treatment": "Continuing medication",
+                "_id": "654fe143fe5ab7e7ed4dc42f"
+            },
+            {
+                "date": "2023-10-15T14:45:00.000Z",
+                "description": "Follow-up appointment",
+                "labResults": "Within normal range",
+                "medicalInformation": "No known allergies",
+                "primaryDiagnosis": "Stable condition",
+                "treatment": "Continuing medication",
+                "_id": "654fee21db99e318072802e8"
+            },
+            {
+                "date": "2023-11-30T00:00:00.000Z",
+                "description": "bbbbb",
+                "labResults": "bbbbb",
+                "medicalInformation": "bbbbb",
+                "primaryDiagnosis": "bbbbb",
+                "treatment": "bbbbb",
+                "_id": "654fee7dd3680d12080b02d9"
+            },
+            {
+                "_id": "65549fce93d90c7a644c4600"
+            }
+        ],
+        "hPackage": "6547d1fa0b08dd03e8e7de39",
+        "SubDate": "2023-11-14T22:00:00.000Z",
+        "hPStatus": "Subscribed",
+        "medHist": [
+            {
+                "title": "heart",
+                "description": "break",
+                "file_path": "medHist\\1702688980571_Screenshot 2023-08-14 192816.png",
+                "file_mimetype": "image/png",
+                "_id": "657cf8d5445ff17a05da6692"
+            }
+        ],
+        "notifications": [
+            {
+                "message": "APPOINTEMNT CANCELED WITH DOCTOR John Doe1",
+                "type": "AppointmentCanceled",
+                "_id": "657dc54aaac6ec25c63fafc5",
+                "timestamp": "2023-12-16T15:42:02.408Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657dc6a3aac6ec25c6403775",
+                "timestamp": "2023-12-16T15:47:47.412Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657dc6baaac6ec25c64038af",
+                "timestamp": "2023-12-16T15:48:10.417Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657dc784aac6ec25c64039f3",
+                "timestamp": "2023-12-16T15:51:32.861Z"
+            },
+            {
+                "message": "APPOINTEMNT CANCELED WITH DOCTOR John Doe1",
+                "type": "AppointmentCanceled",
+                "_id": "657dc8eaaac6ec25c640630e",
+                "timestamp": "2023-12-16T15:57:30.862Z"
+            },
+            {
+                "message": "APPOINTEMNT CANCELED WITH DOCTOR John Doe1",
+                "type": "AppointmentCanceled",
+                "_id": "657dc912aac6ec25c640646b",
+                "timestamp": "2023-12-16T15:58:10.470Z"
+            },
+            {
+                "message": "APPOINTEMNT CANCELED WITH DOCTOR John Doe1",
+                "type": "AppointmentCanceled",
+                "_id": "657dc91eaac6ec25c64065cc",
+                "timestamp": "2023-12-16T15:58:22.660Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657dc960aac6ec25c640ae9b",
+                "timestamp": "2023-12-16T15:59:28.716Z"
+            },
+            {
+                "message": "APPOINTEMNT CANCELED WITH DOCTOR John Doe1",
+                "type": "AppointmentCanceled",
+                "_id": "657dcd7d5b832d3b9939004c",
+                "timestamp": "2023-12-16T16:17:01.818Z"
+            },
+            {
+                "message": "APPOINTEMNT CANCELED WITH DOCTOR John Doe1",
+                "type": "AppointmentCanceled",
+                "_id": "657dd2352b74acebc2fb8858",
+                "timestamp": "2023-12-16T16:37:09.293Z"
+            },
+            {
+                "message": "APPOINTEMNT CANCELED WITH DOCTOR John Doe1",
+                "type": "AppointmentCanceled",
+                "_id": "657dd2512b74acebc2fb89e1",
+                "timestamp": "2023-12-16T16:37:37.086Z"
+            },
+            {
+                "message": "APPOINTEMNT CANCELED WITH DOCTOR John Doe1",
+                "type": "AppointmentCanceled",
+                "_id": "657dd2572b74acebc2fb8b74",
+                "timestamp": "2023-12-16T16:37:43.774Z"
+            },
+            {
+                "message": "APPOINTEMNT CANCELED WITH DOCTOR John Doe1",
+                "type": "AppointmentCanceled",
+                "_id": "657dd4352b74acebc2fb8da0",
+                "timestamp": "2023-12-16T16:45:41.459Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657e2fe39cb4286da0a5e358",
+                "timestamp": "2023-12-16T23:16:51.415Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657e30049cb4286da0a5e3a4",
+                "timestamp": "2023-12-16T23:17:24.174Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657e30749cb4286da0a5e3f2",
+                "timestamp": "2023-12-16T23:19:16.487Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657e30819cb4286da0a5e442",
+                "timestamp": "2023-12-16T23:19:29.415Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657e309f9fdf6b1b45c75fa6",
+                "timestamp": "2023-12-16T23:19:59.723Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657e30ab9fdf6b1b45c75ffa",
+                "timestamp": "2023-12-16T23:20:11.804Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657e30d09fdf6b1b45c76050",
+                "timestamp": "2023-12-16T23:20:48.289Z"
+            },
+            {
+                "message": "APPOINTEMNT RESCHEULED WITH DOCTOR John Doe1",
+                "type": "AppointmentRescheduled",
+                "_id": "657e310b51af0e2beeb4721c",
+                "timestamp": "2023-12-16T23:21:47.091Z"
+            }
+        ]
+    }
+}
+
+```
+
+```http
+  GET /api/pharmacist/pharmacistGetWallet/655a3137acbb95f4558bc8f2
+```
+
+
+| Parameter     | Type     | Description                             |
+| :------------ | :------- | :-------------------------------------- |
+| `pId`       | `ObjectId` | **Required**. Id of pharmacist       |
+
+
+
+
+
+<details>
+<summary>
+Response
+</summary>
+
+
+```json
+{
+    "wallet": 500
+}
+
+```
 
 ## Useful Links
 
