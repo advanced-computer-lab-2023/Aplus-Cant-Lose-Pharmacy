@@ -20,8 +20,11 @@ El7a2ny online pharmacy aims to provide a convenient solution to people who wish
 ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
 ![Stack Overflow](https://img.shields.io/badge/-Stackoverflow-FE7A16?style=for-the-badge&logo=stack-overflow&logoColor=white)
 
-## Build Status 🔨
-Successful
+## Build Status⚒️
+
+![BuildStatus](https://badgen.net/badge/color/builds-successfully/green?icon=github&label=Test-In-Evaluation&)
+
+Project builds successfully and is fully functional. However, project is currently in development and improvements could be made.
 
 ## Coding Style 📜
 The code style is enforced using eslint and prettier. The code style is enforced using pre-commit hooks and pre-commit github action.
