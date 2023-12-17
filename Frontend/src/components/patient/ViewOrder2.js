@@ -103,11 +103,11 @@ const ViewOrder = () => {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Active Elements</TableCell>
-            <TableCell align="right">Price</TableCell>
-            <TableCell align="right">Amount</TableCell>
-            <TableCell align="right">Total Price</TableCell>
+            <TableCell sx={{fontSize:"20px"}}>Name</TableCell>
+            <TableCell sx={{fontSize:"20px"}} align="right">Active Elements</TableCell>
+            <TableCell sx={{fontSize:"20px"}} align="right">Price</TableCell>
+            <TableCell  sx={{fontSize:"20px"}} align="right">Amount</TableCell>
+            <TableCell sx={{fontSize:"20px"}} align="right">Total Price</TableCell>
           </TableRow>
         </TableHead>
 
@@ -120,10 +120,10 @@ const ViewOrder = () => {
               <TableCell component="th" scope="row">
                 {row.name}
               </TableCell>
-              <TableCell align="right">{row.activeElement}</TableCell>
-              <TableCell align="right">{row.price}</TableCell>
-              <TableCell align="right">{row.cartAmount}</TableCell>
-              <TableCell align="right">{row.price * row.cartAmount}</TableCell>
+              <TableCell align="right" sx={{fontSize:"20px"}}>{row.activeElement}</TableCell>
+              <TableCell align="right" sx={{fontSize:"20px"}}>{row.price}</TableCell>
+              <TableCell align="right" sx={{fontSize:"20px"}}>{row.cartAmount}</TableCell>
+              <TableCell align="right"sx={{fontSize:"20px"}} >{row.price * row.cartAmount}</TableCell>
             </TableRow>
           ))}
 

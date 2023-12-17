@@ -153,10 +153,10 @@ if(rows && rows.length > 0) {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Order date</TableCell>
-            <TableCell align="right">Delivery location</TableCell>
-            <TableCell align="right">Total price</TableCell>
-            <TableCell align="right">View more details</TableCell>
+            <TableCell sx={{fontSize:"20px"}}>Order date</TableCell>
+            <TableCell align="right" sx={{fontSize:"20px"}}>Delivery location</TableCell>
+            <TableCell align="right" sx={{fontSize:"20px"}}>Total price</TableCell>
+            <TableCell align="right" sx={{fontSize:"20px"}}>View more details</TableCell>
           </TableRow>
         </TableHead>
 
@@ -166,12 +166,12 @@ if(rows && rows.length > 0) {
               key={index}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-              <TableCell component="th" scope="row">
+              <TableCell sx={{fontSize:"20px"}} component="th" scope="row">
                 {row.orderDate}
               </TableCell>
-              <TableCell align="right">{row.address}</TableCell>
-              <TableCell align="right">{row.totalPrice}</TableCell>
-              <TableCell align="right">
+              <TableCell sx={{fontSize:"20px"}} align="right">{row.address}</TableCell>
+              <TableCell sx={{fontSize:"20px"}} align="right">{row.totalPrice}</TableCell>
+              <TableCell sx={{fontSize:"20px"}} align="right">
                 <Button
                   sx={{
                     backgroundColor: "#004E98",

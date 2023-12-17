@@ -76,7 +76,7 @@ const ViewOrder = () => {
           </Button>
         </NavLink>
       </div>
-
+<Box sx={{ml:"10%"}}>
       <Typography variant="h4" gutterBottom style={{ marginTop: "50px" }}>
         Order Summary
       </Typography>
@@ -96,18 +96,18 @@ const ViewOrder = () => {
       <Typography variant="h6" gutterBottom>
         Payment type: {order.payment}
       </Typography>
-
+      </Box>
 
       <TableContainer component={Paper} style={tableContainerStyle}>
       {/* Dialog component and form go here */}
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Active Elements</TableCell>
-            <TableCell align="right">Price</TableCell>
-            <TableCell align="right">Amount</TableCell>
-            <TableCell align="right">Total Price</TableCell>
+            <TableCell style={{fontSize:"20px"}}>Name</TableCell>
+            <TableCell align="right" style={{fontSize:"20px"}}>Active Elements</TableCell>
+            <TableCell align="right"sx={{fontSize:"20px"}}>Price</TableCell>
+            <TableCell align="right" sx={{fontSize:"20px"}}>Amount</TableCell>
+            <TableCell align="right" sx={{fontSize:"20px"}}>Total Price</TableCell>
           </TableRow>
         </TableHead>
 
@@ -117,13 +117,13 @@ const ViewOrder = () => {
               key={index}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-              <TableCell component="th" scope="row">
+              <TableCell style={{fontSize:"18px"}} component="th" scope="row">
                 {row.name}
               </TableCell>
-              <TableCell align="right">{row.activeElement}</TableCell>
-              <TableCell align="right">{row.price}</TableCell>
-              <TableCell align="right">{row.cartAmount}</TableCell>
-              <TableCell align="right">{row.price * row.cartAmount}</TableCell>
+              <TableCell style={{fontSize:"18px"}} align="right">{row.activeElement}</TableCell>
+              <TableCell style={{fontSize:"18px"}} align="right">{row.price}</TableCell>
+              <TableCell style={{fontSize:"18px"}} align="right">{row.cartAmount}</TableCell>
+              <TableCell style={{fontSize:"18px"}} align="right">{row.price * row.cartAmount}</TableCell>
             </TableRow>
           ))}
 

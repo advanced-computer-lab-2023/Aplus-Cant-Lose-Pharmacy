@@ -176,12 +176,12 @@ function BasicTable({ rows }) {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Active Elements</TableCell>
-            <TableCell align="right">Price</TableCell>
-            <TableCell align="right">Amount</TableCell>
-            <TableCell align="right">Total Price</TableCell>
-            <TableCell align="center">Change Amount</TableCell>
+            <TableCell sx={{fontSize:"20px"}}>Name</TableCell>
+            <TableCell sx={{fontSize:"20px"}} align="right">Active Elements</TableCell>
+            <TableCell sx={{fontSize:"20px"}} align="right">Price</TableCell>
+            <TableCell sx={{fontSize:"20px"}} align="right">Amount</TableCell>
+            <TableCell sx={{fontSize:"20px"}} align="right">Total Price</TableCell>
+            <TableCell sx={{fontSize:"20px"}} align="center">Change Amount</TableCell>
           </TableRow>
         </TableHead>
 
@@ -191,15 +191,15 @@ function BasicTable({ rows }) {
               key={index}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-              <TableCell component="th" scope="row">
+              <TableCell sx={{fontSize:"20px"}} component="th" scope="row">
                 {row.name}
               </TableCell>
-              <TableCell align="right">{row.activeElement}</TableCell>
-              <TableCell align="right">{row.price}</TableCell>
-              <TableCell align="right">{row.amount}</TableCell>
-              <TableCell align="right">{row.totalPrice}</TableCell>
+              <TableCell sx={{fontSize:"20px"}} align="right">{row.activeElement}</TableCell>
+              <TableCell sx={{fontSize:"20px"}} align="right">{row.price}</TableCell>
+              <TableCell sx={{fontSize:"20px"}} align="right">{row.amount}</TableCell>
+              <TableCell sx={{fontSize:"20px"}} align="right">{row.totalPrice}</TableCell>
 
-              <TableCell align="right">
+              <TableCell align="right" sx={{fontSize:"20px"}}>
                 <div
                   style={{
                     display: "flex",
@@ -229,11 +229,11 @@ function BasicTable({ rows }) {
 
           {/* Add the Grand Total row here */}
           <TableRow>
-            <TableCell colSpan={4} align="right">
+            <TableCell sx={{fontSize:"20px"}} colSpan={4} align="right">
               Grand Total:
             </TableCell>
             <TableCell align="right">{rows.grandTotal}</TableCell>
-            <TableCell align="center">
+            <TableCell align="center" sx={{fontSize:"20px"}}>
               <NavLink exact to="/Checkout">
                 <Button variant="contained" color="primary">
                   Checkout

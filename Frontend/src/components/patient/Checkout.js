@@ -126,7 +126,7 @@ const CheckoutPage = () => {
 const navigate = useNavigate();
   return (
     role==="patient" ?
-    <Box>
+    <Box sx={{ml:"20%",borderWidth:"3px"}}>
       <div style={{ position: "absolute", top: 0, left: 0, padding: "10px" }}>
         <NavLink exact to="/Home">
           <Button variant="outlined" color="primary">
@@ -151,6 +151,7 @@ const navigate = useNavigate();
       <FormControl fullWidth sx={{ marginBottom: 2 }}>
         <InputLabel id="location-label">Delivery Location</InputLabel>
         <Select
+        style={{width:"40%"}}
           labelId="location-label"
           id="location-select"
           value={selectedLocation}
@@ -165,12 +166,12 @@ const navigate = useNavigate();
         </Select>
       </FormControl>
 
-      <Button variant="outlined" onClick={handleAddLocation}>
+      <Button variant="outlined" style={{width:"10%"}} onClick={handleAddLocation}>
         Add New Location
       </Button>
 
       {/* Payment options */}
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom   >
         Payment Options
       </Typography>
 
@@ -180,6 +181,7 @@ const navigate = useNavigate();
           labelId="payment-label"
           id="payment-select"
           label="Payment Method"
+          style={{width:"40%"}}
           onChange={(e) => setPaymentType(e.target.value)}
         >
           <MenuItem value="Wallet">Wallet</MenuItem>
@@ -190,8 +192,11 @@ const navigate = useNavigate();
 
       {/* Checkout button */}
       <Button
+      style={{width:"20%"}}
+      
         variant="contained"
         color="primary"
+        sx={{marginLeft:"60px",borderRadius:"15px"}}
         onClick={() => handleConfirmPayment(selectedLocation, paymentType)}
       >
         Confirm Payment

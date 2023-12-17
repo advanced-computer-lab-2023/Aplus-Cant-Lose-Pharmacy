@@ -4,12 +4,10 @@ const paSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true, // Email is required
     },
     email: {
       type: String,
       required: true, // Email is required
-      unique: true,
     },
     username: {
       type: String,
@@ -32,6 +30,7 @@ const paSchema = new mongoose.Schema(
       mobile: Number,
       relation: String,
     },
+  
     family: [
       {
         fullName: String,
@@ -48,6 +47,10 @@ const paSchema = new mongoose.Schema(
           type: String,
           enum: ["spouse", "child"] // Define allowed values for the 'role' field
         },
+        pid: {
+          type: mongoose.Schema.Types.ObjectId, // Reference to the related patient
+          ref: "Patient",
+        },
       }
     ],
     doctors: [
@@ -62,10 +65,30 @@ const paSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "HPackages", // Reference to the HPackages model
     },
+    hPStatus:{
+      type:String,
+      enum:["Subscribed","Unsubscribed","Cancelled"],
+      default:"Unsubscribed"
+    },SubDate:
+    {
+      type:Date
+    }
+    ,
     records: [
       {
         url: String, // Store the URL to the uploaded image
         desc: String, // Optional description for the image
+      },
+    ],
+    healthRecords: [
+      {
+        date:Date,
+        description:String,
+        labResults:String,
+        medicalInformation:String,
+        primaryDiagnosis:String,
+        treatment:String,
+
       },
     ],
     cart: [
@@ -82,10 +105,46 @@ const paSchema = new mongoose.Schema(
         location: String, 
       },
     ],
+    medHist: [
+      {
+        title: {
+          type: String,
+          required: true,
+          trim: true
+        },
+        description: {
+          type: String,
+          required: true,
+          trim: true
+        },
+        file_path: {
+          type: String,
+          required: true
+        },
+        file_mimetype: {
+          type: String,
+          required: true
+        }
+      }
+    ],
     wallet: {
-      type:Number,
-      default: 0,
-    }
+      type: Number,
+  // wallet is required
+    },
+    notifications: [
+      {
+        message: String,
+        type: {
+          type: String,
+          enum: ['AppointmentScheduled', 'AppointmentRescheduled', 'AppointmentCanceled',"info"],
+          default: 'info',
+        },
+        timestamp: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   }
 );
 
